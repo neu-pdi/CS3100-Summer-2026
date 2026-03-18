@@ -26,33 +26,31 @@ export interface StaffMember {
 export const staffMembers: StaffMember[] = [
   // Instructors
   {
-    name: "Jonathan Bell",
-    pronouns: "he/him",
-    role: "instructor",
-    campus: "Boston",
-    bio: "Associate Professor of Computer Science with research interests in software engineering and program analysis.",
-    headshot: "jbell.jpg",
-    email: "j.bell@northeastern.edu",
-    homepage: "https://www.jonbell.net"
-  },
-  {
-    name: "Ellen Spertus",
-    pronouns: "she/her",
+    name: "Rasika Bhalerao",
+    pronouns: "",
     role: "instructor",
     campus: "Oakland",
-    bio: "Teaching Professor",
-    headshot: "espertus.jpg",
-    email: "e.spertus@northeastern.edu",
-    homepage: "https://www.ellenspertus.com"
+    bio: "",
+    headshot: "staff-placeholder.svg",
+    email: "r.bhalerao@northeastern.edu"
   },
   {
-    name: "Ferdinand Vesely",
+    name: "Tamara Bonaci",
+    pronouns: "",
+    role: "instructor",
+    campus: "Seattle",
+    bio: "",
+    headshot: "staff-placeholder.svg",
+    email: "t.bonaci@northeastern.edu"
+  },
+  {
+    name: "Lucia Nunez",
     pronouns: "",
     role: "instructor",
     campus: "Boston",
     bio: "",
     headshot: "staff-placeholder.svg",
-    email: "f.vesely@northeastern.edu"
+    email: "l.nunez@northeastern.edu"
   },
   {
     name: "Amit Shesh",
@@ -62,15 +60,6 @@ export const staffMembers: StaffMember[] = [
     bio: "Teaching Professor, Assistant Dean of Masters Programs",
     headshot: "amit_shesh.jpg",
     email: "a.shesh@northeastern.edu"
-  },
-  {
-    name: "Jeongkyu Lee",
-    pronouns: "",
-    role: "instructor",
-    campus: "New York City",
-    bio: "",
-    headshot: "staff-placeholder.svg",
-    email: "jeo.lee@northeastern.edu"
   },
   
   // Academic Coordinator
