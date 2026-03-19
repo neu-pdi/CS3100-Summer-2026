@@ -45,7 +45,7 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Lucia Nunez",
-    pronouns: "",
+    pronouns: "she/her",
     role: "instructor",
     campus: "Boston",
     bio: "",
