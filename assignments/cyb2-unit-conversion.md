@@ -4,10 +4,9 @@ sidebar_position: 3
 image: /img/assignments/web/a2.png
 ---
 
-
 ## Overview
 
-In this assignment, you'll expand the CookYourBooks domain model by implementing **unit conversion**, **recipe scaling**, and the core **recipe structure**. Building on Assignment 1's `Quantity` and `Ingredient` hierarchies, you'll create a flexible conversion system that supports standard metric/imperial conversions, ingredient-specific density conversions (like "1 cup flour = 125 grams"), and custom "house" overrides.
+In this assignment, you'll expand the existing CookYourBooks domain model by implementing **unit conversion**, **recipe scaling**, and the core **recipe structure**. Building on given `Quantity` and `Ingredient` hierarchies, you'll create a flexible conversion system that supports standard metric/imperial conversions, ingredient-specific density conversions (like "1 cup flour = 125 grams"), and custom "house" overrides.
 
 ![Assignment 2: Unit Conversion, Recipe and Instruction Classes](/img/assignments/web/a2.png)
 
@@ -19,9 +18,9 @@ You'll implement the conversion service and the `Recipe` and `Instruction` domai
 
 **How you achieve this is up to you.** Your design decisions will determine extensibility for future requirements like recipe export formats, display customizations, and bulk conversions.
 
-**Due:** Thursday, January 29, 2026 at 11:59 PM Boston Time
+**Due:** ???, May ???, 2026 at 11:59 PM Boston Time
 
-**Prerequisites:** This assignment builds on the A1 solution (provided). You should be familiar with the `Quantity`, `Ingredient`, and `Unit` hierarchies from [Assignment 1](./cyb1-recipes).
+**Prerequisites:** This assignment builds on provided code and your understanding of Java concepts from Assignment 1. 
 
 ## Learning Outcomes
 
@@ -87,6 +86,35 @@ src/main/java/app/cookyourbooks/
 
 ### Domain Concepts
 
+#### Understanding the existing hierarchies
+
+In cooking, recipes require **ingredients** that may be specified in different ways:
+
+- **Measured ingredients** have precise quantities (e.g., "2.5 cups flour", "3 whole eggs", "100 grams sugar")
+- **Vague ingredients** lack precise measurements (e.g., "salt to taste", "a pinch of pepper", "water as needed")
+
+Both types share the common property of having a name, but differ in how their quantity is expressed. This natural hierarchy makes them ideal candidates for inheritance, where we can write code that works with any ingredient regardless of how it's measured.
+
+##### Units of Measurement
+
+Recipes use various unit systems depending on regional conventions and the ingredient being measured:
+
+- **Imperial units** (common in US recipes): cups, tablespoons, teaspoons, ounces, pounds
+- **Metric units** (common internationally): milliliters, liters, grams, kilograms
+- **House units** (chef-specific or informal): pinch, dash, handful, "to taste"
+
+Some ingredients may also include **preparation notes** (e.g., "chopped", "diced", "room temperature") and **recipe-specific notes** (e.g., "we prefer Bianco DiNapoli tomatoes" or "order from Kalustyan's if unavailable locally"). These details are part of the ingredient's identity in the recipe context.
+
+##### Quantities
+
+Quantities in recipes can vary in precision:
+
+- **Exact quantities** specify a single precise amount (e.g., "2.5 cups", "100 grams")
+- **Fractional quantities** use common fractions (e.g., "1/2 cup", "2 1/3 tablespoons")
+- **Range quantities** specify a range (e.g., "2-3 cups", "100-150 grams")
+
+All quantities are tied to a specific unit and can represent the same amount in different ways (e.g., "0.5 cups" is equivalent to "1/2 cup").
+
 #### Unit Conversion
 
 Unit conversion in cooking is more complex than simple mathematical ratios. Consider these scenarios:
@@ -100,7 +128,7 @@ Your conversion system must support all three, with this **priority order** (hig
 2. **Recipe-specific conversions** - Conversions defined within a particular recipe
 3. **Global conversions** - Standard conversions available to all recipes
 
-Within a priority level, prefer more specific rules (those that specify an ingredient name) over generic rules (those that do not specify an ingredient name). If multiple rules with the same priority level apply, prefer the rule that was added first.
+Within a priority level, your system must prefer more specific rules (those that specify an ingredient name) over generic rules (those that do not specify an ingredient name). If multiple rules with the same priority level apply, your system must prefer the rule that was added first.
 
 Conversions may span different dimensions when appropriate ingredient context is provided:
 - Volume ↔ Volume (cups to mL): Always possible within same dimension
@@ -114,32 +142,33 @@ Conversions may span different dimensions when appropriate ingredient context is
 
 Your implementation must support three types of recipe transformations (defined as methods on the `Recipe` class):
 
-1. **Scale by multiplier**: Scale all `MeasuredIngredient` quantities by a factor (e.g., 2x doubles everything). `VagueIngredient`s remain unchanged. Servings (if present) should also scale.
+1. **Scale by multiplier**: Scale all `MeasuredIngredient` quantities by a factor (e.g., 2x doubles everything). `VagueIngredient`s remain unchanged. Any servings (if present) should also scale.
 
 2. **Scale to ingredient target**: Scale a recipe as defined above, but choosing a scaling factor such that a specific ingredient reaches a target amount.
-   - Example: Recipe has "2 cups flour". Scaling to "500g flour" requires:
+   For example, say a recipe has "2 cups flour". Scaling this recipe to "500g flour" requires:
      - Converting the ingredient's current quantity (2 cups) to the target unit (grams) using a density conversion rule: 2 cups × 125 g/cup = 250g
      - Calculating the scale factor: 500g / 250g = 2.0
      - Scaling the entire recipe by that factor
-   - The target ingredient ends up in the target unit (grams in the example above)
-   - Other ingredients that can be converted to the target unit should also be converted to the target unit as well
-   - Must handle cross-dimension conversions (cups ↔ grams) when conversion rules exist
-   - Must use recipe-specific conversion rules at `RECIPE` priority
+   Some additional requirements follow:
+     - Notice the target ingredient ends up in the target unit (grams in the example above). Other ingredients that can be converted to the target unit should also be converted to the target unit as well.
+       Continuing the example, if the recipe has "1 cup white sugar", then it must also be converted to "250g white sugar" when scaling the recipe to "500g flour".
+     - Scaling must handle cross-dimension conversions (cups ↔ grams) when conversion rules exist.
+     - Scaling must use recipe-specific conversion rules at `RECIPE` priority.
 
 3. **Convert to unit**: Convert all `MeasuredIngredient` quantities to a target unit. `VagueIngredient`s remain unchanged. Servings are never converted.
-   - Must automatically use recipe-specific conversion rules at `RECIPE` priority
-   - Should throw `UnsupportedConversionException` if any `MeasuredIngredient` cannot be converted
+   - Conversion must automatically use recipe-specific conversion rules at `RECIPE` priority
+   - Conversion should throw `UnsupportedConversionException` if any `MeasuredIngredient` cannot be converted
 
 **Design considerations:**
-- All transformations must maintain immutability (return new objects)
-- Transformations must also update any `IngredientRef`s in instructions
-- Quantity type behavior: `RangeQuantity` stays `RangeQuantity`, fractional quantities become `ExactQuantity`
+- All transformations must maintain immutability (return new objects).
+- Transformations must also update any `IngredientRef`s in instructions.
+- Quantity type behavior: `RangeQuantity` stays `RangeQuantity`, fractional quantities become `ExactQuantity`.
 
 ### Service Interface: ConversionRegistry
 
 The `ConversionRegistry` interface (provided) defines the contract for the complex conversion service. You must implement it in a class called `LayeredConversionRegistry`.
 
-**Key responsibilities:**
+The `ConversionRegistry` has the following key responsibilities:
 - Convert quantities between units using prioritized rules
 - Support ingredient-specific conversions (e.g., "1 cup flour" → grams using flour density)
 - Maintain immutability (adding rules returns a new registry)
@@ -150,7 +179,7 @@ The `ConversionRegistry` interface (provided) defines the contract for the compl
 - This separation enables testing conversion logic independently from domain objects, and provides a reasonable design space for you to work within.
 - Future requirements (batch conversions, export to different systems, UI preferences) might benefit from this service
 
-**Your implementation (`LayeredConversionRegistry`)** must handle:
+**Your implementation (`LayeredConversionRegistry`)** must handle all of the following:
 1. **Rule storage** organized by priority level
 2. **Rule matching** that respects both priority and specificity
 3. **Conversion execution** that throws appropriate exceptions when conversions fail
@@ -273,6 +302,43 @@ classDiagram
     note for Recipe "Recipe transformation methods use the ConversionRegistry service."
 ```
 
+#### Already Provided (No Implementation Needed)
+
+The following are fully implemented in the starter code:
+
+- `Ingredient`, `MeasuredIngredient`, `VagueIngredient` — Complete Ingredient hierarchy
+- `ConversionRulePriority` — Enum with `HOUSE`, `RECIPE`, `STANDARD`
+- `StandardConversions` — Pre-computed conversion rules for all within-dimension unit pairs
+- **`UnsupportedConversionException`** — Checked exception with static factory methods
+
+### Design Details
+
+In this section, we outline what your design is required to handle and list what you are allowed to do as part of your design. Make sure your implementation follows these requirements and constraints for full credit on the assignment!
+
+#### Design Requirements
+
+- **Immutability:** All domain objects (`Recipe`, `Instruction`, `Quantity` subclasses) must be immutable. Transformation methods return new objects.
+- **Information hiding:** Internal representation of conversion rules, ingredient references, etc. should not be exposed through the API
+- **Defensive copying:** Getters returning collections must return unmodifiable views or copies
+- **Null safety:** Use `@NonNull` and `@Nullable` annotations from JSpecify to document nullability (we provide package-level default NullMarked annotation). You do **not** need to add runtime null checks for `@NonNull` parameters—the annotations serve as documentation and enable static analysis tools.
+- **Documentation:** Javadoc for all public classes, methods, constructors with `@param`, `@return`, `@throws` tags. Use good specifications that demonstrate restrictiveness, generality, and clarity.
+
+#### Design Constraints
+
+**What you CAN do:**
+- ✅ **Add new public methods** to domain classes (`Recipe`, `MeasuredIngredient`, `Quantity`, etc.)
+- ✅ **Add new private methods and fields** to domain classes
+- ✅ **Create new classes** in the `model`, `conversion`, or other packages
+- ✅ **Create new interfaces** if your design requires them
+- ✅ **Add helper/utility classes** for transformation logic
+
+**What you CANNOT do:**
+- ❌ **Modify existing method signatures** in provided classes (changing parameters, return types, or throws clauses)
+- ❌ **Modify the `ConversionRegistry` interface** (you implement it, but cannot change it)
+- ❌ **Remove or rename existing methods** from provided classes
+- ❌ **Change existing constructors** in provided stub classes
+- ❌ **Modify provided interfaces** (`ConversionRegistry`) or enums (`ConversionRulePriority`)
+
 ### Implementation Details
 
 **Read the code!** The starter code includes complete Javadoc and method signatures for all classes. The specifications below provide high-level context, but **you should read the source files** for detailed contracts, preconditions, and postconditions.
@@ -316,8 +382,7 @@ The `Recipe` class defines transformation methods (`scale()`, `scaleToTarget()`,
 
 **Most importantly:** Your choices about **what public methods to add** and **where to add them** will be the primary focus of design quality evaluation.
 
-
-### `equals()` and `hashCode()` Requirements
+#### `equals()` and `hashCode()` Requirements
 
 Implement `equals()` and `hashCode()` for the following classes:
 
@@ -326,33 +391,10 @@ Implement `equals()` and `hashCode()` for the following classes:
 
 **Note:** `ConversionRule` is a Java record and automatically generates correct `equals()` and `hashCode()`. The provided A1 solution includes `equals()` and `hashCode()` for the `Quantity` subclasses. The Ingredient hierarchy (`Ingredient`, `MeasuredIngredient`, `VagueIngredient`) is fully provided in the A2 starter code, including `equals()` and `hashCode()`.
 
-### Design Requirements
-
-- **Immutability:** All domain objects (`Recipe`, `Instruction`, `Quantity` subclasses) must be immutable. Transformation methods return new objects.
-- **Information hiding:** Internal representation of conversion rules, ingredient references, etc. should not be exposed through the API
-- **Defensive copying:** Getters returning collections must return unmodifiable views or copies
-- **Null safety:** Use `@NonNull` and `@Nullable` annotations from JSpecify to document nullability (we provide package-level default NullMarked annotation). You do **not** need to add runtime null checks for `@NonNull` parameters—the annotations serve as documentation and enable static analysis tools.
-- **Documentation:** Javadoc for all public classes, methods, constructors with `@param`, `@return`, `@throws` tags. Use good specifications that demonstrate restrictiveness, generality, and clarity.
-
-### Design Constraints
-
-**What you CAN do:**
-- ✅ **Add new public methods** to domain classes (`Recipe`, `MeasuredIngredient`, `Quantity`, etc.)
-- ✅ **Add new private methods and fields** to domain classes
-- ✅ **Create new classes** in the `model`, `conversion`, or other packages
-- ✅ **Create new interfaces** if your design requires them
-- ✅ **Add helper/utility classes** for transformation logic
-
-**What you CANNOT do:**
-- ❌ **Modify existing method signatures** in provided classes (changing parameters, return types, or throws clauses)
-- ❌ **Modify the `ConversionRegistry` interface** (you implement it, but cannot change it)
-- ❌ **Remove or rename existing methods** from provided classes
-- ❌ **Change existing constructors** in provided stub classes
-- ❌ **Modify provided interfaces** (`ConversionRegistry`) or enums (`ConversionRulePriority`)
 
 ### Suggested Implementation Order
 
-The starter code provides stubs for all classes that compile but throw `UnsupportedOperationException`. This allows you to implement incrementally while keeping the project in a compilable state. The `Recipe` transformation method signatures (`scale()`, `scaleToTarget()`, `convert()`) are defined in the stub—you must implement them.
+The starter code provides stubs for all classes that compile but throw `UnsupportedOperationException`. This allows you to implement incrementally while keeping the project in a compilable state. The `Recipe` transformation method signatures (`scale()`, `scaleToTarget()`, `convert()`) are defined in the stub—you must implement them. What follows is a step by step suggestion for how to tackle the assignment. If this is the first time working with this much code, we suggest following these steps closely and reflecting on why we chose these steps in this order to handle the assignment.
 
 #### Phase 1: Foundation Classes (Model Layer)
 
@@ -371,9 +413,9 @@ We provide **sample tests** for `Instruction` (only `toString()` tests are inclu
 **Autograder note:** For this and the remaining tasks on this assignment, the autograder is configured not to provide feedback on your implementation until you provide a plausible test suite for that functionality (as you experienced with Assignment 1).
 
 4. **`ConversionRule`** (record)
-   - Implement compact constructor validation (factor > 0, nulls)
+   - Implement compact constructor validation (checking if factors > 0, handle null arguments)
    - Implement `canConvert()` — check units match and ingredient matches (case-insensitive)
-   - Hold off on `convert()` until you make a conscious design decision about how to implement it
+   - **Hold off** on `convert()` until you make a conscious design decision about how to implement it
 
 **Run tests as you go:** `./gradlew test --tests "ConversionRuleTest"` to verify your `ConversionRule` implementation. We provide complete tests for `ConversionRule`—the autograder runs these to verify your implementation.
 
@@ -403,7 +445,7 @@ Implement and test **scaling separately from unit conversion**—you can earn cr
 7. **`LayeredConversionRegistry`** (implements `ConversionRegistry`)
     - Start with `withRule()` and `withRules()` to build the rule collection
     - Then implement `convert()` methods with priority ordering
-    - Test through the `ConversionRegistry` interface (priority ordering, specificity, exceptions)
+    - Test your implementation through the `ConversionRegistry` interface (priority ordering, specificity, exceptions)
 
 **Write and run tests as you go:** `./gradlew test --tests "ConversionRegistryTest"` to verify your registry implementation handles priority ordering, ingredient-specific rules, and edge cases correctly. We provide a few tests for `ConversionRegistry` in the handout, and you must enhance these tests as you go. The handout has a hint of the first test you'll need to write in order to unlock feedback on your implementation.
 
@@ -414,26 +456,18 @@ Implement and test **scaling separately from unit conversion**—you can earn cr
     - **Enhance the starter tests in `RecipeTest.java`** for target scaling
 
 9. **Implement Recipe Unit Conversion**
-    - Convert all `MeasuredIngredient` quantities to a target unit
-    - Must delegate to `ConversionRegistry.convert()` for each ingredient
+    - Convert all `MeasuredIngredient` quantities to a target unit.
+    - You must delegate to `ConversionRegistry.convert()` for each ingredient.
     - Recipe-specific conversion rules should be used at `RECIPE` priority
     - Throw `UnsupportedConversionException` if any conversion fails
     - **Enhance the starter tests in `RecipeTest.java`** for recipe unit conversion behavior
 
-#### Already Provided (No Implementation Needed)
-
-The following are fully implemented in the starter code:
-
-- `Ingredient`, `MeasuredIngredient`, `VagueIngredient` — Complete Ingredient hierarchy
-- `ConversionRulePriority` — Enum with `HOUSE`, `RECIPE`, `STANDARD`
-- `StandardConversions` — Pre-computed conversion rules for all within-dimension unit pairs
-- **`UnsupportedConversionException`** — Checked exception with static factory methods
 
 ### Testing Requirements
 
 Your tests should verify both individual components and the **service interface (`ConversionRegistry`)** which is the primary focus of this assignment.
 
-Focus on testing **behavior and requirements**, not specific method signatures.
+Focus on testing **behavior and requirements**, not specific method signatures. If you follow the [Suggested Implementation Order](#suggested-implementation-order), you will have most if not all of the tests you will need.
 
 #### Provided Test Files
 
@@ -466,7 +500,7 @@ You must enhance tests in the following files:
 
    For both methods, verify priority ordering (HOUSE > RECIPE > STANDARD), specificity handling (ingredient-specific > generic at same priority), correct conversion mechanics, and exception handling.
 
-As on assignment 1, we will grade your test cases based on their ability to find faults in our own implementations. Your tests must **not** depend on any of your own implementation details. The tests must utilize only the public APIs as provided in the assignment handout.
+As on assignment 1, your tests must **not** depend on any of your own implementation details. The tests must utilize only the public APIs as provided in the assignment handout.
 
 
 ## Reflection
