@@ -20,9 +20,9 @@ You'll implement the conversion service and the `Recipe` and `Instruction` domai
 
 **How you achieve this is up to you.** Your design decisions will determine extensibility for future requirements like recipe export formats, display customizations, and bulk conversions.
 
-**Due:** ???, May ???, 2026 at 11:59 PM Boston Time
+**Due:** Friday, May 21, 2026 at 11:59 PM Boston Time
 
-**Prerequisites:** This assignment builds on provided code and your understanding of Java concepts from Assignment 1. 
+**Prerequisites:** This assignment builds on provided code and your understanding of Java concepts from Assignment 1.
 
 ## Learning Outcomes
 
@@ -97,13 +97,13 @@ Below is a table of the provided interfaces, classes, and their purposes in the 
 | Provided                  | Purpose                                                 | Example |
 | ---                       | ---                                                     | --- |
 | `Ingredient.java`         | Interface representing a single ingredient in a recipe  |     |
-| `MeasuredIngredient.java` | Represents an ingredient with a preciese quantity       | "2.5 cups flour", "100 grams sugar", "3 whole eggs" |
-| `VagueIngredient.java`    | Represnts an ingredient withour precise quantity        | "salt to taste", "a pinch of pepper", "water as needed" |
+| `MeasuredIngredient.java` | Represents an ingredient with a precise quantity       | "2.5 cups flour", "100 grams sugar", "3 whole eggs" |
+| `VagueIngredient.java`    | Represents an ingredient without precise quantity        | "salt to taste", "a pinch of pepper", "water as needed" |
 | `Unit.java`               | Interface representing a unit of measurement            | "grams", "cups", "pinch" |
 | `UnitSystem.java`         | An enum representing the unit system used for a quantity | IMPERIAL", "METRIC", "HOUSE" |
 | `UnitDimension.java`      | An enum representing what the unit represents | "WEIGHT", "DIMENSION". "COUNT", "OTHER"  |
 | `Quantity.java`           | Interface representing a quantity, coupled with a unit | |
-| `ExactQuantity.java`      | Reepresents a single precise amount                     | "2.5 cups", "100 grams" |
+| `ExactQuantity.java`      | Represents a single precise amount                     | "2.5 cups", "100 grams" |
 | `FractionalQuantity.java` | Represents an amount in fractions                       | "1/2 cup", "2 1/3 tablespoons" |
 | `RangeQuantity.java`      | Represents a range of amounts                           | "2-3 cups", "100-150 grams" |
 
@@ -225,11 +225,11 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
   - Consider what helper methods you might need to implement those transformation methods.
 4. Implement and test the scaling transformations in `Multiplier`. You will need to add or enhance the tests in `RecipeTest.java` related to scaling behavior.
 5. Implement and test conversion with `LayeredConversionRegistry`.
-  - We suggest starting with building the collection of rules first, then work on the `convert()` methods. Keep in mind the priority ordering mentioned in [the prior section](???)
-  - Use the `ConversionRegistry` interface when testing your implementation. Make sure your tests cover the specification requirements for conversions from [the prior section](???) We have you some to start but you **must** write your own.
+  - We suggest starting with building the collection of rules first, then work on the `convert()` methods. Keep in mind the priority ordering mentioned in [Unit Conversion](#unit-conversion)
+  - Use the `ConversionRegistry` interface when testing your implementation. Make sure your tests cover the specification requirements for conversions from [Unit Conversion](#unit-conversion) We have you some to start but you **must** write your own.
   - Run your tests with `./gradlew test --tests ConversionRegistryTest`. 
 6. Implement scaling an ingredient to a specific target and amount.
-  - As a rule of thumb, return to the example of conversion from [the prior section](???) for a regular case. Then consider the exceptional cases, like ingredients appearing multiple times.
+  - As a rule of thumb, return to the example of conversion from [Recipe Transformations](#recipe-transformations) subsection for a regular case. Then consider the exceptional cases, like ingredients appearing multiple times.
   - Add or enhance the tests in `RecipeTest.java` to check correctness locally. Again, we always test as we go.
   - **Hint:** You will find your `ConversionRegistry` very useful to actually convert the units. If you depend on the `ConversionRegistry` to do its job, what is left for you to handle?
 7. Finally, implement the conversion for the entire recipe. This means all `MeasuredIngredient` quantities are converted to whatever target unit is provided. If any conversion fails, you **must** throw the `UnsupportedConversionException`.
@@ -238,9 +238,9 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
   - Enhance the tests in `RecipeTest.java` to test the expected recipe unit conversion behavior.
 ## Design and Implementation Hints
 
-The `Recipe` class defines transformation methods (`scale()`, `scaleToTarget()`, `convert()`) that you must implement. As you implement these methods and the supporting classes, keep the questions in the [Reflection](reflection) open adn address them in your design.
+The `Recipe` class defines transformation methods (`scale()`, `scaleToTarget()`, `convert()`) that you must implement. As you implement these methods and the supporting classes, keep the questions in the [Reflection](#reflection) open and address them in your design.
 
-In additon, sit down and plan how your `LayeredConversionRegistry` organizes its rules by answering the following questions.
+In addition, sit down and plan how your `LayeredConversionRegistry` organizes its rules by answering the following questions.
    - What data structure efficiently supports priority-based search?
    - How do you maintain immutability while enabling rule additions?
    - How do you handle the "first added takes precedence" requirement at each priority level?
