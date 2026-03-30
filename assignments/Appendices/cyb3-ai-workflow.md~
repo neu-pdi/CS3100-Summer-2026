@@ -1,0 +1,301 @@
+---
+title: 'A3: AI Workflow Guide'
+sidebar_position: 5
+---
+
+# TODO: Verify all links in this page before publishing
+
+## AI Workflow Guide
+
+This section provides structured guidance for using AI assistants effectively on each part of this
+assignment. The goal is not to minimize AI usage, but to maximize its effectiveness while ensuring
+you understand and can defend your code.
+
+### Task Categories
+
+Different tasks benefit from AI assistance in different ways:
+
+| Task Type                                             | AI Value | Strategy                                                                         |
+| ----------------------------------------------------- | -------- | -------------------------------------------------------------------------------- |
+| **Understanding handout code**                        | High     | Ask AI to explain unfamiliar patterns, annotations, design decisions             |
+| **Boilerplate code** (Jackson annotations, getters)   | High     | Let AI generate, review for correctness                                          |
+| **Design decisions** (data structures, relationships) | Moderate | Think first, then ask AI for alternatives or to expand your design into diagrams |
+| **Test generation**                                   | Moderate | AI for ideas, you verify they're meaningful                                      |
+| **MarkdownExporter tests**                            | High     | Format is precisely specified; AI generates tests, you verify expected values    |
+| **Debugging**                                         | High     | Use scientific debugging, supported by AI                                        |
+
+### Managing Your AI Assistant
+
+IDE-integrated assistants like Copilot and Cursor are powerful, but require some skill to use
+effectively. Here's what you need to know:
+
+#### Copilot Chat Modes
+
+Copilot offers different interaction modes. Choose the right one for your task:
+
+| Mode     | What It Does                                                    | Best For                                                   |
+| -------- | --------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Ask**  | Answers questions, explains code. Read-only—won't change files. | Understanding starter code, learning patterns, debugging   |
+| **Edit** | Makes targeted changes to specific files you select.            | Small, focused edits where you know exactly what to change |
+| **Agent**| Autonomously explores codebase, reads files, runs commands.     | Multi-file tasks, when AI needs to find relevant code      |
+
+**For this assignment:** Start with **Ask** mode to understand the starter code and patterns.
+Use **Edit** mode for small, focused changes. Use **Agent** mode when the AI needs to explore
+your codebase to find relevant examples.
+
+#### Project-Specific Context Limitations
+
+AI assistants don't automatically understand all your project conventions. For example:
+
+- The starter code uses NullAway with `@NonNull` as the default—most parameters don't need
+  explicit annotations. However, an AI trained on general Java code may add `@NonNull`
+  annotations everywhere because that's the common pattern in other codebases.
+- Your project may have specific naming conventions, package structures, or patterns that the
+  AI won't know unless you tell it.
+
+If the AI keeps making the same mistake, add a note to your prompt: "This project uses NullAway
+with @NonNull as the default, so don't add @NonNull annotations unless the existing code does."
+
+#### Task Scope: Start Small
+
+:::warning AI Assistants Want to "Help" Too Much
+
+If you give an AI assistant a large, vague task ("Implement all the collection classes"), it
+will often get stuck in a loop, generating and regenerating code without converging.
+
+The AI is eager to finish the whole assignment for you. **This is not helpful for learning.**
+
+:::
+
+**The key principle: Only accept code you understand.**
+
+Why this matters:
+
+1. **Smaller changes are easier to review.** You can actually verify the code is correct.
+2. **You stay in control.** If something is wrong, you know exactly where to look.
+3. **You build understanding.** Reviewing small pieces teaches you the patterns.
+4. **The AI produces better code.** Focused prompts get focused, accurate responses.
+
+As you practice specifying and reviewing AI-generated code, you'll develop intuition for what
+task sizes work well. Early on, err on the side of smaller tasks. You can always ask for more.
+
+### Suggested Prompts by Task
+
+Your IDE (Copilot, Cursor) automatically provides context from your open files and codebase. Use
+this to your advantage—reference classes by name rather than describing them.
+
+#### Domain Modeling (Cookbook, UserLibrary)
+
+**Think first, then validate with AI:**
+
+```
+I need to design a Cookbook class. See Recipe for the pattern I've been using for immutability.
+
+Cookbook needs: title, optional author, optional ISBN, list of recipes.
+
+I'm thinking of [your design approach]. What are the tradeoffs? Please draw a diagram of the class and its relationships to other classes in this codebase.
+```
+
+**Why think first?** Design decisions affect your entire codebase. AI can suggest patterns, but you
+need to understand why you're choosing one approach over another.
+
+#### JSON Serialization Setup
+
+**Learn by experimenting, then use AI for debugging:**
+
+The starter code already includes all necessary Jackson annotations on the A2 classes. Your task is
+to **understand how they work** and apply similar patterns to your collection implementations.
+
+**Step 1: Experiment with serialization by hand**
+
+Before writing repository code, write a simple test to see how Jackson serializes your domain
+objects:
+
+```java
+ObjectMapper mapper = new ObjectMapper();
+mapper.registerModule(new Jdk8Module());
+
+Recipe recipe = new Recipe(...);  // Create a test recipe
+String json = mapper.writeValueAsString(recipe);
+System.out.println(json);  // See the JSON structure
+
+Recipe restored = mapper.readValue(json, Recipe.class);
+assertEquals(recipe, restored);  // Verify round-trip
+```
+
+**Why experiment first?** Understanding the JSON structure helps you debug serialization issues and
+design your collection serialization. You'll see how `@JsonTypeInfo` adds the `"type"` field for
+polymorphic classes.
+
+**Step 2: Apply the pattern to your collection implementations**
+
+Your collection classes (`CookbookImpl`, etc.) need similar annotations. Use AI to help:
+
+```
+I'm implementing CookbookImpl which implements the Cookbook interface. I need to set up
+Jackson annotations for polymorphic serialization, similar to how Quantity and Ingredient
+are configured in the starter code.
+
+Help me add the appropriate @JsonTypeInfo, @JsonSubTypes, and @JsonCreator annotations.
+```
+
+**Debugging prompts:**
+
+- "The deserialization is failing with [error]. What's wrong?"
+- "How do I handle the Optional fields in my collection classes?"
+- "My collection deserializes as the wrong type. How do I fix this?"
+
+#### Test Generation
+
+**AI for ideas, you for verification:**
+
+```
+I'm testing JsonRecipeCollectionRepository. I need to verify that
+different collection types (Cookbook, PersonalCollection, WebCollection)
+all serialize and deserialize correctly.
+
+Outline a comprehensive testing strategy for the JsonRecipeCollectionRepository.
+```
+
+**Critical:** AI-suggested tests may not be meaningful. For each suggestion, ask:
+
+- Does this test a distinct behavior?
+- Would this catch a real bug?
+- Is the expected result correct?
+
+### Review Checklist
+
+Before accepting AI-generated code, verify:
+
+- [ ] **Compiles:** Does it compile without errors?
+- [ ] **Edge cases:** What happens with empty strings, empty collections, special characters?
+- [ ] **Meets quality requirements:** Does the code meet the quality requirements specified in the
+      assignment?
+- [ ] **Tested:** Have you written tests that pass on this code?
+- [ ] **Understood:** Can you explain what this code does and why? Does it have meaningful comments?
+
+### Iteration Strategies
+
+When AI output isn't quite right:
+
+1. **Be specific about the problem:** "This code fails when the input is [X], I think because [Y] -
+   trace through the code and identify any likely bugs that would cause this to happen"
+2. **Provide context:** Explicitly refer to existing parts of your codebase that are relevant to the
+   problem, or additional aspects of the specification that are relevant.
+3. **Ask for explanation:** "Why did you use [approach]? What are the alternatives?"
+4. **Request modifications:** "Modify this to also handle [case]"
+5. **Try a different approach:** "That approach is getting complicated. Is there a simpler way?"
+
+### Development Checkpoints
+
+Use these checkpoints to verify your understanding and progress:
+
+#### Checkpoint 0: Understanding the Provided Code (Start Here)
+
+Before writing any code, use AI to understand the substantial codebase you're inheriting:
+
+**Recommended AI Task:** Ask AI to explain the provided code. You're inheriting interfaces, domain
+classes with Jackson annotations, and design patterns you may not have seen before.
+
+**Suggested prompts:**
+
+```
+Explain the RecipeCollection interface hierarchy. What's the relationship between
+RecipeCollection, Cookbook, PersonalCollection, and WebCollection?
+```
+
+```
+I see @JsonTypeInfo and @JsonSubTypes annotations on the Quantity class. What do these
+do and why are they needed?
+```
+
+```
+Walk me through the Recipe class. What are the key fields and how does the constructor
+handle null IDs?
+```
+
+```
+What is the Builder pattern? Explain how CookbookImpl.Builder works and why we use it
+instead of a constructor with many parameters.
+```
+
+**Goal:** Before implementing anything, you should be able to explain:
+
+- The interface hierarchy for collections
+- How Jackson polymorphic serialization annotations work
+- What the Builder pattern provides
+- How immutability is maintained in the domain classes
+
+#### Checkpoint 1: After Studying CookbookImpl Reference
+
+`CookbookImpl` is provided as a complete reference implementation. Before implementing
+`PersonalCollectionImpl` and `WebCollectionImpl`:
+
+- Verify you understand how `CookbookImpl` implements the `Cookbook` interface
+- Understand the Jackson annotations (`@JsonCreator`, `@JsonProperty`) on the constructor
+- Understand the Builder pattern implementation and validation logic
+
+#### Checkpoint 2: After Implementing PersonalCollectionImpl
+
+- Run the starter tests to verify basic functionality
+- Manually serialize a `PersonalCollection` and inspect the JSON:
+  ```java
+  ObjectMapper mapper = new ObjectMapper();
+  mapper.registerModule(new Jdk8Module());
+  String json = mapper.writeValueAsString(myCollection);
+  System.out.println(json);  // Verify the JSON structure
+  ```
+- If serialization fails, ask AI for debugging help with the specific error message
+
+#### Checkpoint 3: Before Implementing JsonRecipeCollectionRepository
+
+- Experiment with serialization in an isolated test
+- Verify that all collection types serialize and deserialize back to an equal object (see [round-trip tests](/assignments/a3#testing-requirements)) for all collection types
+- Ask AI: "How do I configure Jackson to preserve the concrete type when deserializing a
+  `RecipeCollection`?"
+
+#### Checkpoint 4: Before Writing Comprehensive Tests
+
+- Review the mutation testing requirements in the grading rubric
+- Write down the bugs you think your tests should catch—think about edge cases, invalid input, and incorrect behavior in each component
+- Ask AI: "What test cases would catch common bugs in a repository implementation?"
+
+#### Checkpoint 5: MarkdownExporter Tests (AI-Recommended Task)
+
+This is an **ideal task for AI assistance**. The format is precisely specified, making this an
+excellent use of AI for mechanical test generation.
+
+**Suggested prompt:**
+
+```
+I need to write tests for MarkdownExporter.exportRecipe(). The required format is:
+
+# {Recipe Title}
+
+_Serves: {servings}_
+
+## Ingredients
+
+- {ingredient1.toString()}
+- {ingredient2.toString()}
+
+## Instructions
+
+{instruction1.toString()}
+{instruction2.toString()}
+
+---
+
+_Exported from CookYourBooks, learn more at https://www.cookyourbooks.app_
+
+Generate JUnit 5 tests covering:
+- Recipe with all fields (title, servings, ingredients, instructions)
+- Recipe without servings (omit the Serves line)
+- Empty ingredients list
+- Empty instructions list
+- Multiple ingredients and instructions
+- Special characters in title/ingredient names
+```
+
+**Your responsibility:** Verify each generated test has correct expected values. AI may generate
+plausible-looking tests with wrong expectations.
