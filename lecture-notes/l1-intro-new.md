@@ -152,7 +152,7 @@ We can use these functions as follows: calling `identify(livingRoomLight)` produ
  
 Consider the situation of supporting an additional type of device: thermostat. A thermostat also has a name, but it has a temperature. It identifies itself as "Thermostat display on, currently at X temperature". How can this type of device be supported in this type of design?
 
-We can represent a web page using another compound data type. 
+We can represent a thermostat using another compound data type. 
 
 ```python
 
