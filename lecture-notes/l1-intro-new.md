@@ -7,8 +7,8 @@ image: /img/lectures/web/l1.png
 Designs and Programming Languages
 ================
  
-   * [ Python Source (.zip)](/code/lectures/l1-intro/python.zip)
-   * [ Java Source (.zip)](/code/lectures/l1-intro/java.zip)
+   * [Python Source (.zip)](/code/lectures/l1-intro/python.zip)
+   * [Java Source (.zip)](/code/lectures/l1-intro/java.zip)
    
    
 # 1 Introduction
@@ -28,7 +28,7 @@ One way to design the above would be to start by representing the data. We can r
 ```java
 
 Light(name, power, on-status)
-Article(name, speed, on-status)
+Fan(name, speed, on-status)
 ```
 
 We can then write functions (verbs) that:
@@ -135,7 +135,7 @@ def isFan(device):
     return (type(device) is dict) and ('type' in device) and (device['type'] == "fan") and ('name' in device) and ('speed' in device)
         
 #function that identifies a device
-def identifyDevice(device):
+def identify(device):
     if isLight(device):
         return "Light blinks at {}% power".format(device['power'])
     elif isFan(device):
@@ -146,7 +146,7 @@ def identifyDevice(device):
 ```
 
  
-We can use these functions as follows: calling `identify(livingRoomLight)` produces the string "Light blinks at 100% power", and calling `identify(fan)` produces the string "Fan spins at 50% speed" 
+We can use these functions as follows: calling `identify(livingRoomLight)` produces the string "Light blinks at 100% power", and calling `identify(fan)` produces the string "Fan spins at 50% speed".
  
 ## 2.2 Extending the design
  
@@ -186,7 +186,7 @@ def isThermostat(device):
 
 
 #function that identifies a device
-def identifyDevice(device):
+def identify(device):
     if isLight(device):
         ...
     elif isFan(device):
@@ -271,7 +271,7 @@ Both designs achieve the same outcomes: representation of devices and operating 
 
 ## 2.4 Extending the design: Take two
  
-How does the second design fare in the same situation of supporting a new kind of device: themostats? Since each type of device is *self-contained*, we can add a `Thermostat` class as before, and implement functions for it. 
+How does the second design fare in the same situation of supporting a new kind of device: themostat? Since each type of device is *self-contained*, we can add a `Thermostat` class as before, and implement functions for it. 
 
 ```python
 
@@ -408,7 +408,7 @@ This class shows several features of Java:
 
 The `Fan` and `Thermostat` classes are similar and can be found in the accompanying code.
 
-## 3.1 The `main` method
+## 3.2 The `main` method
 
 When we run a python file, it runs the instructions that are outside of a function in that file (there are ways to provide a more formal starting point). Java programs on the other hand require a formal starting point. This is a method called `main`. The following `main` method creates some IoTDevice objects and operates them.
 
