@@ -443,12 +443,12 @@
   ],
   "lectures": [
     {
-      "lectureId": "l1-intro",
+      "lectureId": "l1-intro-new",
       "dates": [
-        "2026-01-07"
+        "2026-05-06"
       ],
       "topics": [
-        "Course Overview and Introduction to Java"
+        "Different Designs and Languages"
       ]
     },
     {
