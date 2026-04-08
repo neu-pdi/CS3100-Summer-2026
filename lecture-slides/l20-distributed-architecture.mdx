@@ -57,8 +57,8 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 <aside className="notes">
 **Lecture overview:**
 - **Total time:** ~65 MINUTES
-- **Prerequisites:** L19 (monoliths, modular monoliths, microservices intro, Conway's Law preview)
-- **Connects to:** L21 (serverless — pushing these concerns to the platform), L22 (teams and Conway's Law)
+- **Prerequisites:** (monoliths, modular monoliths, microservices intro, Conway's Law preview)
+- **Connects to:** (serverless — pushing these concerns to the platform), (teams and Conway's Law)
 
 **Structure:**
 - Recap: Why Leave the Monolith? (~3 min)
@@ -93,41 +93,17 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 
 <aside className="notes">
 **Context:**
-- L19 ended with a tease: the road continues into fog, "Distributed Systems Ahead, Here Be Dragons"
+- Previous lecture ended with a tease: the road continues into fog, "Distributed Systems Ahead, Here Be Dragons"
 - Today we go into that fog
-- Running examples: same as L19 — Pawtograder and Bottlenose — but now we focus on the network boundary between them
+- Running examples: Pawtograder and Bottlenose — but now we focus on the network boundary between them
 
 **Framing the lecture:**
-- "L19 was about how we organize code INSIDE a single deployment"
+- "Previous lecture was about how we organize code INSIDE a single deployment"
 - "Today is about what happens when components move to DIFFERENT deployments, connected by a network"
 - "You are NOT expected to design distributed systems. The goal: understand why they're different, so you can read them, debug them, and make informed tradeoff decisions."
 
 → **Transition:** Here's what you'll be able to do after today...
 </aside>
-
-</Slide>
-
-
-<Slide>
-
-## Announcements
-
-<div style={{fontSize: '0.85em', textAlign: 'left'}}>
-
-**Midterm Survey via Qualtrics, +1 participation credit if you complete it**
-- Due Friday 2/27 @ 11:59 PM
-- Anonymous link in your email
-- 150 students have completed it so far
-
-**Team Formation Survey Released!**
-- Starting Week 10: teams of 4 for CookYourBooks GUI project
-- Tell us your preferences + availability
-- **Due Friday 2/27 @ 11:59 PM**
-- [Complete the Survey →](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform)
-
-**HW4 Due Thursday Night**
-
-</div>
 
 </Slide>
 
@@ -1430,7 +1406,7 @@ A <strong>microservices architecture</strong> decomposes a system into small, in
 **Team autonomy is real:**
 - Pawtograder: GitHub Actions maintainers evolve the Grading Action independently of API maintainers
 - They just need to agree on the interface (API contract)
-- This maps to Conway's Law (L22): team structure → system structure
+- This maps to Conway's Law: team structure → system structure
 
 **Energy overhead:**
 - I want to flag this again: the "chatty" microservices architecture wastes energy
@@ -1733,7 +1709,7 @@ flowchart TB
 
 **Database becomes the bottleneck:**
 - This is why database scaling (replication, sharding) is its own specialty
-- More on this in L21
+
 
 → **Transition:** Now let's connect to security — because security shapes all of these decisions...
 </aside>
@@ -2465,7 +2441,7 @@ Security isn't about eliminating trust — it's about understanding <em>what</em
 
 <div style={{fontSize: '0.62em', marginTop: '0.5em'}}>
 
-| Concept | Monolith (L19) | Distributed (L20) |
+| Concept | Monolith | Distributed |
 |---------|---------------|-------------------|
 | **Communication** | Method calls (nanoseconds) | Network calls (milliseconds+) |
 | **Failure modes** | Process crash → everything fails | Partial failures, network partitions |
@@ -2496,7 +2472,7 @@ Security isn't about eliminating trust — it's about understanding <em>what</em
 - Authentication, authorization, and trust boundaries explain most distributed system security issues
 - This mental model will serve you in every job where you work with distributed systems — which is most software jobs
 
-**Conway's Law preview (connects to L22):**
+**Conway's Law preview:**
 - Distributed systems and team structure are deeply connected
 - We'll explore this next time
 
@@ -2510,7 +2486,7 @@ Security isn't about eliminating trust — it's about understanding <em>what</em
 ## Conway's Law: Even More True for Distributed Systems
 
 <p style={{fontSize: '0.82em'}}>
-In L19, we introduced Conway's Law:
+Previously we introduced Conway's Law:
 </p>
 
 <div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.78em', textAlign: 'center', fontStyle: 'italic'}}>
@@ -2545,82 +2521,24 @@ Distributed monolith! Teams that can't deploy independently → services that ca
 </div>
 
 <p style={{fontSize: '0.73em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
-We'll explore this further in L22 (Teams and Collaboration).
+We'll explore this further in (Teams and Collaboration).
 </p>
 
 <aside className="notes">
 **Connect the whole arc:**
-- L18: "Where do boundaries go?" → the four heuristics
-- L19: "How do we organize code?" → architectural styles
-- L20: "What changes when we cross the network?" → distributed system challenges
-- L22: "How do teams shape architecture?" → Conway's Law in depth
+- "Where do boundaries go?" → the four heuristics
+- "How do we organize code?" → architectural styles
+- "What changes when we cross the network?" → distributed system challenges
+- "How do teams shape architecture?" → Conway's Law in depth
 
 **The "Inverse Conway Maneuver":**
 - The inverse: you can deliberately organize your TEAMS to produce the system structure you want
 - Want independently deployable services? Create independently operating teams.
 - Amazon's "two-pizza teams" and API mandate: Jeff Bezos famously required all Amazon teams to expose their data via APIs — this wasn't an accident, it was deliberately using Conway's Law
-
-→ **Transition:** What's coming next?
 </aside>
 
 </Slide>
 
-<Slide>
 
-## What's Next: Serverless
-
-<p style={{fontSize: '0.82em'}}>
-In <strong>L21</strong>, we'll explore <strong>Serverless Architecture</strong> — an architectural style that pushes many of today's concerns to the platform level.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '1em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**What serverless does:**
-- Infrastructure management → platform's job
-- Scaling, availability → platform's job
-- Some security concerns → platform's job
-- **You** focus on business logic
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**The tradeoffs:**
-- You STILL deal with all eight fallacies
-- You gain elasticity and scale-to-zero
-- You lose control over runtime environment
-- New constraints: cold starts, execution time limits
-
-*Pawtograder uses serverless extensively — Supabase Edge Functions, GitHub Actions.*
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.73em', marginTop: '1em', fontStyle: 'italic', color: '#666'}}>
-Serverless is the natural continuation of today's lesson: it's distributed computing with operational complexity offloaded to the cloud provider.
-</p>
-
-<aside className="notes">
-**Preview L21:**
-- Supabase Edge Functions: Deno-based serverless functions — the Pawtograder API
-- GitHub Actions: the Grading Action is itself a form of serverless
-- The key questions for L21: What do you give up by going serverless? What do you gain? When does it make sense?
-
-**The thread connecting L19-L20-L21:**
-- L19: How do we organize code?
-- L20: What changes when code crosses the network?
-- L21: What changes when the cloud manages the infrastructure?
-
-**End-of-lecture homework:**
-- If students want to go deeper: Fundamentals of Software Architecture, Chapter 17 on Microservices
-- The eight fallacies are worth memorizing — they'll come up in interviews
-
-→ **Wrap up.**
-</aside>
-
-</Slide>
 
 </RevealJS>

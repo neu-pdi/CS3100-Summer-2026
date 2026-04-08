@@ -6,7 +6,6 @@ image: /img/lectures/web/l7.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
-import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -25,7 +24,6 @@ import PollSlide from '@site/src/components/PollSlide';
 **Lecture overview:**
 - **Total time:** ~55 minutes
 - **Prerequisites:** Students understand Java basics, design patterns from L5-L6
-- **Connects to:** Assignment 2 (designing changeable systems), Lab 4 (refactoring)
 
 **Structure:**
 - Analyzing changeability with coupling and cohesion (~10 min)
@@ -83,7 +81,6 @@ After this lecture, you will be able to:
   <li>Analyze the changeability of a software module for some hypothetical change using the language of coupling and cohesion</li>
   <li>Define and recognize cases of data coupling, stamp coupling, control coupling, common coupling, and content coupling</li>
   <li>Define and recognize cases of coincidental, logical, temporal, procedural, communicational, sequential, and functional cohesion</li>
-  <li>Use the vocabulary of coupling and cohesion to review the Strategy pattern</li>
 </ol>
 
 <aside className="notes">
@@ -99,15 +96,6 @@ After this lecture, you will be able to:
 </aside>
 
 </Slide>
-
-<Slide>
-
-## Poll: What are the pillars of OOP?
-
-<PollSlide choices={["Abstraction", "Encapsulation", "Inheritance", "Litigation", "Marble", "Polymorphism", "Polyphemus"] } />
-
-</Slide>
-
 <Slide>
 
 ## The Four Pillars of OOP
@@ -572,10 +560,6 @@ public void sendCanvasNotification(User destination, String message);
 public void sendEmailNotification(User destination, String message);
 public void sendSmsNotification(User destination, String message);
 ```
-
-<p style={{fontSize: '0.7em', marginTop: '0em'}}>
-  This works if we want the caller to determine how to send the notification. But there's an even better approach—the <strong>Strategy pattern</strong>—which we'll see after discussing cohesion.
-</p>
 
 <aside className="notes">
 **Benefits:**
@@ -1237,248 +1221,6 @@ classDiagram
 - If yes, you likely have functional cohesion
 
 → **Transition:** Let's apply this to the Strategy pattern...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 4: STRATEGY PATTERN REVISITED */}
-{/* ============================================ */}
-
-<Slide>
-
-## Strategy Pattern Reduces Coupling and Increases Cohesion
-
-<p style={{fontSize: '0.85em'}}>
-  Recall the <strong>Strategy pattern</strong>: encapsulate interchangeable algorithms behind a common interface. Each variant gets its own class.
-</p>
-
-<Img
-  src="/img/lectures/web/l7-strategy-comparison.webp"
-  prompt="A split-screen comparison illustration showing 'Without Strategy' vs 'With Strategy' pattern for handling multiple programming languages.
-
-LEFT SIDE - 'Without Strategy' (red tinted, chaotic):
-A single large overloaded robot/machine labeled 'SubmissionService' trying to juggle multiple tasks at once. It has Java, Python, and TypeScript logos all crammed inside its body, with gears grinding against each other and sparks flying. The robot looks stressed and overheating. When a new 'TypeScript' task arrives (shown as a package), the entire robot needs to be opened up and modified (shown with warning tape and construction signs). Speech bubble: 'I do EVERYTHING and I'm falling apart!'
-
-RIGHT SIDE - 'With Strategy' (green tinted, organized):
-A clean coordinator robot labeled 'SubmissionService' that simply holds a 'BuildStrategy' interface plug. Below it are three separate, happy specialist robots: 'JavaStrategy', 'PythonStrategy', and 'TypeScriptStrategy', each with their respective language logo and doing one job well. They all connect via the same standard interface plug. When a new 'RustStrategy' robot arrives, it simply plugs in without any modification to the coordinator. Speech bubble from coordinator: 'I just delegate!' Speech bubbles from specialists: 'One job, done well!'
-
-CENTER: A versus symbol or arrow showing the transformation."
-  alt="Split-screen comparison: Left shows 'Without Strategy' - one overloaded robot trying to handle Java, Python, TypeScript all at once, overheating and stressed. Right shows 'With Strategy' - a clean coordinator robot delegating to separate specialist robots (JavaStrategy, PythonStrategy, TypeScriptStrategy) each doing one job well, easily adding new RustStrategy."
-/>
-
-<aside className="notes">
-**Recall Strategy from Lecture 5:** Different algorithms used interchangeably behind a common interface.
-
-**Today's lens:** How does this affect coupling and cohesion? The graphic shows the contrast—one overloaded class vs. focused specialists.
-
-→ **Transition:** Let's see how this fixes the control coupling problem we saw earlier...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Strategy Fixes Control Coupling by Hoisting the Decision
-
-<p style={{fontSize: '0.85em'}}>
-  Remember the control coupling problem? Strategy pattern fixes it:
-</p>
-
-```mermaid
-classDiagram
-    class NotificationSender {
-        <<interface>>
-        +send(User destination, String message)*
-    }
-    class EmailSender {
-        +send(User destination, String message)
-    }
-    class SmsSender {
-        +send(User destination, String message)
-    }
-    class PushSender {
-        +send(User destination, String message)
-    }
-
-    NotificationSender <|.. EmailSender
-    NotificationSender <|.. SmsSender
-    NotificationSender <|.. PushSender
-
-    style NotificationSender fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-```
-
-```java
-void notifyUser(User user, String message,
-                NotificationSender sender) {
-    sender.send(user, message);
-}
-```
-
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#8BC34A'}}>
-  The choice of <em>which</em> notification to send is now made when the <code>NotificationSender</code> is created—not buried inside the method.
-</p>
-
-<aside className="notes">
-**Key insight:** The branching still exists somewhere—at object construction time—but the rest of your code just works with the interface.
-
-**Adding a new notification type:**
-- Create a new class implementing NotificationSender
-- No existing code changes
-
-**Compare to the other approaches:**
-- Flag parameter: modify the if/else chain
-- Separate methods: modify every call site that dispatches
-
-This is the Open-Closed Principle: open for extension, closed for modification.
-
-**Alternative approach:** Another option would be to make *how* to send the notification a responsibility of the Notification object itself—more on that in a future lecture...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Strategy Increases Cohesion by Isolating Each Variant
-
-```mermaid
-classDiagram
-    direction TB
-    class SubmissionService {
-        -BuildStrategy buildStrategy
-        +processSubmission(Submission submission)
-    }
-    class BuildStrategy {
-        <<interface>>
-        +build(Submission submission)
-        +lint(Submission submission)
-        +test(Submission submission)
-    }
-    class JavaBuildStrategy {
-        +build(Submission submission)
-        +lint(Submission submission)
-        +test(Submission submission)
-    }
-    class PythonBuildStrategy {
-        +build(Submission submission)
-        +lint(Submission submission)
-        +test(Submission submission)
-    }
-    BuildStrategy <|.. JavaBuildStrategy
-    BuildStrategy <|.. PythonBuildStrategy
-    SubmissionService o-- BuildStrategy
-    style BuildStrategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-```
-
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#8BC34A'}}>
-  Each strategy class has functional cohesion—one language, one job. Adding TypeScript? Just add a new class.
-</p>
-
-<aside className="notes">
-**The design:**
-- `SubmissionService` doesn't know Java vs Python
-- It only knows `BuildStrategy` interface
-- Each language has its own strategy class
-
-**Adding TypeScript:**
-- Create `TypeScriptBuildStrategy`
-- No changes to `SubmissionService`
-- Clean extension point
-
-→ **Transition:** Let's summarize the tradeoffs...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Benefits of Strategy Pattern
-
-<table style={{fontSize: '0.7em', width: '100%'}}>
-<thead>
-<tr>
-<th>Aspect</th>
-<th>Without Strategy</th>
-<th>With Strategy</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Coupling</strong></td>
-<td>Java/Python code coupled in same class</td>
-<td>Each strategy isolated; only interface shared</td>
-</tr>
-<tr>
-<td><strong>Cohesion</strong></td>
-<td>Low—class does many unrelated things</td>
-<td>High—each class has one job</td>
-</tr>
-<tr>
-<td><strong>Adding languages</strong></td>
-<td>Modify SubmissionService</td>
-<td>Add new strategy class</td>
-</tr>
-<tr>
-<td><strong>Testing</strong></td>
-<td>Must test all paths together</td>
-<td>Test each strategy in isolation</td>
-</tr>
-</tbody>
-</table>
-
-<p style={{fontSize: '0.7em', marginTop: '0.5em', color: '#FF9800'}}>
-  ⚠ But beware: Strategy adds indirection and more classes. Use it when you actually have multiple variants—not for hypothetical future flexibility.
-</p>
-
-<aside className="notes">
-**The pattern enforces good design:**
-- Compiler enforces the interface boundary
-- Can't accidentally access internals of other strategies
-- Each strategy is functionally cohesive
-
-**Key insight:**
-- Design patterns often exist to reduce coupling
-- And increase cohesion
-- They encode best practices in reusable structures
-
-**When Strategy overcomplicates:**
-- If you only have one implementation and no concrete plans for more, a simple method is clearer
-- If the "strategies" share most of their code, you end up with duplication or awkward inheritance
-- If the algorithm is simple (a few lines), the overhead of interfaces and classes isn't worth it
-- If switching strategies at runtime isn't needed, consider simpler alternatives
-
-**Rule of thumb:** Wait until you have 2-3 real variants before introducing Strategy. Don't design for hypothetical future requirements.
-
-→ **Transition:** Let's wrap up...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## What's the difference between polymorphism and Strategy?
-
-**Polymorphism** is the mechanism—calling a method on an abstract type, where the concrete runtime type determines which implementation runs.
-
-**Strategy** is a design pattern that *uses* polymorphism to make algorithms interchangeable
-by holding a reference to the concrete subtype.
-
-
-<aside className="notes">
-**Common confusion:** Students sometimes use these terms interchangeably.
-
-**The distinction:**
-- Polymorphism is a language feature (method dispatch based on runtime type)
-- Strategy is an architectural choice (encapsulate algorithms behind an interface)
-
-**Other patterns using polymorphism:**
-- Template Method: superclass skeleton, subclass steps
-- State: behavior changes based on internal state
-- Command: encapsulate requests as objects
-- Decorator: wrap objects to add behavior
-
-**When people say "use polymorphism instead of switch":**
-They usually mean Strategy specifically, but the underlying mechanism is polymorphism.
 </aside>
 
 </Slide>

@@ -7,7 +7,6 @@ image: /img/lectures/web/l5.png
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import ImageSlide from '@site/src/components/ImageSlide';
 import Img from '@site/src/components/Img';
-import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -31,7 +30,6 @@ This visualizes the lecture's pointed historical commentary: 'For decades, Java 
 - **Theme:** Java finally caught up—let's use it
 - **The cover:** The "fashionably late" visual sets the tone—Java took 40 years to get features other languages had from the start
 - **Prerequisites:** Students understand Java basics, specifications, Object contracts from L1-L4
-- **Connects to:** Assignment 1 (using lambdas for sorting), Lab 4 (refactoring)
 
 **The narrative:**
 - Readability matters (why we care)
@@ -109,28 +107,7 @@ After this lecture, you will be able to:
 </Slide>
 
 {/* ============================================ */}
-{/* INTRODUCTORY EXERCISE */}
-{/* ============================================ */}
-
-<Slide>
-
-## Poll: Which language do you like better?
-
-<PollSlide choices={["Python", "Java", "I like them equally", "I don't know Java well enough yet to have an opinion"]}
-/>
-
-</Slide>
-
-<Slide>
-
-## Poll: How come?
-
-<PollSlide bottomText="Remember to state the language." />
-
-</Slide>
-
-{/* ============================================ */}
-{/* BRIDGE FROM L4: COMPARETO REVIEW */}
+{/* COMPARATOR: THE PROBLEM AND SOLUTION */}
 {/* ============================================ */}
 
 <Slide>
@@ -138,7 +115,7 @@ After this lecture, you will be able to:
 ## Review: compareTo Defines Natural Ordering
 
 <p style={{fontSize: '0.9em'}}>
-  Last time, we learned that <code>Comparable</code> lets a class define its <strong>natural order</strong>:
+  <code>Comparable</code> lets a class define its <strong>natural order</strong>:
 </p>
 
 ```java
@@ -161,7 +138,7 @@ Collections.sort(lights);  // Uses compareTo automatically
 </p>
 
 <aside className="notes">
-**Quick review from L4:**
+**Quick review:**
 - `Comparable<T>` interface with one method: `compareTo(T other)`
 - Returns negative (less than), zero (equal), positive (greater than)
 - Enables `Collections.sort()`, `TreeSet`, `TreeMap`
@@ -739,196 +716,6 @@ lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 
 </Slide>
 
-
-{/* I consider the Strategy slides skippable. --ES */}
-<Slide>
-
-## Aside: This Is the Strategy Pattern
-
-<p style={{fontSize: '0.85em'}}>
-  The anonymous <code>Comparator</code> is an example of the <strong>Strategy Pattern</strong>:
-</p>
-
-```mermaid
-classDiagram
-direction BT
-    class Context {
-        - Strategy strategy
-        + setStrategy(Strategy)
-        + doSomething()
-    }
-    class Strategy {
-        &lt;&lt;interface&gt;&gt;
-        +execute()*
-    }
-    class ConcreteStrategyA {
-        +execute()
-    }
-    class ConcreteStrategyB {
-        +execute()
-    }
-    Context o--> Strategy : uses
-    ConcreteStrategyA ..|> Strategy
-    ConcreteStrategyB ..|> Strategy
-    style Strategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-```
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <strong>Strategy Pattern:</strong> Define a family of algorithms, encapsulate each one, and make them interchangeable.
-</p>
-
-<aside className="notes">
-**The pattern:**
-- Context has a Strategy (interface)
-- Multiple ConcreteStrategies implement the interface
-- Client chooses which strategy to use at runtime
-
-**In our Comparator example:**
-- Context = `Collections.sort()` or `List.sort()`
-- Strategy = `Comparator` interface
-- ConcreteStrategy = `BrightnessComparator`, `LocationComparator`, etc.
-
-**Why it exists:**
-- Allows algorithm selection at runtime
-- Follows Open/Closed Principle (open for extension, closed for modification)
-- Decouples the algorithm from the code that uses it
-
-**You should:**
-- Recognize this pattern when you see it
-- Understand why it's useful
-- But prefer lambdas for implementation (next slide)
-
-→ **Transition:** Here's how Comparator uses the strategy pattern...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Comparator as Strategy Pattern
-
-```mermaid
-classDiagram
-direction BT
-    class List {
-        +sort(Comparator c)
-    }
-    class Comparator {
-        &lt;&lt;interface&gt;&gt;
-        +compare(T o1, T o2)*
-    }
-    class BrightnessComparator {
-        +compare(Light l1, Light l2)
-    }
-    class LocationComparator {
-        +compare(Light l1, Light l2)
-    }
-    List o--> Comparator : uses
-    BrightnessComparator ..|> Comparator
-    LocationComparator ..|> Comparator
-      style Comparator fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-
-```
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-  The client chooses the strategy at runtime:
-</p>
-
-```java
-Comparator<Light> comparator = userWantsBrightness
-    ? new BrightnessComparator()
-    : new LocationComparator();
-lights.sort(comparator);
-```
-
-<aside className="notes">
-**How it maps:**
-- `List.sort()` is the Context
-- `Comparator` is the Strategy interface
-- `BrightnessComparator`, `LocationComparator` are ConcreteStrategies
-
-**The flexibility:**
-- `sort()` doesn't know how to compare lights
-- It just needs SOMETHING that implements Comparator
-- The client decides which comparator to use
-
-**Before lambdas:**
-- Each strategy needed a named class
-- Or an anonymous class (verbose)
-- Lots of ceremony for simple behavior
-
-→ **Transition:** Lambdas make strategies trivial to create...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Lambdas Make Strategy Pattern Trivial
-
-<div style={{display: 'flex', gap: '1em', fontSize: '0.75em'}}>
-<div style={{flex: 1}}>
-
-**Before Java 8 (Strategy classes):**
-
-```java
-class BrightnessComparator
-    implements Comparator<Light> {
-  @Override
-  public int compare(Light l1, Light l2) {
-    return Integer.compare(
-      l1.getBrightness(),
-      l2.getBrightness());
-  }
-}
-
-lights.sort(new BrightnessComparator());
-```
-
-</div>
-<div style={{flex: 1}}>
-
-**After Java 8 (Lambdas):**
-
-```java
-lights.sort((l1, l2) ->
-  Integer.compare(
-    l1.getBrightness(),
-    l2.getBrightness()));
-
-// Or even simpler:
-lights.sort(Comparator
-  .comparingInt(Light::getBrightness));
-```
-
-</div>
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#27ae60'}}>
-  <strong>Recognize</strong> the Strategy Pattern. <strong>Implement</strong> it with lambdas.
-</p>
-
-<aside className="notes">
-**The evolution:**
-- Same pattern, less ceremony
-- The Strategy Pattern is still there conceptually
-- But lambdas remove the need for named classes
-
-**When to still use named classes:**
-- Complex strategy with multiple methods
-- Strategy needs state/fields
-- Strategy is reused across many places
-- Strategy needs documentation/testing
-
-**The rule:**
-- Recognize Strategy Pattern in code
-- Prefer lambdas for simple strategies
-- Use named classes for complex ones
-
-→ **Transition:** Let's look at what the lambda really expresses...
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -2577,9 +2364,7 @@ Style notes: The key insight is that understanding IS achievable either way—ba
 - But remember: naming is still the foundation
 
 **Connections:**
-- A1: Use lambdas for sorting, filtering
-- A1: Consider records for value objects
-- Lab: Practice refactoring verbose code
+
 
 → **Transition:** Here's what's coming up...
 </aside>
@@ -2588,11 +2373,7 @@ Style notes: The key insight is that understanding IS achievable either way—ba
 
 <Slide>
 
-## Next Steps
-
-<p style={{fontSize: '0.9em', color: '#e74c3c', marginBottom: '1em'}}>
-  ⚠️ <strong>Assignment 1 due tonight (Thursday, Jan 15)!</strong>
-</p>
+## Further Reading
 
 <p style={{fontSize: '0.85em'}}>
   <strong>Optional readings</strong> (from <em>Effective Java</em> and <em>The Programmer's Brain</em>):
@@ -2606,19 +2387,10 @@ Style notes: The key insight is that understanding IS achievable either way—ba
 </ul>
 
 <aside className="notes">
-**Assignment 1:**
-- Due TONIGHT
-- Use lambdas for sorting (you've seen the syntax today)
-- Consider records if you're creating simple data classes
-
 **Optional readings:**
 - All accessible through O'Reilly via Northeastern library
 - Effective Java chapters go deeper on when/why to use each feature
 - The Programmer's Brain chapter has fascinating research on naming
-
-**Questions?**
-- Now is a good time for questions on lambdas, records, or A1
-- Office hours available for A1 help
 
 → **End of lecture.**
 </aside>

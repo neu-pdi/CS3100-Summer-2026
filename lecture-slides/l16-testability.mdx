@@ -40,8 +40,7 @@ STYLE: Retro pixel art, teals and warm ambers, clean vs chaotic contrast." />
 <aside className="notes">
 **Lecture overview:**
 - **Total time:** ~55 minutes
-- **Prerequisites:** Students understand coupling/cohesion (L7), SOLID principles (L8), test doubles (L15)
-- **Connects to:** L6 (information hiding), L7 (coupling/cohesion), L8 (Dependency Inversion)
+- **Prerequisites:** Students understand coupling/cohesion, SOLID principles, test doubles
 
 **Structure:**
 - Testability as a design choice (~10 min)
@@ -110,8 +109,8 @@ After this lecture, you will be able to:
 - Objective 4: Anti-patterns (~15 min)
 
 **Connection to prior lectures:**
-- These concepts build directly on information hiding (L6) and coupling/cohesion (L7)
-- Testability is a *consequence* of following SOLID principles (L8)
+- These concepts build directly on information hiding and coupling/cohesion
+- Testability is a *consequence* of following SOLID principles
 
 -> **Transition:** Let's start by understanding what makes code testable...
 </aside>
@@ -192,7 +191,7 @@ STYLE: Clean architectural diagram, blueprint blue background, warm amber highli
 
 **Connection to L7 (coupling):**
 - High coupling reduces controllability—dependencies are hardwired
-- Information hiding (L6) can reduce observability if overdone
+- Information hiding can reduce observability if overdone
 - Balance is key
 
 -> **Transition:** Let's look at observability first...
@@ -278,7 +277,7 @@ public class TemperatureLogger {
 - Expose read-only access via `getLogEntries()` (observability)
 - Inject a `Clock` dependency (controllability via DIP!)
 
-**This is Dependency Inversion from L8:**
+**This is Dependency Inversion:**
 - Instead of calling `LocalDateTime.now()` directly (hidden dependency)
 - We inject a `Clock` that can be substituted in tests
 - Production uses `Clock.systemDefaultZone()`
@@ -358,7 +357,7 @@ public boolean isOffPeakHours() {
 <div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
   <p className="fragment" style={{color: '#f44336', margin: '0.25em 0'}}>❌ Left: Dependencies created <em>inside</em> methods — can't substitute them</p>
   <p className="fragment" style={{color: '#4CAF50', margin: '0.25em 0'}}>✓ Right: Dependencies <em>injected</em> via constructor — tests provide stubs</p>
-  <p className="fragment" style={{color: '#2196F3', margin: '0.25em 0'}}>💡 This is Dependency Inversion Principle (L8) in action!</p>
+  <p className="fragment" style={{color: '#2196F3', margin: '0.25em 0'}}>💡 This is Dependency Inversion Principle in action!</p>
 </div>
 
 <aside className="notes">
@@ -366,7 +365,7 @@ public boolean isOffPeakHours() {
 - Dependencies that are *created* inside methods can't be controlled
 - Dependencies that are *injected* can be substituted with test doubles
 
-**Connection to L8:**
+**Connection:**
 - This is the **Dependency Inversion Principle** in action!
 - "Depend on abstractions, not concretions"
 
@@ -715,7 +714,7 @@ graph LR
 - Domain depends only on Ports (interfaces)
 - Domain never depends on Adapters
 
-**This is DIP from L8:**
+**This is Dependency Inversion Principle:**
 - High-level modules (domain) don't depend on low-level modules (infrastructure)
 - Both depend on abstractions (ports)
 
@@ -764,7 +763,7 @@ public interface UserPreferencesPort {
 - Makes test setup super concise: `EnergyPricePort stub = () -> 0.35;`
 - If you need multiple methods, that's fine—just use a class instead of a lambda
 
-**Connection to L8:**
+**Connection:**
 - Ports are the "abstractions" that both sides depend on
 - Domain depends on ports, adapters implement ports
 
@@ -1080,19 +1079,19 @@ The domain logic is:
 ## Testability Aligns with Good Design
 
 <p style={{fontSize: '0.85em'}}>
-  Testability isn't a separate concern—it's a natural consequence of following the principles from L6-L8:
+  Testability isn't a separate concern—it's a natural consequence of following the principles from earlier design lectures:
 </p>
 
 <div style={{fontSize: '0.7em'}}>
 
 | Design Principle | Testability Benefit |
 |------------------|---------------------|
-| **Low Coupling (L7)** | Dependencies can be substituted with test doubles |
-| **High Cohesion (L7)** | Each class has a clear purpose → focused tests |
-| **Information Hiding (L6)** | Implementation changes don't break tests |
-| **Dependency Inversion (L8)** | Inject test doubles instead of real dependencies |
-| **Single Responsibility (L8)** | Fewer behaviors to test per class |
-| **Interface Segregation (L8)** | Smaller interfaces → simpler test doubles |
+| **Low Coupling ** | Dependencies can be substituted with test doubles |
+| **High Cohesion ** | Each class has a clear purpose → focused tests |
+| **Information Hiding ** | Implementation changes don't break tests |
+| **Dependency Inversion ** | Inject test doubles instead of real dependencies |
+| **Single Responsibility ** | Fewer behaviors to test per class |
+| **Interface Segregation ** | Smaller interfaces → simpler test doubles |
 
 </div>
 
@@ -1607,7 +1606,7 @@ public class DeviceHealthAssessor {
 </div>
 
 <p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#9370DB'}}>
-  Connection to SRP (L8): DeviceHealthChecker was doing two things. Health assessment deserves its own class.
+  Connection to Single Responsibility Principle: DeviceHealthChecker was doing two things. Health assessment deserves its own class.
 </p>
 
 <aside className="notes">
@@ -1805,9 +1804,9 @@ private boolean hasSufficientBattery(
 
 <aside className="notes">
 **Connection to prior lectures:**
-- Information hiding (L6) → isolate infrastructure behind interfaces
-- Coupling/cohesion (L7) → low coupling enables test double substitution
-- SOLID (L8) → Dependency Inversion is key to testability
+- Information hiding → isolate infrastructure behind interfaces
+- Coupling/cohesion → low coupling enables test double substitution
+- SOLID → Dependency Inversion is key to testability
 
 **For assignments:**
 - Design for testability from the start

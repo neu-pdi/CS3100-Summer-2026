@@ -41,8 +41,8 @@ Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixe
 <aside className="notes">
 **Lecture overview:**
 - **Total time:** ~65 MINUTES
-- **Prerequisites:** L16 (testability, hexagonal intro), L17 (creation patterns, DI), L18 (architectural thinking, boundaries, C4, ADRs, Pawtograder/Bottlenose, **four heuristics**)
-- **Connects to:** L20–L21 (distributed architecture, networks, client-server, serverless), L22 (Conway's Law, teams), L29–L30 (MVC/GUI)
+- **Prerequisites:** (testability, hexagonal intro), (creation patterns, DI), (architectural thinking, boundaries, C4, ADRs, Pawtograder/Bottlenose, **four heuristics**)
+- **Connects to:** (distributed architecture, networks, client-server, serverless), (Conway's Law, teams), (MVC/GUI)
 
 **Structure:**
 - Motivating Question: "How do we organize our code?" + Big Ball of Mud (~3 min)
@@ -100,23 +100,6 @@ Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixe
 {/* ANNOUNCEMENTS */}
 {/* ============================================ */}
 
-<Slide>
-
-## Announcements
-
-<div style={{fontSize: '0.85em', textAlign: 'left'}}>
-
-**Team Formation Survey Released!**
-- Starting Week 10: teams of 4 for CookYourBooks GUI project
-- Tell us your preferences + availability
-- **Due Friday 2/26 @ 11:59 PM**
-- [Complete the Survey →](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform)
-
-**HW4 Due Thursday Night**
-
-</div>
-
-</Slide>
 
 {/* ============================================ */}
 {/* LEARNING OBJECTIVES */}
@@ -761,7 +744,7 @@ autograder/
 
 <div className="fragment">
 <p style={{fontSize: '0.75em', marginTop: '0.5em', fontStyle: 'italic', color: '#666'}}>
-<strong>Conway's Law</strong> (L22 preview): Organizations design systems that mirror their communication structure. If you have a "frontend team" and "backend team," you'll get technical partitioning. If you have a "grading team" and "courses team," you'll get domain partitioning.
+<strong>Conway's Law</strong>: Organizations design systems that mirror their communication structure. If you have a "frontend team" and "backend team," you'll get technical partitioning. If you have a "grading team" and "courses team," you'll get domain partitioning.
 </p>
 </div>
 
@@ -1075,7 +1058,7 @@ We've already seen a tension between simplicity and modularity: adding interface
 **IMPORTANT FRAMING for the next few slides:**
 - We're building VOCABULARY first, not deep understanding
 - Students need to know these terms exist and roughly what they mean
-- The deep exploration of how architectural choices affect these attributes comes LATER in this lecture (when we examine styles) and in L20
+- The deep exploration of how architectural choices affect these attributes comes LATER in this lecture (when we examine styles)
 - Don't get bogged down in details — keep it brisk, definitional
 </aside>
 
@@ -1086,7 +1069,7 @@ We've already seen a tension between simplicity and modularity: adding interface
 ## New Attributes: Deployability, Responsiveness, Fault Tolerance
 
 <p style={{fontSize: '0.78em', fontStyle: 'italic', color: '#666', marginBottom: '0.75em'}}>
-These three attributes become critical when comparing monoliths vs. distributed systems. We'll explore them in depth in L20 — for now, just the vocabulary:
+These three attributes become critical when comparing monoliths vs. distributed systems. We'll explore them in depth later — for now, just the vocabulary:
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.52em'}}>
@@ -1134,7 +1117,7 @@ These three attributes become critical when comparing monoliths vs. distributed 
 
 <div className="fragment">
 <p style={{fontSize: '0.75em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-Notice the pattern: Monoliths tend to have <strong>better responsiveness</strong> but <strong>worse deployability and fault tolerance</strong>. Distributed systems flip this. These tradeoffs are central to L20.
+Notice the pattern: Monoliths tend to have <strong>better responsiveness</strong> but <strong>worse deployability and fault tolerance</strong>. Distributed systems flip this. 
 </p>
 </div>
 
@@ -1158,7 +1141,7 @@ These three attributes are where monoliths and microservices diverge most sharpl
 
 **The fragment reveals the core tradeoff:**
 - This is the heart of the monolith vs. microservices debate
-- L20 will unpack this in detail with real examples
+- Distributed architecture lecture will unpack this in detail with real examples
 
 → **Transition:** Now the umbrella term that ties these together...
 </aside>
@@ -1174,7 +1157,7 @@ These three attributes are where monoliths and microservices diverge most sharpl
 </p>
 
 <p style={{fontSize: '0.65em', fontStyle: 'italic', color: '#666', marginTop: '-0.25em', marginBottom: '0.5em'}}>
-This is the "big picture" attribute — we'll see how styles affect it throughout this lecture and L20.
+This is the "big picture" attribute — we'll see how styles affect it throughout this lecture and Distributed Architecture lecture.
 </p>
 
 <div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
@@ -1236,7 +1219,7 @@ How does the system handle growth in load, data, or users?
 </p>
 
 <p style={{fontSize: '0.65em', fontStyle: 'italic', color: '#666', marginTop: '-0.5em', marginBottom: '0.5em'}}>
-Scaling strategies vary by architecture — we'll explore this in depth in L20.
+Scaling strategies vary by architecture — we'll explore this in depth in Distributed Architecture lecture.
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
@@ -1271,7 +1254,7 @@ Scaling strategies vary by architecture — we'll explore this in depth in L20.
 
 <div className="fragment">
 <p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
-Key insight: Scalability isn't just "can the system handle more load?" It's "does the <em>rest</em> of the system stay responsive while handling that load?" We'll return to this distinction in L20-21.
+Key insight: Scalability isn't just "can the system handle more load?" It's "does the <em>rest</em> of the system stay responsive while handling that load?" We'll return to this distinction later.
 </p>
 </div>
 
@@ -1297,7 +1280,7 @@ Key insight: Scalability isn't just "can the system handle more load?" It's "doe
 - It's "does the web UI stay responsive WHILE we grade 200 submissions?"
 - Pawtograder: yes. Monolith: no (without architectural changes).
 
-**Foreshadow L20-21:**
+**Foreshadow future lectures:**
 - We'll go much deeper into distributed architecture
 - Horizontal scaling requires infrastructure: queues, workers, coordination
 - There's no free lunch — distributed systems add complexity
@@ -2437,7 +2420,7 @@ At the highest level, systems fall into two categories based on how they're depl
 - Services communicate via network (HTTP, messages)
 - Separate databases, processes, servers
 
-*This is where industry has been moving — and it's the focus of L20-L21.*
+*This is where industry has been moving.*
 
 </div>
 
@@ -2514,7 +2497,7 @@ Pawtograder's `SupabaseAPI` actually implements **retry logic with exponential b
 - "When Pawtograder calls `feedbackApi.submit()`: What if the API times out? What if it returns an error? What if the request succeeds but the RESPONSE never arrives?"
 - "The grading action actually implements retry with exponential backoff. That code doesn't need to exist in a monolith."
 
-**Preview for L20:**
+**Preview for Distributed Architecture lecture:**
 - In the NEXT lecture, we'll explore what makes distributed systems so challenging
 - The Fallacies of Distributed Computing (eight assumptions about networks that are all false)
 - Client-server architecture and its variants
@@ -2577,7 +2560,7 @@ Notice the pattern: almost every row is a <strong>direct tradeoff</strong>. What
 
 **The modular monolith (which we just saw) tries to get modularity ★★★ while keeping simplicity ★★★ — but it can't help with scalability or fault tolerance.**
 
-**Foreshadow L20-21:**
+**Foreshadow:**
 - We'll go much deeper into distributed system tradeoffs
 - Fallacies of Distributed Computing, CAP theorem, eventual consistency
 - For now: just understand that this is a REAL tradeoff, not a clear winner
@@ -2831,10 +2814,10 @@ Understand the domain (L12) → Apply heuristics (L18) → Boundaries emerge →
 
 | Concept from Today | Where It Goes |
 |-------------------|---------------|
-| **"The Network Changes Everything"** | **L20:** Fallacies of Distributed Computing, client-server architecture, security across trust boundaries |
-| **Monolith vs. Microservices** | **L20-21:** Distributed architecture styles, when to break the monolith, serverless |
-| **Quality Attribute Tradeoffs** | **L21:** How platform constraints (serverless, containers) shape architecture — like GitHub Actions shaped Pawtograder |
-| **Heuristics → Emergent Styles** | **L22:** Conway's Law — team structure is another heuristic that shapes architecture |
+| **"The Network Changes Everything"** | Fallacies of Distributed Computing, client-server architecture, security across trust boundaries |
+| **Monolith vs. Microservices** | Distributed architecture styles, when to break the monolith, serverless |
+| **Quality Attribute Tradeoffs** | How platform constraints (serverless, containers) shape architecture — like GitHub Actions shaped Pawtograder |
+| **Heuristics → Emergent Styles** | Conway's Law — team structure is another heuristic that shapes architecture |
 
 </div>
 
@@ -2844,16 +2827,16 @@ We opened with "how do we organize our code?" — and now you have styles, quali
 
 <aside className="notes">
 **The arc ahead:**
-- **L20 (Networks & Security):** When components communicate over a network, everything gets harder. Fallacies of Distributed Computing. Client-server architecture. Security.
-- **L21 (Serverless):** Infrastructure building blocks — databases, blob storage, queues. Serverless as an architectural style.
-- **L22 (Teams):** Conway's Law — team structure is ANOTHER heuristic. "Organizations design systems that mirror their communication structure."
+- **(Networks & Security):** When components communicate over a network, everything gets harder. Fallacies of Distributed Computing. Client-server architecture. Security.
+- **(Serverless):** Infrastructure building blocks — databases, blob storage, queues. Serverless as an architectural style.
+- **(Teams):** Conway's Law — team structure is ANOTHER heuristic. "Organizations design systems that mirror their communication structure."
 
 **The throughline with heuristics:**
-- L16: "How do we design for testability?" → Hexagonal Architecture emerges
-- L18: "Where do the boundaries go?" → Four heuristics: Rate of Change, Actor, ISP, Testability
-- **L19: "What styles emerge from those heuristics?" → Hexagonal, Layered, Pipelined, Monolith**
-- L20-21: "What happens when boundaries cross networks?" → Distributed styles emerge
-- L22: "What happens when boundaries cross teams?" → Conway's Law as another heuristic
+- "How do we design for testability?" → Hexagonal Architecture emerges
+- "Where do the boundaries go?" → Four heuristics: Rate of Change, Actor, ISP, Testability
+- "What styles emerge from those heuristics?" → Hexagonal, Layered, Pipelined, Monolith
+- "What happens when boundaries cross networks?" → Distributed styles emerge
+- "What happens when boundaries cross teams?" → Conway's Law as another heuristic
 
 **The meta-lesson:**
 - Architecture isn't about memorizing style names

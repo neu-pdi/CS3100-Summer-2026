@@ -6,7 +6,6 @@ image: /img/lectures/web/l13.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
-import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -112,8 +111,7 @@ This topic is **unlike anything we've covered so far**:
 </p>
 
 <ul style={{fontSize: '0.8em'}}>
-  <li><strong>Lab 6 (Monday):</strong> Hands-on practice + surveys that will shape future lectures and workshops</li>
-  <li><strong>Tuesday evening:</strong> <a href="https://www.khoury.northeastern.edu/event/ai-at-khoury-college-an-undergraduate-student-and-faculty-conversation/">Panel discussion with Prof. Bell and Associate Dean Christo Wilson on AI in the curriculum</a> (6:00-7:30pm in WVH 102, organized by UG Advisory Committee, registration required)</li>
+  <li><strong>Lab:</strong> Hands-on practice + surveys that will shape future lectures and workshops</li>
   <li><strong>Rest of semester:</strong> AI will be woven throughout our remaining lectures and assignments—this conversation continues</li>
 </ul>
 
@@ -196,41 +194,6 @@ After this lecture, you will be able to:
 </aside>
 
 </Slide>
-
-{/* ============================================ */}
-{/* INTRODUCATORY POLL */}
-{/* ============================================ */}
-
-<Slide>
-## Poll: How would you supervise a SWE intern?
-
-Imagine you have graduated and have a full-time software engineering position
-and are asked to supervise an intern on their first co-op. How would you guide
-them and evaluate their work?
-
-<PollSlide
-/>
-
-<aside className="notes">
-**Poll administration**
-- Use PollEV with open-ended answers Or
-- Think-pair-share
-
-**Poll discussion**
-- Discuss student answers
-- Remark that nobody answered that you should give them no guidance And
-  uncritically accept their work
-
-**Transition [to rest of lecture]**
-- Can you guess why I asked you this?
-- Working with an AI coding assistant is like supervising an intern.
-- Let's see what the best practices are.
-
-**Transition to next slide**
-- First, let's review what LLMs are...
-</aside>
-</Slide>
-
 
 {/* ============================================ */}
 {/* ARC 0: WHAT IS AN LLM? (FOUNDATION) */}
@@ -383,19 +346,6 @@ Pricing is usually per million tokens (input and output priced separately). Fast
 {/* ============================================ */}
 {/* ARC 1: WHAT ARE AI CODING ASSISTANTS? */}
 {/* ============================================ */}
-
-<Slide>
-
-## Poll: AI Coding Experience
-
-Have you used an AI coding assistant before? (GitHub Copilot, Cursor, ChatGPT for code, etc.)
-
-<PollSlide
-  choices={["Yes, regularly", "Yes, occasionally", "Tried it once or twice", "Never"]}
-/>
-
-</Slide>
-
 <Slide>
 
 ## The Secret Sauce: Static Analysis Powers Context
@@ -1121,24 +1071,6 @@ AI can help you <strong>generate</strong> for any task. But don't rely on AI to 
 </aside>
 
 </Slide>
-
-<Slide>
-
-## Poll: Evaluating AI Output
-
-If AI generates a sorting algorithm and you don't know any sorting algorithms, how would you verify it's correct?
-
-<PollSlide
-  choices={[
-    "Run it on a bunch of test cases",
-    "Skim the code",
-    "I couldn't verify it properly",
-    "Trust it if it compiles"
-  ]}
-/>
-
-</Slide>
-
 <Slide>
 
 ## The "Vibe Coding" Trap
@@ -1739,7 +1671,7 @@ The spec-writing skills from L4 directly apply to writing effective prompts. Amb
 
 <ul style={{fontSize: '0.9em'}}>
   <li>Set up GitHub Copilot if you haven't already (free with GitHub Education)</li>
-  <li>Lab 6: AI Coding Agents, HW3: CYB with AI</li>
+  <li>Lab, HW</li>
 </ul>
 
 <p style={{marginTop: '1.5em', fontSize: '0.9em'}}><strong>Recommended reading:</strong></p>
