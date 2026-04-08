@@ -48,7 +48,7 @@ import Img from '@site/src/components/Img';
 
 # CS 3100: Program Design and Implementation II
 
-## From Code Patterns to Architecture Patterns
+## Lecture 17: From Code Patterns to Architecture Patterns
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
   ©2026 Jonathan Bell, CC-BY-SA
@@ -117,7 +117,7 @@ After this lecture, you will be able to:
 ## Creation Patterns Are Information Hiding for Construction
 
 <p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
-Previously we learned to hide implementation details behind interfaces.
+In Lecture 6, we learned to hide implementation details behind interfaces.
 </p>
 
 <p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
@@ -887,8 +887,8 @@ No constructor parameters, no field declarations, no wiring. What's not to love?
 
 <div style={{fontSize: '0.75em'}}>
 
-1. **Hidden dependencies**: Not visible in constructor — discovery requires reading every line (common coupling!)
-2. **Untestable**: Can't substitute a test double (this is why we inject dependencies!)
+1. **Hidden dependencies**: Not visible in constructor — discovery requires reading every line (L7: common coupling!)
+2. **Untestable**: Can't substitute a test double (L16: this is why we inject dependencies!)
 3. **Global state**: Every caller shares the same mutable instance — changes ripple unpredictably
 
 </div>
@@ -899,9 +899,9 @@ No constructor parameters, no field declarations, no wiring. What's not to love?
 
 <aside className="notes">
 **Connect to prior lectures:**
-- Singleton creates common coupling (shared global state)
-- Singleton hurts testability (can't substitute test doubles)
-- We now see the full creation pattern perspective
+- L7: Singleton creates common coupling (shared global state)
+- L16: Singleton hurts testability (can't substitute test doubles)
+- L17: We now see the full creation pattern perspective
 
 **The question becomes:**
 - How do we get "one shared instance" without these problems?
@@ -1121,7 +1121,7 @@ public class RecipeConverter {
 
 <Slide>
 
-## Dependency Injection Solves All Three Singleton Problems 
+## DI Solves All Three Singleton Problems (L16 Recap)
 
 ```java
 // Production: wire up with real implementations
@@ -1138,7 +1138,7 @@ RecipeConverter testConverter = new RecipeConverter(stubRegistry);
 | Problem | Singleton | Dependency Injection |
 |---------|-----------|---------------------|
 | **Hidden dependencies** | Buried in implementation | Visible in constructor signature |
-| **Testability** | Can't substitute | Inject stubs/mocks freely |
+| **Testability** | Can't substitute | Inject stubs/mocks freely (L15-16!) |
 | **Global state** | Shared mutable state | Each context gets its own instance |
 
 </div>
@@ -1250,7 +1250,7 @@ All three let you swap implementations. But they differ in <strong>what invarian
 ## Why Not Field Injection?
 
 <p style={{fontSize: '0.85em'}}>
-<em>"Software Engineering is the Integral of Programming Over Time"</em>
+From Lecture 1: <em>"Software Engineering is the Integral of Programming Over Time"</em>
 </p>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
@@ -1831,10 +1831,10 @@ Style: Clean technical illustration, warm colors, educational diagram feel with 
 
 <Slide>
 
-## Service Locator Through the Coupling Lens 
+## Service Locator Through the Coupling Lens (L7)
 
 <p style={{fontSize: '0.85em'}}>
-Dependency Injection and Service Locator make <strong>different coupling tradeoffs</strong>:
+Remember our coupling types from L7? DI and Service Locator make <strong>different coupling tradeoffs</strong>:
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em', marginTop: '1em'}}>
@@ -2181,7 +2181,44 @@ This is the <strong>"composition root"</strong> — the one place that knows abo
 
 </Slide>
 
+<Slide>
 
+## Preview: Where Do Service Boundaries Come From?
+
+<p style={{fontSize: '0.85em'}}>
+We said <code>ImportService</code>, <code>ExportService</code>, <code>LibraryService</code> — but <strong>how did we decide those were the right boundaries?</strong>
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+Next lecture, we step back to ask:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>What distinguishes "architecture" from "design"?</li>
+  <li>How do you identify the natural seams in a problem domain?</li>
+  <li>How do you communicate and document architectural decisions?</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+The patterns you've learned — Builder, Factory, DI — don't disappear at larger scales. They're the building blocks. Architecture is about deciding <em>which</em> buildings to construct and <em>how</em> they relate.
+</p>
+
+<aside className="notes">
+**Set up L18:**
+- L17 showed that patterns scale up
+- L18 will show how to decide what the services should BE
+- We'll look at heuristics for finding boundaries, the C4 model, and ADRs
+
+**The journey:**
+- A1-A4: Build objects well (code patterns)
+- L17: Wire objects into services (creation + DI patterns)
+- L18: Design service boundaries (architecture)
+- A5+: Build systems well
+
+→ **Transition:** Let's wrap up...
+</aside>
+
+</Slide>
 
 {/* ============================================ */}
 {/* KEY TAKEAWAYS */}
@@ -2195,8 +2232,8 @@ This is the <strong>"composition root"</strong> — the one place that knows abo
   <li><strong>These are Java patterns</strong> — they work around language limitations (no named params, no module singletons). Other languages have different idioms!</li>
   <li><strong>Creation patterns</strong> are information hiding applied to object construction — same principle from L6!</li>
   <li><strong>Static factories</strong> name intent and enable caching; <strong>Builders</strong> handle many optional parameters</li>
-  <li><strong>Singleton is an anti-pattern:</strong> hides dependencies, hurts testability, creates global state</li>
-  <li><strong>Dependency Injection</strong> is both a testability enabler AND a creation pattern — same technique!</li>
+  <li><strong>Singleton is an anti-pattern:</strong> hides dependencies (L7), hurts testability (L16), creates global state</li>
+  <li><strong>Dependency Injection</strong> is both a testability enabler (L16) AND a creation pattern — same technique!</li>
   <li><strong>Constructor injection</strong> makes dependencies explicit, immutable, and visible in the API</li>
   <li><strong>These patterns scale:</strong> the same principles that wire objects also wire entire systems (preview of A5)</li>
 </ul>
@@ -2207,10 +2244,10 @@ Understand the problem, then use the language's idiomatic solution.
 
 <aside className="notes">
 **Connection to prior lectures:**
-- Information hiding → creation patterns hide construction
-- Coupling → Singleton creates problematic coupling
-- DIP → DI applies dependency inversion
-- Testability → DI enables test double substitution
+- L6: Information hiding → creation patterns hide construction
+- L7: Coupling → Singleton creates problematic coupling
+- L8: DIP → DI applies dependency inversion
+- L16: Testability → DI enables test double substitution
 
 **Language perspective:**
 - Builder → TypeScript/Kotlin: named/default parameters
