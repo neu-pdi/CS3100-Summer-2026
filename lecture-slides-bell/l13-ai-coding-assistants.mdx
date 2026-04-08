@@ -1,0 +1,1767 @@
+---
+sidebar_position: 13
+title: "AI Coding Assistants"
+image: /img/lectures/web/l13.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l13.webp"
+    prompt="Concept: 'Human in Every Loop - The Pioneers Who Never Left'. A striking 8-bit pixel art cover image. TOP: Centered header text 'CS 3100: Program Design & Implementation 2' prominently displayed above all graphics. MAIN CONTENT: Horizontal timeline showing evolution of code size vs. validation time through REAL historical figures. First panel (1945): Betty Holberton and ENIAC programmers - MULTI-FACETED VALIDATION. Hands on patch cables, checking wire connections. Clipboard with checklist showing all validation types: 'Hardware config ✓', 'Circuit paths ✓', 'Timing sequences ✓', 'Memory allocation ✓', 'Operator procedures ✓'. Cross-referencing physical machine against computation plan. Multiple validation artifacts visible: wiring diagrams, timing charts, test cases, procedure manuals. Sepia/warm tones. Small code indicator: '~1000 instructions'. Review method: physical inspection, desk checking, test runs, documentation review. Next panel (1952): YOUNG Grace Hopper (mid-40s, brown hair, NOT the elderly white-haired admiral image) - COMPILER VERIFICATION. At desk comparing machine code output against expected output. Verifying her TOOL works correctly. Skeptics in background with speech bubble: 'Machines can't write programs!' Small code indicator: '~5000 lines'. Review method: validating the translation. Next panel (1969): Margaret Hamilton - EXHAUSTIVE STRUCTURED INSPECTION. Standing next to her famous stack of Apollo guidance code printouts (taller than her!). NO CALENDAR - instead emphasize the CODE SIZE vs TIME tradeoff. Visual: small stack of code = months of review time. Text overlay: '~400,000 lines / months of review'. She's methodically reviewing, finding edge cases like the famous 1202 alarm. The code is SMALL by modern standards but validation took MONTHS. Next panel (2006): GitHub code review - SCALED PEER REVIEW. Two developers, PR diff on screen showing MUCH MORE code. Visual: large codebase indicator '~10 million lines'. Clock/timer showing 'hours to days'. Review method: distributed, rapid iteration, automated tests help. Code got BIGGER, reviews got FASTER. Next panel (2026): Modern developer with Copilot - THE FUTURE??? Question marks floating. Even LARGER code indicator '~100 million lines'. Ghost text appearing, cursor hovering over Accept/Reject. Timer showing '???'. Code gets EVEN BIGGER, review speed = ???. The central tension: exponential code growth vs. human review capacity. Color palette: Progressive from sepia (1940s) through green-screen tones (1950s-60s), to GitHub's blue/white (2006), to modern teals and purples (2026). Human figures have warm orange/gold accents. Tagline at bottom: 'Technology Changes. Responsibility Doesn't.' Style: Retro 8-bit pixel art matching CS 3100 lecture aesthetic."
+    alt="8-bit pixel art cover image with 'CS 3100: Program Design & Implementation 2' header. Timeline showing code size vs validation time: Betty Holberton with ENIAC validation checklist (1000 instructions), Grace Hopper verifying compiler (5000 lines), Margaret Hamilton with code stack (400K lines, months of review), GitHub PR review (10M lines, hours), modern Copilot (100M lines, ???). Tagline: Technology Changes. Responsibility Doesn't."
+  />
+
+<aside className="notes">
+**Connection to Lecture 1:**
+- We started the semester with these same pioneers
+- Grace Hopper faced skeptics: "Machines can't write programs"
+- Margaret Hamilton's rigorous verification saved Apollo 11
+- The same pattern repeats with AI: tools generate, humans verify
+
+**The GitHub addition (2006):**
+- Code review normalized having ANOTHER human check your work
+- Pull requests made review a first-class workflow
+- This trained an entire generation to expect review before merge
+- Now we apply those same skills to AI-generated code
+
+**The meta-point of this lecture:**
+- This lecture was generated with AI assistance
+- But I (the professor) did all 6 steps of the workflow
+- I identified what context to provide
+- I engaged with prompts
+- I evaluated every slide, every word
+- I calibrated when things went wrong
+- I tweaked the final output
+- I'm finalizing by teaching it to you
+
+**The irony is intentional:**
+- An AI-generated lecture about not blindly trusting AI
+- Only works BECAUSE human judgment was applied
+- If I had "vibe-coded" this lecture, it would be terrible
+- The fact that it's (hopefully) good proves the workflow works
+
+**The message:**
+- You stand in a line of pioneers
+- Each generation faced skepticism about "automatic programming"
+- Each generation kept human judgment in the loop
+- You continue that tradition
+
+→ **Transition:** Let's get into the formal lecture...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 13: AI Coding Assistants
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2026 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Context from earlier lectures:**
+- L4: Specifications—same principles apply to AI prompts
+- L7-L8: Design for change—AI helps explore design alternatives
+- L9: Requirements—stakeholder engagement parallels AI context management
+
+**Key theme:** AI is a powerful tool, but like any tool, its effectiveness depends on how you use it. Today we'll learn the skills to use it well.
+
+→ **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* FRAMING: A CONVERSATION BEGINS */}
+{/* ============================================ */}
+
+<Slide>
+
+## This Is Just the Beginning of Our Conversation
+
+<div style={{fontSize: '0.85em'}}>
+
+This topic is **unlike anything we've covered so far**:
+
+- The technology is evolving faster than any textbook can capture
+- There's genuine disagreement among experts about best practices
+- The hype is real—and so are the concerns
+- Your professors are learning alongside you, trying to model the best practices that we are teaching you
+
+</div>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB'}}>
+<strong>What comes next:</strong>
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>Lab 6 (Monday):</strong> Hands-on practice + surveys that will shape future lectures and workshops</li>
+  <li><strong>Tuesday evening:</strong> <a href="https://www.khoury.northeastern.edu/event/ai-at-khoury-college-an-undergraduate-student-and-faculty-conversation/">Panel discussion with Prof. Bell and Associate Dean Christo Wilson on AI in the curriculum</a> (6:00-7:30pm in WVH 102, organized by UG Advisory Committee, registration required)</li>
+  <li><strong>Rest of semester:</strong> AI will be woven throughout our remaining lectures and assignments—this conversation continues</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', fontStyle: 'italic'}}>
+This is an exciting moment to be learning together.
+</p>
+
+<aside className="notes">
+**Why this framing matters:**
+- Be honest with students: this is genuinely hard to teach
+- The field is moving so fast that last year's best practices may be outdated
+- There's real disagreement among practitioners and researchers
+- We're not pretending to have all the answers
+
+**What we DO have:**
+- Foundational principles that transcend specific tools
+- A framework for thinking about human-AI collaboration
+- The 6-step workflow from research
+- Your own critical thinking skills
+
+**Lab 6 preview:**
+- Required surveys on AI usage and concerns
+- Survey results will directly influence future content
+- Hands-on practice with AI coding assistants
+- This is formative—we're building this curriculum together
+
+**Tuesday fireside chat:**
+- UG Advisory Committee organized this
+- Prof Bell and Associate Dean Christo Wilson
+- Broader conversation about AI in CS education
+- Encourage students to attend and bring questions
+
+**Rest of semester:**
+- AI isn't a one-lecture topic—it's now part of the fabric of software engineering
+- Future lectures will reference back to these principles
+- Assignments will include AI-assisted components where appropriate
+- We'll revisit and refine based on what we learn together
+
+**The meta-point:**
+- We're modeling the kind of thoughtful, iterative approach we're teaching
+- We don't have a perfect curriculum—we're building it with student input
+- This is what "learning together" actually looks like
+
+→ **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Define AI programming agents and enumerate their capabilities and limitations</li>
+  <li>Compare model provider tools (Copilot, Claude Code) with tool builder IDEs (Cursor, Windsurf)</li>
+  <li>Apply a 6-step workflow for effective human-AI collaboration</li>
+  <li>Determine when it is appropriate (and inappropriate) to use an AI programming agent</li>
+  <li>Use AI coding assistants to accelerate domain modeling and design exploration</li>
+</ol>
+
+<aside className="notes">
+**Time allocation:**
+- Foundations: What is an LLM + context windows (~5 min)
+- Objective 1: AI coding assistants + ecosystem (~12 min)
+- Objective 2: The 6-step workflow (~5 min)
+- Objective 3: When to use AI (~8 min)
+- Objective 4: Live demo with GitHub Copilot (~20 min)
+
+**Why this matters:** AI coding assistants are transforming software development. Students who learn to use them effectively will be more productive—but only if they maintain the judgment and expertise that makes AI assistance valuable.
+
+→ **Transition:** Let's start with what AI coding assistants actually are...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* INTRODUCATORY POLL */}
+{/* ============================================ */}
+
+<Slide>
+## Poll: How would you supervise a SWE intern?
+
+Imagine you have graduated and have a full-time software engineering position
+and are asked to supervise an intern on their first co-op. How would you guide
+them and evaluate their work?
+
+<PollSlide
+/>
+
+<aside className="notes">
+**Poll administration**
+- Use PollEV with open-ended answers Or
+- Think-pair-share
+
+**Poll discussion**
+- Discuss student answers
+- Remark that nobody answered that you should give them no guidance And
+  uncritically accept their work
+
+**Transition [to rest of lecture]**
+- Can you guess why I asked you this?
+- Working with an AI coding assistant is like supervising an intern.
+- Let's see what the best practices are.
+
+**Transition to next slide**
+- First, let's review what LLMs are...
+</aside>
+</Slide>
+
+
+{/* ============================================ */}
+{/* ARC 0: WHAT IS AN LLM? (FOUNDATION) */}
+{/* ============================================ */}
+
+<Slide>
+
+## What Is an LLM? Text Prediction at Scale
+
+<Img
+  src="/img/lectures/web/l13-llm-basics.webp"
+  prompt="Concept: 'LLMs Are Fancy Text Predictors'. A clean educational diagram showing the fundamental mechanism of Large Language Models. LEFT SIDE - INPUT: A text prompt shown as a document/speech bubble: 'The capital of France is'. An arrow labeled 'tokenization' shows this being broken into tokens. CENTER - THE MODEL: A large neural network visualization (simplified, not scary) with billions of parameters indicated. Label: 'Trained on trillions of words from the internet'. The model is shown as a sophisticated pattern-matching machine, not a database. A key annotation: 'NOT a search engine. NOT a database. A pattern predictor.' RIGHT SIDE - OUTPUT: Multiple possible next tokens shown with probability bars: 'Paris' (95%), 'a' (2%), 'located' (1%), 'the' (0.5%). The highest probability token 'Paris' is highlighted and selected. Below, show the process REPEATING: 'The capital of France is Paris.' → predict next token → '.' or 'and' etc. BOTTOM INSIGHT: 'Every response is generated one token at a time. The model predicts what text SHOULD come next based on patterns in training data.' VISUAL METAPHOR: Perhaps show this as a very sophisticated autocomplete—like phone keyboard suggestions but trained on the entire internet. Style: Clean, educational, not intimidating. Blues and purples. Should demystify, not mystify."
+  alt="Diagram showing LLM basics: Input text 'The capital of France is' gets tokenized, passes through a neural network trained on trillions of words, outputs probability distribution over next tokens (Paris 95%, a 2%, etc.). Bottom shows this repeats token by token. Key insight: Not a database, a pattern predictor."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+LLMs predict the next token based on patterns learned from training data. That's it.
+</p>
+
+<aside className="notes">
+**The fundamental insight:**
+- LLMs are NOT databases that store and retrieve facts
+- LLMs are NOT search engines that find information
+- LLMs are PATTERN PREDICTORS that generate plausible text
+
+**How it works:**
+1. Take input text, break into tokens (~words/subwords)
+2. Model predicts probability of each possible next token
+3. Sample from distribution (or take highest probability)
+4. Repeat until done
+
+**Why this matters:**
+- Explains hallucination: model predicts plausible-LOOKING text, not necessarily TRUE text
+- Explains why context matters: predictions depend on what came before
+- Explains strengths: patterns in code are highly predictable!
+
+**The autocomplete metaphor:**
+- Phone keyboard suggestions, but trained on the internet
+- Really good at predicting what text SHOULD come next
+- Doesn't "know" anything—just predicts patterns
+
+→ **Transition:** So if it's all about prediction, what determines the quality of predictions?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Model Tiers: Cost, Speed, and Capability
+
+<div style={{fontSize: '0.7em'}}>
+
+| Tier | Examples | Best For | Tradeoff |
+|------|----------|----------|----------|
+| **Fast/Cheap** | GPT-5-nano, Claude Haiku, Gemini Flash | Simple completions, boilerplate, routine tasks | Low cost, fast, but limited reasoning |
+| **Balanced** | GPT-5-mini, Claude Sonnet | Most coding tasks, explanations, refactoring | Good balance of speed and capability |
+| **Frontier** | Claude Opus, GPT-5.2, Gemini Pro| Complex architecture, difficult bugs, novel problems | Highest capability, but slower and expensive |
+| **Tool-specific** | Cursor's composer-1, Copilot's internal models | Optimized for that tool's workflow | Tuned for speed in specific contexts |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+<strong>Most tools offer "Auto" mode</strong> — the tool picks the right model for each task. This is often the right default.
+</p>
+
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#666'}}>
+Pricing is usually per million tokens (input and output priced separately). Fast models: ~\$0.10-0.50/M tokens. Frontier: ~\$5-75/M tokens. Output tokens cost more than input.
+</p>
+
+<aside className="notes">
+**Pricing basics:**
+- Models charge per million tokens (roughly ~750K words per million tokens)
+- Input tokens (your prompt + context) and output tokens (model's response) priced separately
+- Output tokens typically cost 2-5x more than input tokens
+- Fast models: fractions of a cent per request
+- Frontier models: can be dollars per long conversation
+- This is why "auto" mode matters—no need to pay frontier prices for simple completions
+
+**Why this matters:**
+- Different tasks need different models
+- Simple autocomplete? Fast model is fine
+- Architecture decision? You want frontier reasoning
+
+**"Auto" mode in modern tools:**
+- Cursor, Copilot, Claude Code all have auto-selection
+- Tool decides: simple completion → fast model, complex reasoning → frontier
+- This optimizes cost/quality automatically
+- Let the tool handle this unless you have a reason to override
+
+**When to override auto:**
+- Force frontier model for architecture decisions
+- Force fast model when you need quick iteration
+- Understanding tiers helps you make this call
+
+**The landscape changes fast:**
+- Today's frontier is tomorrow's baseline
+- The tiers matter more than specific model names
+- Focus on understanding the tradeoffs
+
+→ **Transition:** But the model is only half the equation—context determines output quality...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Context Is Everything
+
+<Img
+  src="/img/lectures/web/l13-context-window3.webp"
+  prompt="Concept: 'Context Is Everything - How THIS Lecture Was Made'. A dramatic before/after comparison showing how context transforms LLM output—using THIS VERY LECTURE as the example. TOP HALF - 'WITHOUT CONTEXT' (labeled 'Vague Input → Generic Output'): A small prompt box contains: 'Write a lecture on AI coding assistants'. Arrow points to OUTPUT: A generic, bland lecture outline. Labels point to problems: 'No historical arc', 'Generic tips like Be specific', 'No connection to course themes', 'Wrong visual style'. The output is mediocre/gray. BOTTOM HALF - 'WITH CONTEXT' (labeled 'Rich Input → THIS Lecture'): A LARGE prompt box contains a stack of documents being fed in: '📄 Detailed lecture notes outlining structure, concepts, and flow... 📄 L1-L12: All previous lectures (specs, requirements, design for change, historical pioneers)... 📄 Course pixel art style guide and existing slide images... 📄 L1 arc: Betty Holberton, Grace Hopper, Margaret Hamilton... 📄 Assignment 4 requirements...' Then: 'Draft lecture 13 slides on AI coding assistants'. Arrow points to OUTPUT showing ACTUAL results from this lecture: 'Human in Every Loop cover connecting to L1 pioneers', '6-step workflow diagram', 'Vibe coding trap warning', 'Plan mode for evaluation'. Labels indicate: 'References Betty, Grace, Margaret from L1', 'Matches 8-bit pixel art style', 'Connects spec-writing (L4) to prompt-writing'. The output GLOWS. RECURSIVE CALLOUT with arrow pointing to the slide itself: 'This slide was generated with this process. It went through the 6-step workflow: IDENTIFIED context needed (L1 pioneers, course style), ENGAGED with detailed lecture notes, EVALUATED for missing historical arc, CALIBRATED to add pioneers, TWEAKED the image prompts 6 times, FINALIZED by being taught to you.' CENTER DIVIDER: Context window size indicators. KEY INSIGHT at bottom: 'The model is the same. The context is different. The 6-step workflow closed the gap.' Style: Dramatic split comparison, gray/mediocre on top, golden/excellent on bottom."
+  alt="Split comparison: Top shows vague prompt producing generic AI lecture. Bottom shows same request with L1-L12 lectures, course style guide, historical pioneers context producing THIS lecture with Human in Every Loop cover, 6-step workflow, connections to Betty Holberton and Grace Hopper. Recursive callout notes this slide itself went through 6 iterations. Key insight: Same model, different context, the 6-step workflow closed the gap."
+/>
+
+<aside className="notes">
+**The key insight of this entire lecture:**
+- The MODEL is the same
+- The CONTEXT is different
+- The OUTPUT QUALITY is dramatically different
+
+**What is the context window?**
+- Everything the model can "see" when generating
+- Early models: ~4,000 tokens (a few pages)
+- Modern models: 100,000-200,000 tokens (a novel)
+- Frontier: 1,000,000+ tokens (multiple books)
+
+**Why context matters for coding:**
+- "Write a function to process orders" → generic
+- "Write a function to process orders [+ your Order class + your database schema + your error handling conventions]" → useful
+
+**This is why IDE integration matters:**
+- Copilot sees your open files = more context
+- Claude Code can read your whole codebase = even more context
+- More relevant context = better predictions
+
+**The spec-writing connection (L4):**
+- A vague spec yields unpredictable implementations
+- A vague prompt yields unpredictable outputs
+- Same principle, same solution: be specific about what matters
+
+**Teaser:**
+- Are you curious now about the 6-step workflow?
+- That's one thing you'll learn today.
+
+→ **Transition:** Now let's see how these tools integrate this into your workflow...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: WHAT ARE AI CODING ASSISTANTS? */}
+{/* ============================================ */}
+
+<Slide>
+
+## Poll: AI Coding Experience
+
+Have you used an AI coding assistant before? (GitHub Copilot, Cursor, ChatGPT for code, etc.)
+
+<PollSlide
+  choices={["Yes, regularly", "Yes, occasionally", "Tried it once or twice", "Never"]}
+/>
+
+</Slide>
+
+<Slide>
+
+## The Secret Sauce: Static Analysis Powers Context
+
+<Img
+  src="/img/lectures/web/l13-agent-overview2.webp"
+  prompt="Concept: 'Context Is Everything - How AI Coding Assistants Find What Matters'. A technical diagram centered on a VS Code-style IDE showing how static analysis automatically curates context. CENTER - THE IDE: A code editor (VS Code style) with a Java file open. The cursor is inside a method 'processOrder(Order o)'. Ghost text appears suggesting a completion. Two interaction modes visible: (1) INLINE COMPLETION with ghost text labeled 'Tab-Complete Mode', (2) CHAT PANEL on the side labeled 'Chat Mode'. But the KEY VISUAL is what's happening BEHIND THE SCENES: LEFT SIDE - 'WHAT THE TOOL SEES': Radiating out from the cursor position, glowing connection lines trace to: the Order class definition, the interface it implements, related service classes, test files that use this method, type definitions. Labels on connections: 'Type info', 'Call graph', 'Imports', 'Usage patterns'. A layer labeled 'Static Analysis Engine' sits between the IDE and these files, performing: AST parsing, semantic indexing, symbol resolution. Annotation: 'Static analysis finds exactly what matters'. RIGHT SIDE - 'WHAT GETS SENT TO LLM': A compact, curated bundle of ONLY the relevant snippets (highlighted in gold) being packaged. Contrast with crossed-out alternative: 'Naive approach: dump 50 files' (red X, wasteful). The curated bundle is small and precise. Label: 'Right context, right size, right result'. BOTTOM: Flow diagram: 'Your cursor → Static analysis traces dependencies → Curated context to LLM → High-quality suggestion'. Key insight: 'You type. The tool finds what matters. You evaluate.' Style: IDE-centric diagram with the editor as focal point. Blues and purples for the IDE, teals for analysis layer, gold for curated context."
+  alt="VS Code-style IDE showing how AI coding assistants work. Center shows editor with cursor in a method, ghost text completion, and chat panel. Left shows static analysis tracing connections to relevant files (type definitions, call graphs, imports). Right shows curated context bundle sent to LLM, contrasted with wasteful 'dump everything' approach. Key insight: You type, the tool finds what matters, you evaluate."
+/>
+
+<aside className="notes">
+**The through-line from "Context Is Everything":**
+- We just said context determines output quality
+- But how do coding assistants GET the right context?
+- Answer: Static analysis—the same technology that powers your IDE's autocomplete, go-to-definition, and refactoring tools
+
+**What static analysis provides:**
+- **AST parsing:** Understands code structure, not just text
+- **Semantic indexing:** Knows what symbols mean, where they're defined
+- **Call graphs:** Traces which functions call which
+- **Type information:** Knows the types flowing through your code
+
+**Why this matters:**
+- When your cursor is in a method, the tool KNOWS:
+  - What class you're in
+  - What interfaces it implements
+  - What types the parameters are
+  - What methods are available on those types
+- It sends EXACTLY this to the LLM—not your whole codebase
+
+**The key insight:**
+- Better static analysis = better context curation = better suggestions
+- This is what separates good tools from great ones
+- You don't need to learn "prompt engineering"—the tool does it for you
+
+→ **Transition:** Let's see how this changes your interaction model...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1B: THE AI CODING TOOL ECOSYSTEM */}
+{/* ============================================ */}
+
+<Slide>
+
+## Two Categories of AI Coding Tools
+
+<Img
+  src="/img/lectures/web/l13-ecosystem.webp"
+  prompt="A split infographic styled as two different buildings showing two categories of AI coding tools. LEFT SIDE - 'MODEL PROVIDERS': Two separate factories. First factory has Microsoft/OpenAI logos, glowing cubes inside representing LLM models, conveyor belt outputs GitHub Copilot going to VS Code logo. Second factory has Anthropic logo, glowing cubes inside, conveyor belt outputs Claude Code going to terminal icon. Key characteristics: 'Control the models', 'Flat subscription pricing', 'Optimized integration', 'Limited model choice'. Price tag: '$10-20/month flat'. RIGHT SIDE - 'TOOL BUILDERS': A workshop/studio building with text names (not logos) for Cursor, Windsurf, Cline, Continue. These purchase API access from model providers (dollar signs flowing left). Inside they're building IDE features. Key characteristics: 'Best-in-class UX', 'Model flexibility', 'Pay-per-use API costs', 'Rapid innovation'. CENTER: Arrows showing relationship - providers SELL API access, builders BUY it. Annotation: 'Tool builders compete on UX. Model providers compete on model quality.' BOTTOM: Spectrum showing 'Predictable cost ←→ Maximum flexibility'. Style: Clean tech infographic, blue for providers, orange for builders. No title or caption at the top of the image."
+  alt="Split infographic comparing Model Providers (Microsoft/OpenAI with Copilot, Anthropic with Claude Code) who control the models and offer flat subscriptions, versus Tool Builders (Cursor, Windsurf, Cline) who purchase API access and compete on UX features. Arrows show API costs flowing from builders to providers."
+/>
+
+<aside className="notes">
+**Two fundamentally different business models:**
+
+**Model Providers (Copilot, Claude Code):**
+- Microsoft/OpenAI → GitHub Copilot
+- Anthropic → Claude Code
+- They MAKE the models AND build tools
+- Subscription pricing ($10-20/month)
+- You're locked to their models
+
+**Tool Builders (Cursor, Windsurf, Cline, etc.):**
+- They DON'T make models—they buy API (programmatic) access
+- Compete on UX, features, workflows
+- Can offer multiple models (GPT-4, Claude, Gemini, local)
+- Pricing often includes API pass-through costs
+
+**Why this matters:**
+- Different cost structures
+- Different feature priorities
+- Different levels of model lock-in
+
+→ **Transition:** Let's compare these in detail...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What Are They Optimizing For?
+
+<Img
+  src="/img/lectures/web/l13-business-models2.webp"
+  prompt="Concept: 'Strategic Optimization - What Each Player Is Betting On'. A strategic landscape diagram showing three different business strategies as three distinct paths/machines, each optimizing for different outcomes. PATH 1 - COPILOT (Microsoft/OpenAI): A funnel diagram showing 'Enterprise Sales' at the top (big dollar signs, corporate buildings) flowing down to 'Free for Students' (graduation caps, 'future customers' label). Strategy label: 'Lock in the enterprise, capture the next generation.' Icon: handshake with dollar sign. Annotation: 'Why is it free for you? You're the future enterprise customer.' PATH 2 - CLAUDE CODE (Anthropic): A circular flywheel showing: 'Best Models' → 'Build Tool That Consumes Own API Efficiently' → 'Showcase Capabilities' → 'Charge Competitors API Fees' → 'Fund Better Models'. The tool (Claude Code) is shown as both a product AND a demonstration. Strategy label: 'Invest in models, make a product that eats your own API faster than competitors can.' Icon: ouroboros/snake eating tail. Annotation: 'Claude Code is a showcase AND a revenue stream from competitors.' PATH 3 - CURSOR/TOOL BUILDERS: A speed-focused diagram showing 'Lightning-fast UX' (composer-1, best plan mode), 'Model Agnostic' (multiple model logos feeding in), 'Rapid Iteration' (weekly release calendar). Strategy label: 'Win on experience, not models. Be the best interface to ANY model, make your own smaller models.' Icon: racing car. Annotation: 'When models commoditize, Developer Experience is the moat.' BOTTOM CONNECTION: Shows how these strategies INTERACT: Cursor pays Anthropic for Claude API → Anthropic uses revenue for better models → Better models make Claude Code more capable → Competition intensifies. Caption: 'Understanding the game helps you predict where tools are heading.' Style: Strategic business diagram with game-theory feel, clean iconography, distinct color lanes for each strategy."
+  alt="Three-path strategic diagram: Copilot optimizes for enterprise sales while giving free access to students (future customers). Claude Code creates a flywheel where Anthropic builds the best models, then builds a tool that efficiently consumes its own API while charging competitors. Cursor optimizes for lightning-fast UX and model flexibility. Arrows show how strategies interact: tool builders pay model providers, funding better models."
+/>
+
+<aside className="notes">
+**Understanding the strategic game:**
+
+**Copilot (Microsoft/OpenAI):**
+- Sell to enterprise at premium prices
+- Give away to students (you!) for free
+- Why? You're the future enterprise customer
+- Classic "capture the next generation" strategy
+- Also: deep GitHub integration creates lock-in
+
+**Claude Code (Anthropic):**
+- Pour resources into model quality
+- Build a tool that consumes their own API very efficiently
+- Two wins: showcase capabilities AND charge competitors
+- When Cursor uses Claude API, Anthropic gets paid
+- It's a flywheel: revenue funds better models
+
+**Cursor and Tool Builders:**
+- Can't compete on models—so compete on UX
+- "Composer" is FAST—like, shockingly fast
+- Model-agnostic means they can switch to whoever's best
+- Betting that models commoditize, UX becomes the moat
+
+**Why this matters to you:**
+- Helps you predict where tools are heading
+- Understand why features get prioritized
+- The "free" tier always has a strategy behind it
+
+→ **Transition:** Let's look at a comparison table...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Strengths: Pattern Recognition and Cross-Domain Transfer
+
+<ul style={{fontSize: '0.85em'}}>
+  <li><strong>Pattern recognition:</strong> Recognizes and reproduces common coding patterns</li>
+  <li><strong>Syntax knowledge:</strong> Extensive knowledge of language syntax, libraries, frameworks</li>
+  <li><strong>Cross-domain transfer:</strong> Can apply patterns from one language/domain to another</li>
+  <li><strong>Natural language understanding:</strong> Translates business context into requirements into code</li>
+  <li><strong>Rapid prototyping:</strong> Generates boilerplate, tests, and common implementations quickly</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', fontStyle: 'italic', color: '#666'}}>
+Think of it as a very well-read junior developer who has seen millions of codebases.
+</p>
+
+<aside className="notes">
+**What AI excels at:**
+- It has seen MILLIONS of code examples during training
+- Recognizes patterns you might not know exist
+- Can translate between languages, frameworks, paradigms
+
+**The junior developer metaphor:**
+- Knows a lot of syntax and patterns
+- Can work quickly on well-defined tasks
+- But needs guidance on architecture and design decisions
+- Doesn't understand YOUR specific project context
+
+**Connection to L4:**
+- This is like having someone who knows every API signature
+- But doesn't know which API is right for YOUR requirements
+
+→ **Transition:** But there are important limitations...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Limitations: Entirely Non-Deterministic, Limited Context Window
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>Context window constraints:</strong> Can only see ~100K tokens at once—may miss parts of large codebases</li>
+  <li><strong>No runtime verification:</strong> Generates code based on patterns, not execution results</li>
+  <li><strong>Training data cutoff:</strong> May not know recent libraries, API changes, or language features</li>
+  <li><strong>Hallucination risk:</strong> May generate plausible-looking code that doesn't actually work</li>
+</ul>
+
+<aside className="notes">
+**Critical limitations to understand:**
+
+**Context window:**
+- Even 100K tokens isn't your whole codebase
+- AI might not see the module that matters
+
+**No execution:**
+- The AI has NEVER RUN code
+- It predicts what code LOOKS like based on training data
+- Doesn't verify that code actually works
+
+**Hallucination:**
+- AI might invent API methods that don't exist
+- Looks correct, compiles sometimes, but fails at runtime
+- This is why YOU must review ALL generated code
+
+**Connection to L4:**
+- Remember: specs exist because we can't hold entire systems in our heads
+- AI has the same problem—it can't hold your whole system either
+
+→ **Transition:** So where does AI fit in our systematic design process?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## AI Assists Throughout the Software Development Lifecycle
+
+![Software development lifecycle diagram showing five phases (Requirements, Design, Implementation, Validation, Operations) with specific tasks in each phase and exit conditions below](/img/software_design_process_fall_2025.png)
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+AI can assist at every phase—but human judgment drives every decision.
+</p>
+
+<aside className="notes">
+**AI isn't just for coding:**
+- Requirements: Generate user stories, identify stakeholders
+- Design: Explore design alternatives, generate UML diagrams
+- Implementation: The obvious one—code generation
+- Validation: Generate test cases, identify edge cases
+- Operations: Deployment scripts, log analysis
+
+**The key insight:**
+- AI doesn't REPLACE the process
+- It ACCELERATES parts of each phase
+- Human judgment is required at EVERY phase
+
+**Connection to L9:**
+- Remember requirements analysis?
+- AI can help generate questions to ask stakeholders
+- But only YOU can engage with actual stakeholders
+
+→ **Transition:** Now let's look at a systematic workflow for using AI effectively...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: THE 6-STEP WORKFLOW */}
+{/* ============================================ */}
+
+<Slide>
+
+## The 6-Step Human-AI Collaboration Workflow
+
+<Img
+  src="/img/lectures/web/l13-workflow2.webp"
+  prompt="A circular workflow diagram showing six steps connected in a cycle. Each step is a distinct node with an icon and label: (1) IDENTIFY - magnifying glass icon - 'Recognize what information AI needs'; (2) ENGAGE - speech bubble icon - 'Craft effective prompts with context'; (3) EVALUATE - checklist icon - 'Critically assess AI outputs'; (4) CALIBRATE - dial/adjustment icon - 'Steer AI toward desired outcomes'; (5) TWEAK - pencil/edit icon - 'Refine generated artifacts'; (6) FINALIZE - stamp/checkmark icon - 'Document decisions and rationale'. The center shows a human-AI handshake symbol. Arrows between steps show the flow, with a prominent arrow from step 6 back to step 1 showing iteration. Style: Clean, professional workflow diagram with distinct colors for each step."
+  alt="Circular workflow diagram with six steps: Identify (recognize AI needs), Engage (craft prompts), Evaluate (assess outputs), Calibrate (steer toward goals), Tweak (refine artifacts), Finalize (document). Arrows show flow with iteration back to start."
+/>
+
+<p style={{fontSize: '0.75em', textAlign: 'center', fontStyle: 'italic'}}>
+Based on <a href="https://arxiv.org/abs/2506.00202">research on Developer-AI collaboration</a> from Google
+</p>
+
+<aside className="notes">
+**The workflow from Google research:**
+- Studied 21 expert developers working with AI
+- Identified common patterns in effective AI use
+- This is NOT a rigid process—steps may overlap or repeat
+
+**Quick overview:**
+1. **Identify:** What does AI need to help you?
+2. **Engage:** Craft the prompt with appropriate context
+3. **Evaluate:** Is the output what you expected?
+4. **Calibrate:** Guide AI toward better results
+5. **Tweak:** Manually refine what AI generated
+6. **Finalize:** Document what you decided and why
+
+**The cycle:**
+- This isn't linear—you'll loop back frequently
+- Evaluation often leads back to Identify or Engage
+
+→ **Transition:** Let's quickly walk through each step...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Identify & Engage: It Depends on Three Things
+
+<Img
+  src="/img/lectures/web/l13-identify-triangle.webp"
+  prompt="Concept: 'The Identify/Engage Triangle - Three Factors That Determine Context Needs'. A triangular diagram showing three vertices that together determine how much manual context you need to provide. VERTEX 1 (top) - 'YOUR UNDERSTANDING': Icon of a brain/head with gears. Shows a spectrum: 'Novice in domain → need to provide more explicit context because you don't know what matters' to 'Expert in domain → know exactly what context matters, can be surgical'. Annotation: 'You can only identify relevant context for things you understand.' VERTEX 2 (bottom-left) - 'MODEL CAPABILITIES': Icon of AI/neural network. Shows spectrum: 'Older/smaller models → need hand-holding, explicit instructions' to 'Frontier models → better reasoning, can infer more from less'. Annotation: 'GPT-3.5 needed more guidance than Claude Opus needs today.' VERTEX 3 (bottom-right) - 'TOOL CAPABILITIES': Icon of IDE/toolbox. Shows spectrum: 'Basic Copilot → sees open files only' to 'Cursor/Claude Code → indexes whole codebase, @-mentions, auto-finds files'. Annotation: 'Cursor finds the files for you. Basic tools need you to open them.' CENTER: Shows resulting behavior - when all three are HIGH (expert + good model + good tools), you can just describe intent and the system figures out context. When any is LOW, you need to compensate. Examples around the triangle: 'Junior dev + Cursor + Claude = tool compensates for expertise', 'Senior dev + basic Copilot + GPT-3.5 = expertise compensates for tools', 'Senior dev + Cursor + Claude = just describe what you want'. Style: Clean triangular diagram with gradients showing spectrums, practical examples at each vertex."
+  alt="Triangle diagram showing three factors that determine context needs: YOUR UNDERSTANDING (can you identify what matters?), MODEL CAPABILITIES (how much can it infer?), TOOL CAPABILITIES (does it auto-find files?). Center shows: when all are high, just describe intent; when any is low, you compensate manually."
+/>
+
+<aside className="notes">
+**The key insight: Identify/Engage isn't static—it depends on:**
+
+**1. Your understanding of the problem:**
+- If you're an expert, you know EXACTLY what context matters
+- If you're learning, you might not know what to include
+- You can only identify relevant context for things you understand!
+
+**2. Model capabilities (and they keep improving):**
+- GPT-3.5 needed very explicit instructions
+- Claude Opus / GPT-4o can infer much more from less
+- Frontier models are increasingly good at asking clarifying questions
+
+**3. Tool capabilities (varies wildly!):**
+- Basic Copilot: sees your open files, that's it
+- Cursor: indexes entire codebase, @-mentions, finds files automatically
+- Claude Code: searches codebase, reads files on demand
+- The tool determines how much YOU need to manually provide
+
+**The practical implication:**
+- "Identify what context AI needs" is outdated for modern tools
+- Better framing: "Recognize when the tool WON'T find what it needs"
+- Modern tools often just... figure it out
+
+→ **Transition:** So what does this mean practically?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Modern Tools Change the Game
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.68em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.75em', borderRadius: '8px'}}>
+
+**Old Mental Model (2022-2023)**
+
+"I need to carefully identify and provide all relevant context"
+
+- Manually open all relevant files
+- Copy-paste code snippets into prompts
+- Describe file structure explicitly
+- Anticipate what AI needs to know
+
+**You do the work of context gathering**
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.75em', borderRadius: '8px'}}>
+
+**New Reality (2026+)**
+
+"I describe intent; the tool finds context"
+
+- Tools search your codebase automatically
+- You can reference specific files when needed
+- Tool indexes and retrieves relevant context
+- AI asks clarifying questions
+
+**Tool does context gathering; you validate**
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
+<strong>But:</strong> Tools can't find context that doesn't exist in code—requirements, design rationale, rejected alternatives. That's still YOUR job.
+</p>
+
+<aside className="notes">
+**The shift in mental model:**
+
+**Old way (still true for basic Copilot):**
+- YOU identify what's relevant
+- YOU craft the perfect prompt
+- YOU provide all context upfront
+- Heavy burden on the human
+
+**New way (Cursor, Claude Code, advanced tools):**
+- YOU describe what you want
+- TOOL searches and retrieves context
+- TOOL presents what it found
+- YOU validate and correct if needed
+
+**What tools CAN auto-find:**
+- Related code files
+- Type definitions, interfaces
+- Similar patterns in codebase
+- Test files, usage examples
+
+**What tools CAN'T auto-find:**
+- Why a design decision was made
+- Requirements that aren't in code
+- Conventions that aren't documented
+- Knowledge in your head
+
+**This is why DESIGN.md and documentation matter—it's context the tool CAN find!**
+
+→ **Transition:** But before we move on—let's clear up some prompting myths...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Prompting Myths That Don't Actually Help
+
+<div style={{fontSize: '0.7em'}}>
+
+| Myth | Example | Reality |
+|------|---------|---------|
+| **Persona prompts improve output** | "You are a brilliant 10x engineer who..." | Models don't roleplay better code. Context and specificity matter, not flattery. |
+| **Politeness affects performance** | "Please" and "Thank you" | Doesn't affect the model—but polite, humble communication is a good habit for talking to humans! |
+| **Threats or stakes help** | "I'll lose my job if you get this wrong" | The model has no concept of your job. Just describe what you actually need. |
+| **More instructions = better** | 500-word system prompts | Often WORSE. Key details get lost. Be concise and specific. |
+| **Magic phrases always work** | "Think step by step" everywhere | Useful for reasoning, but tools have built this in better. See: Plan Mode. |
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
+<strong>What actually helps:</strong> Relevant context, specific requirements, concrete examples, clear success criteria.
+</p>
+
+<aside className="notes">
+**Why these myths persist:**
+- Confirmation bias: sometimes it "works" by coincidence
+- Cargo-cult prompting: copying what worked once without understanding why
+- Anthropomorphizing: treating the model like a person who responds to flattery
+
+**Persona prompts:**
+- "You are a great software engineering professor who really 'gets AI'"
+- Does NOT yield better lecture slides
+- The model doesn't have self-esteem to boost
+- What DOES help: "Generate lecture slides in this format: [example]"
+
+**Politeness:**
+- Won't affect model performance
+- But expressing yourself with humility and politeness IS a good habit
+- Same communication skills help when talking to humans
+- Think of it as practice for "winning friends" in professional settings
+
+**Threats/stakes:**
+- "This is for my thesis defense" doesn't make the model try harder
+- The model has no concept of consequences
+- Just describe what you actually need
+
+**"Think step by step":**
+- Actually DOES help for reasoning/math problems
+- But the tools have productized this better than you can prompt it
+- This leads us to Plan Mode...
+
+→ **Transition:** Speaking of "think step by step"—there's a better way...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Plan Mode: Reducing Your Evaluation Surface
+
+<Img
+  src="/img/lectures/web/l13-plan-mode7.webp"
+  prompt="A two-phase workflow showing the smart approach to AI-assisted coding. PHASE 1 - 'REVIEW THE BLUEPRINT': Developer asks 'Build me a user authentication system'. AI first generates a PLAN - a short document showing: '1. Create User model with these fields... 2. Add AuthService with these methods... 3. Implement JWT tokens... 4. Add middleware...' Developer reviews the plan. Two possible thought bubbles shown: EXPERT thought bubble: 'Wait, we should use sessions not JWT for this use case.' - catches architectural issues early. LEARNER thought bubble with lightbulb: 'I don't know what JWT is - I should learn that before approving!' - plan reveals what to learn. Evaluation surface is SMALL. Cost to fix: LOW (erasing a line on paper). PHASE 2 - 'VERIFY BUILD MATCHES BLUEPRINT': After plan approval, AI generates code. Now the developer reviews code WITH THE PLAN AS A GUIDE. They check: 'Does AuthService have the methods we agreed on? Are the JWT tokens implemented as planned?' The plan becomes a CHECKLIST for code review. Thought bubble: 'I know what to look for because I already approved the approach.' Key insight box: 'You still review the code - but now you know WHAT to look for. The blueprint tells you what the building should contain.' Style: Clean two-phase workflow, architectural blueprint aesthetic transitioning to construction verification."
+  alt="Split comparison: WITHOUT PLAN MODE - developer overwhelmed evaluating 500 lines of generated code at once. WITH PLAN MODE - developer reviews short plan first. Two thought bubbles shown: Expert thinks 'should use sessions not JWT'; Learner thinks 'I don't know what JWT is - I should learn before approving!' Callout: If you can't evaluate the plan, you can't evaluate the code. Plans reveal knowledge gaps early."
+/>
+
+<aside className="notes">
+**The "think step by step" insight, productized:**
+- Chain-of-thought prompting DOES help models reason better
+- But manually prompting it is clunky
+- Plan mode is the tool-level implementation of this insight
+
+**What Plan mode does:**
+- AI generates a PLAN first (not code)
+- You review the plan (small evaluation surface!)
+- You refine the plan (cheap to change!)
+- THEN AI generates code based on approved plan
+
+**Why this matters:**
+- Evaluating a 10-line plan is MUCH easier than evaluating 500 lines of code
+- Catching "wrong approach" at plan stage = minutes to fix
+- Catching "wrong approach" in code = hours to fix
+- Catching "wrong approach" in production = days/weeks to fix
+
+**Connection to L4 (specs):**
+- This is EXACTLY what specs are for!
+- Get agreement on WHAT before implementing HOW
+- The plan IS a lightweight spec
+
+**Tools that support this:**
+- Cursor: Plan mode in Composer
+- Claude Code: Thinks through approach before coding
+- Codex/ChatGPT: Can be prompted to plan first
+
+**When to use Plan mode:**
+- Multi-file changes
+- Architectural decisions
+- Anything where "wrong direction" would be costly
+- NOT needed for: single-line fixes, simple refactors
+
+→ **Transition:** But there's a deeper SE principle here...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## How Do You Know You're Done?
+
+<Img
+  src="/img/lectures/web/l13-definition-of-done2.webp"
+  prompt="A simple split comparison showing two workplace scenarios. LEFT SIDE: Intern brings laptop to supervisor's desk, speech bubble says 'I'm done!' Supervisor looks at screen, frowns, speech bubble says 'What about OAuth token refresh? And session timeout handling?' Intern looks deflated. RED tint suggesting failure. RIGHT SIDE: First, intern and supervisor at whiteboard together writing checklist: 'OAuth login', 'Token refresh', 'Session timeout', 'Error messages'. Then intern brings laptop to supervisor, speech bubble says 'All four criteria pass.' Supervisor nods approvingly, gives thumbs up. GREEN tint suggesting success. Style: Clean split comparison, 8-bit pixel art, no text captions above or below the scenes, just the speech bubbles and whiteboard content."
+  alt="Split comparison: Left - intern says 'I'm done!' but supervisor frowns asking 'What about OAuth token refresh?' Right - intern and supervisor agree on checklist first, then intern confidently reports 'All four criteria pass' and supervisor approves."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+Whether waterfall or Agile, SE techniques share one thing: <strong>agree on what "done" means before you start each piece of work.</strong>
+</p>
+
+<aside className="notes">
+**The intern/supervisor scenario:**
+- You're an intern, you finish a task, you bring it to your supervisor
+- "I'm done!" → Supervisor looks, frowns: "No... where's the error handling?"
+- You didn't know that was required. Now you have to redo the work.
+- This happens ALL THE TIME in professional settings
+- The fix: agree on what "done" means BEFORE you start
+
+**The SE principle:**
+- If you start making changes without knowing where you're going, how do you know when you arrive?
+- This is why we write specs (L4), define requirements (L9), create acceptance criteria
+- The same principle applies to AI-assisted work AND to working with humans
+
+**Without a definition of done:**
+- "Make it better" → but better how? Better for whom?
+- Endless tweaking with no exit condition
+- "I'll know it when I see it" rarely works in practice
+- You waste time and never feel confident in the result
+
+**With a definition of done:**
+- Clear success criteria BEFORE you start prompting (or coding)
+- Each output can be checked against the criteria
+- You know exactly when to stop
+- The plan you approved in Plan Mode IS your definition of done
+
+**Connection to CS4530:**
+- This is an essential skill you'll practice more deeply in CS4530
+- Agile "Definition of Done", acceptance criteria, user stories
+- Start building this habit now—with AI, with supervisors, with yourself
+
+**Practical application:**
+- Before starting ANY work, write down: "I'll know this is done when..."
+- Use that as your evaluation checklist
+- Plan Mode makes this explicit for AI work
+- Asking your supervisor "what does done look like?" makes it explicit for human work
+
+→ **Transition:** Now let's talk about evaluation itself...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Evaluate: The Step That Never Changes
+
+<div style={{fontSize: '0.75em'}}>
+
+| What Changed | What Stayed the Same |
+|--------------|---------------------|
+| Tools auto-find context | **You** must evaluate if output is correct |
+| Models infer more from less | **You** must spot hallucinations and errors |
+| Less manual prompt crafting | **You** must know if it fits your requirements |
+| AI asks clarifying questions | **You** must have domain expertise to answer |
+
+</div>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', fontWeight: 'bold', color: '#e74c3c'}}>
+No matter how good the tools get, evaluation requires YOUR expertise.
+</p>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+This is why the "task familiarity" principle still applies—if you can't evaluate, you can't use AI effectively.
+</p>
+
+<aside className="notes">
+**The constant across all tool/model improvements:**
+- EVALUATION requires human expertise
+- No tool can tell you if the code is RIGHT for your context
+- No model knows your actual requirements
+
+**What evaluation looks like:**
+- Does this match what I actually need?
+- Are there edge cases being missed?
+- Does this fit our architecture?
+- Is this the right abstraction?
+
+**The trap with better tools:**
+- Easy to accept output because it "looks right"
+- Tool found lots of context, must be correct!
+- But context-gathering ≠ correctness
+
+**Connection to L4:**
+- Same as reviewing code against a spec
+- Spec-writing skills → evaluation skills
+- If you couldn't write the spec, you can't evaluate the output
+
+→ **Transition:** Steps 4-6 remain largely the same...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Steps 4-6: Calibrate, Tweak, Finalize
+
+<div style={{fontSize: '0.75em'}}>
+
+| Step | What You Do | Example |
+|------|-------------|---------|
+| <span style={{whiteSpace: 'nowrap'}}>**4. Calibrate**</span> | Steer AI toward desired outcomes through feedback | "That's close, but use interfaces instead of abstract classes" |
+| <span style={{whiteSpace: 'nowrap'}}>**5. Tweak**</span> | Manually refine AI-generated artifacts | Fix edge cases, adjust naming, add error handling |
+| <span style={{whiteSpace: 'nowrap'}}>**6. Finalize**</span> | Document decisions and rationale | Add comments or notes explaining why you chose this approach |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+The goal: AI accelerates initial generation, but YOU make the final decisions.
+</p>
+
+<aside className="notes">
+**Calibrate is like iterative spec refinement:**
+- Initial prompt was too vague? Add constraints
+- Output went wrong direction? Redirect explicitly
+- This is a CONVERSATION, not a single query
+
+**Tweak is inevitable:**
+- AI output is rarely perfect
+- Naming might not match your conventions
+- Edge cases may be missed
+- This is expected and normal
+
+**Finalize is critical and often skipped:**
+- Document WHY you accepted the AI's suggestion
+- Future-you needs to understand the rationale
+- This prevents "I don't remember why we did this" moments
+
+→ **Transition:** Now the key question—when should you use AI at all?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: WHEN TO USE AI */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Fundamental Principle: Task Familiarity
+
+<Img
+  src="/img/lectures/web/l13-familiarity-quadrant.webp"
+  prompt="Concept: 'The AI Appropriateness Quadrant'. A 2x2 matrix diagram. X-axis: 'Your Domain Expertise' (Low to High). Y-axis: 'Task Complexity' (Low to High). Four quadrants with distinct recommendations: TOP-LEFT (High complexity, Low expertise): RED zone - 'DANGER ZONE: Don't use AI here—you can't evaluate outputs. Learn the fundamentals first.' Icon: warning triangle. TOP-RIGHT (High complexity, High expertise): GREEN zone - 'IDEAL FOR AI: You can evaluate and guide. AI accelerates your work.' Icon: rocket. BOTTOM-LEFT (Low complexity, Low expertise): YELLOW zone - 'LEARNING OPPORTUNITY: Do it manually to build expertise. AI creates learning debt here.' Icon: book/student. BOTTOM-RIGHT (Low complexity, High expertise): GREEN zone - 'EFFICIENT USE: Routine tasks you understand well. Let AI handle the boilerplate.' Icon: speedometer. The diagonal from bottom-left to top-right shows the 'growth path' - build expertise on simple tasks before using AI on complex ones. Style: Clean quadrant diagram with traffic-light colors (red, yellow, green)."
+  alt="2x2 quadrant diagram with Domain Expertise on X-axis and Task Complexity on Y-axis. Top-left (low expertise, high complexity) is red 'Danger Zone'. Top-right (high expertise, high complexity) is green 'Ideal for AI'. Bottom-left (low expertise, low complexity) is yellow 'Learning Opportunity'. Bottom-right (high expertise, low complexity) is green 'Efficient Use'."
+/>
+
+<aside className="notes">
+**The quadrant explained:**
+
+**Bottom-left (Low expertise, Low complexity):**
+- Simple tasks you don't know how to do
+- This is a LEARNING OPPORTUNITY
+- Do it manually! Build the knowledge base
+- Using AI here creates "learning debt"
+
+**Bottom-right (High expertise, Low complexity):**
+- Routine tasks you understand well
+- Perfect for AI—let it handle boilerplate
+- You can instantly spot if something's wrong
+
+**Top-left (Low expertise, High complexity):**
+- DANGER ZONE
+- Complex tasks you don't understand
+- You CAN'T evaluate AI's output
+- This is where "vibe coding" disasters happen
+
+**Top-right (High expertise, High complexity):**
+- The sweet spot for AI assistance
+- Complex tasks where AI accelerates your work
+- You can evaluate, guide, and refine
+
+**Key insight:** The ability to EVALUATE output determines appropriateness.
+
+→ **Transition:** But there's another dimension to consider...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## How Hard Is It to Evaluate?
+
+<Img
+  src="/img/lectures/web/l13-evaluation-difficulty2.webp"
+  prompt="A horizontal spectrum showing tasks from easy to hard to evaluate. LEFT (GREEN) - 'Easy to Evaluate': Examples with clear yes/no answers. 'Does the script run and download the course schedule?' with a simple checkmark/X. 'Does it compile?' Binary outcome. 'Does the test pass?' Clear result. Icon: simple checkbox. CENTER (YELLOW) - 'Medium Difficulty': 'Is the code readable?' - needs human judgment but can assess relatively quickly. 'Does it follow our style guide?' - checkable but requires expertise. Icon: magnifying glass. RIGHT (RED) - 'Hard to Evaluate': 'Does the quiz have confusing questions?' - annotation: 'Give it to 100 students and find out...' 'Is this architecture scalable?' - annotation: 'Wait 6 months and see...' 'Will users find this intuitive?' - annotation: 'Ship it and measure...' Icon: crystal ball with question mark. BOTTOM INSIGHT BOX: 'AI can help you GENERATE for any of these tasks. But for hard-to-evaluate outcomes, don't rely on AI to EVALUATE. You need external validation: user testing, expert review, time in production.' Arrow showing: AI helps generate → YOU (or users/time) must evaluate. Style: Clean horizontal spectrum, traffic light colors, clear examples at each point."
+  alt="Horizontal spectrum from easy to hard evaluation. Easy (green): Does it run? Does it compile? Medium (yellow): Is code readable? Hard (red): Are quiz questions confusing? (give to 100 students), Is architecture scalable? (wait 6 months). Key insight: AI can generate for any task, but hard evaluations need external validation."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+AI can help you <strong>generate</strong> for any task. But don't rely on AI to <strong>evaluate</strong> hard-to-evaluate outcomes.
+</p>
+
+<aside className="notes">
+**The evaluation difficulty dimension:**
+- Task familiarity tells you IF you can evaluate
+- Evaluation difficulty tells you HOW HARD it is to evaluate
+- Both matter for deciding how to use AI
+
+**Easy to evaluate (use AI freely):**
+- Does the script run? (Yes/No)
+- Does it compile? (Yes/No)
+- Does the test pass? (Yes/No)
+- You can verify immediately
+
+**Hard to evaluate (use AI carefully):**
+- Does the quiz have confusing questions? → Give it to 100 students
+- Is this architecture scalable? → Wait 6 months in production
+- Will users find this intuitive? → Ship and measure
+
+**The key nuance:**
+- This DOESN'T mean "don't use AI" for hard-to-evaluate tasks
+- You CAN use AI to generate quiz drafts, explore architectures, prototype UIs
+- But don't trust AI's judgment on the OUTCOME
+- "This quiz looks clear to me" ≠ "Students won't find it confusing"
+
+**What to do for hard-to-evaluate tasks:**
+- Use AI to generate options quickly
+- Get external validation: user testing, expert review, stakeholder feedback
+- Accept that some evaluations take time
+
+→ **Transition:** Let's test your evaluation intuition...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Evaluating AI Output
+
+If AI generates a sorting algorithm and you don't know any sorting algorithms, how would you verify it's correct?
+
+<PollSlide
+  choices={[
+    "Run it on a bunch of test cases",
+    "Skim the code",
+    "I couldn't verify it properly",
+    "Trust it if it compiles"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## The "Vibe Coding" Trap
+
+<Img
+  src="/img/lectures/web/l13-vibe-coding2.webp"
+  prompt="A three-panel comic showing the descent into vibe coding. PANEL 1 - 'The Beginning': A developer asks AI 'Build me a login system'. AI generates code. Developer doesn't read the code, just runs the app. It works! Developer smiles, thought bubble: 'This is easy!' PANEL 2 - 'The Problem': App crashes with an error. Developer asks AI 'Fix this error'. AI generates more code. Developer runs app. Different error appears. Developer asks AI again. Cycle repeats. Speech bubble: 'Just keep asking until it works...' PANEL 3 - 'The Collapse': Developer surrounded by error messages, tangled code arrows, exhausted and frustrated. Speech bubble or text message to friend: 'I've been arguing with GPT5 all day but I think I'm almost there'. A tangled mess of code on screen. They have no idea what any of the code does and can't even describe the bug to AI anymore. Style: Comic strip format with clear progression, warm to alarming color shift."
+  alt="Three-panel comic showing vibe coding trap: Panel 1 - developer asks AI for login system, runs without reading, it works. Panel 2 - error appears, developer asks AI to fix, cycle repeats. Panel 3 - developer surrounded by errors, tangled code, unable to describe the problem anymore."
+/>
+
+<aside className="notes">
+**What is "vibe coding"?**
+- Only evaluating EXECUTION, not CODE
+- Ask AI to implement feature
+- Run app, see if it "works"
+- If error, describe error to AI, repeat
+- Never actually read or understand the code
+
+**Why it seems appealing:**
+- You can get a "working" app without understanding anything
+- Feels fast at first
+
+**Why it leads to collapse:**
+- No troubleshooting capability—you don't understand what the code does
+- Can't provide effective feedback—you can only describe symptoms
+- Brittle development—one change breaks everything
+- Dependency spiral—need AI for every tiny change
+
+**The key insight:**
+- To effectively use AI, you must be able to EVALUATE the code itself
+- Not just "does it run"—does it do the RIGHT thing?
+
+→ **Transition:** How do you know when to STOP using AI?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## When to STOP Using AI and Change Your Approach
+
+<div style={{fontSize: '0.8em', backgroundColor: 'rgba(255,100,100,0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**Stop signals:**
+
+1. **You can't evaluate the output** — You're not sure if the code is correct or why it works
+2. **You can't calibrate effectively** — Repeated attempts don't move toward your goal
+3. **You're describing symptoms, not problems** — "It's broken" instead of "The recursion doesn't terminate"
+4. **You're repeating without progress** — 3-4 variations of the same request aren't getting closer to what you need
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<strong>What to do instead:</strong>
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Are there technical topics you should learn first? Do some manual implementation.</li>
+  <li>Are there domain concepts you need to understand? Talk to stakeholders.</li>
+  <li>Are the requirements unclear? Go back to requirements analysis (L9).</li>
+</ul>
+
+<aside className="notes">
+**Recognizing the stop signals:**
+
+**Can't evaluate:**
+- The code compiles but you're not sure if it's right
+- You'd have to run it to find out
+- This is the DANGER ZONE
+
+**Can't calibrate:**
+- You've given feedback 3-4 times
+- AI keeps going in wrong directions
+- Problem: YOUR understanding might be incomplete
+
+**Describing symptoms:**
+- "It crashes" vs "NullPointerException on line 42"
+- "It's slow" vs "The nested loops create O(n²) complexity"
+- If you can only describe symptoms, you can't guide AI
+
+**Repeating without progress:**
+- You've tried 3-4 different phrasings of the same request
+- Each attempt isn't getting closer to what you need
+- This might mean: there's no right answer to give
+- Tools behave differently with false negatives vs false positives
+- Sometimes the task isn't well-suited for AI—reformulate your approach
+
+**Connection to L9:**
+- Remember requirements elicitation?
+- Same skills apply—if you don't understand the domain, go learn it
+
+→ **Transition:** There's also a learning consideration...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## AI Creates "Learning Debt" When Used Too Early
+
+<Img
+  src="/img/lectures/web/l13-learning-debt3.webp"
+  prompt="Show two parallel timelines/paths for a developer learning to code: PATH A - 'Learning First' (top): Shows steady progression—manual coding, making mistakes, understanding errors, building mental models. Speed: slow but steady. End state: solid foundation, can use AI effectively. Icon: strong building with deep foundation. PATH B - 'AI First' (bottom): Shows rapid initial progress with AI—quick results, shipped code, looks productive. But then: hit a complex bug, can't debug it, AI suggestions don't help because dev can't evaluate them, productivity COLLAPSE. Icon: tall building with shallow foundation, cracking. COMPARISON: Graph showing productivity over time—Path A starts slower but maintains steady growth. Path B starts fast but crashes and never recovers to Path A levels. Style: Split comparison with clear progression, before/after contrast."
+  alt="Two parallel paths comparison: 'Learning First' shows slow steady progress building strong foundation. 'AI First' shows rapid initial progress then collapse when hitting complex bugs. A graph shows Path A (learning first) eventually surpassing Path B (AI first) in long-term productivity."
+/>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+<strong>The goal isn't to avoid AI</strong> — it's to use it in ways that support learning rather than replace it.
+</p>
+
+<aside className="notes">
+**The car analogy:**
+- When you get in a car, you should know you could crash
+- Does that mean you don't drive? No!
+- You learn to drive safely, understand the risks, and make informed choices
+- Same with AI: the goal isn't avoidance, it's informed, skillful use
+
+**The learning debt concept:**
+- Like technical debt, but for YOUR knowledge
+- Functional code masks gaps in understanding
+- Works until you hit something that requires real expertise
+
+**There are ways to use AI that support learning vs. replace it:**
+- SUPPORT: Use AI to explain concepts after you've tried manually
+- SUPPORT: Use AI to generate variations after you understand the pattern
+- REPLACE: Use AI to skip understanding entirely
+- REPLACE: Copy-paste without reading the code
+
+**Path A - Learning First:**
+- Slower at first—manual work, mistakes, frustration
+- But you BUILD UNDERSTANDING
+- When you eventually use AI, you can evaluate and guide it
+
+**Path B - AI First:**
+- Fast initial progress—ship features quickly
+- But you never learned WHY the code works
+- When complex bugs hit, you're stuck
+- You can't even describe the problem to AI effectively
+
+**The recommendation:**
+- For this course: Do initial implementations MANUALLY
+- Then use AI for variations, extensions, boilerplate
+- Example: Implement JSON serialization for 2-3 classes by hand, then let AI do the rest
+
+→ **Transition:** There are also long-term considerations beyond learning...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Documentation Test
+
+<div style={{fontSize: '0.85em', backgroundColor: 'rgba(147, 112, 219, 0.15)', padding: '1em', borderRadius: '8px'}}>
+
+Before committing AI-generated code, ask yourself:
+
+1. **Can I justify the design decisions in this code to a colleague?**
+2. **If I look at this in 6 months, will I know WHY I chose this approach?**
+3. **Am I prepared to take responsibility if this code is wrong?**
+4. **Would a new team member understand the design decisions?**
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+If the answer to any of these is "no"—you're creating <strong>maintenance debt</strong> that future-you will pay.
+</p>
+
+<aside className="notes">
+**The four questions, explained:**
+
+**1. Can you explain it without AI?**
+- If you need the AI to explain YOUR code, you don't understand it
+- Understanding is required for debugging, extending, and teaching others
+- Test: Rubber duck it. Can you explain each decision?
+
+**2. Will you know WHY in 6 months?**
+- "It worked" is not a reason
+- "The AI suggested it" is not a reason
+- Document the actual design rationale
+
+**3. Did you document rejected alternatives?**
+- AI often shows multiple approaches
+- Which did you reject and why?
+- This saves future-you from re-exploring dead ends
+
+**4. Would a new team member understand?**
+- You won't be the only person reading this code
+- Internship/job: you'll onboard others to your code
+- They won't have your context (or your AI conversation)
+
+**The maintenance debt concept:**
+- Every undocumented decision = interest on a loan
+- Future changes require re-learning the context
+- Compounds over time—small debts become big ones
+
+→ **Transition:** Let's apply all of this in a live demo...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 4: LIVE DEMO WITH GITHUB COPILOT */}
+{/* ============================================ */}
+
+<Slide>
+
+## Demo: Domain Modeling with GitHub Copilot
+
+<p style={{fontSize: '0.9em'}}>
+Let's revisit <strong>SceneItAll</strong> from L2—an IoT/smarthome control platform:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>Lights:</strong> Can be switched, dimmable, or RGBW tunable</li>
+  <li><strong>Fans:</strong> On/off with speeds 1-4</li>
+  <li><strong>Shades:</strong> Open/closed by 1-100%</li>
+  <li><strong>Areas:</strong> Group devices by physical area, can be nested</li>
+  <li><strong>Scenes:</strong> Preset conditions for devices, with cascading AreaScenes</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+Goal: Use AI to explore domain model alternatives, following the 6-step workflow.
+</p>
+
+<aside className="notes">
+**Demo setup:**
+- We'll use GitHub Copilot Chat in VS Code
+- Walk through the 6-step workflow explicitly
+- Show both good and bad prompting techniques
+
+**What we'll demonstrate:**
+1. IDENTIFY: What context does AI need?
+2. ENGAGE: Craft an effective initial prompt
+3. EVALUATE: Critically assess the output
+4. CALIBRATE: Guide toward our goals
+5. TWEAK: Manually refine
+6. FINALIZE: Document our decisions
+
+**Time allocation:** ~25 minutes for demo + discussion
+
+→ **Transition:** Let's start with Step 1: Identify...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Step 1: Identify What Information AI Needs
+
+<p style={{fontSize: '0.9em'}}>
+Before prompting, ask yourself:
+</p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li>What domain concepts exist? (We have a basic list)</li>
+  <li>What level of detail is needed? (Domain model, not implementation)</li>
+  <li>What design constraints matter? (Design for change—L7)</li>
+  <li>What artifacts would be useful? (Mermaid diagrams, comparison matrix)</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+Connection to L4: This is like writing a spec. What does the reader (AI) need to give you the right answer?
+</p>
+
+<aside className="notes">
+**The Identify step:**
+- DON'T just start typing a prompt
+- THINK about what AI needs to help you
+
+**For SceneItAll, we need to convey:**
+- The domain concepts (lights, fans, shades, areas, scenes)
+- The relationships (areas nest, scenes contain device states)
+- The constraints (design for change, MVP focus)
+- The desired output (design alternatives, not just one)
+
+**Connection to L4:**
+- Same questions as writing a method spec:
+- What does the reader need to understand?
+- What should NOT be over-specified?
+
+→ **Transition:** Now let's craft the prompt...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Step 2: Engage with Context-Rich Prompt
+
+<p style={{fontSize: '0.8em', fontStyle: 'italic', color: '#666', marginBottom: '0.5em'}}>
+This isn't a magic formula—it's showing what effective prompts have in common: context, constraints, and clear success criteria.
+</p>
+
+<div style={{fontSize: '0.7em', backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+```
+We are designing a new Java project called "SceneItAll". Our first step is
+to enumerate some key requirements and explore domain model alternatives.
+
+SceneItAll is an IoT/smarthome control app with the following domain concepts:
+- Lights (can be switched, dimmable, or RGBW tunable)
+- Fans (on/off and speeds 1-4)
+- Shades (open/closed by 1-100%)
+- Areas (group devices by physical area, can be nested)
+- Scenes (define preset conditions for devices, with cascading AreaScenes)
+
+Our domain model should emphasize "design for change" so that we can defer
+decisions and get an MVP up soon for user feedback.
+
+Generate a MODEL.md file with several design alternatives expressed as
+mermaid class diagrams, including pros/cons for each.
+```
+
+</div>
+
+<aside className="notes">
+**This is NOT a magic prompt formula:**
+- The specific format doesn't matter
+- What matters: context, constraints, clear success criteria
+- This example shows what success LOOKS LIKE, not a template to copy
+
+**Notice the structure:**
+- Context: What project, what phase
+- Domain: Specific concepts with details
+- Constraints: "Design for change", "MVP soon"
+- Desired output: Specific artifact format
+
+**What makes this effective:**
+- Tells AI WHAT we want, not HOW to do it (like a good spec!)
+- Provides enough domain context
+- States evaluation criteria (how will we judge the output?)
+- Requests specific, usable artifacts
+
+**What to expect:**
+- AI will generate multiple alternatives
+- Each with pros/cons
+- We'll need to EVALUATE and CALIBRATE
+
+→ **Transition:** Let's run this and see what we get... [LIVE DEMO]
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Step 3: Evaluate Against Success Criteria
+
+<p style={{fontSize: '0.9em'}}>
+When evaluating AI output, ask:
+</p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li>Does it capture all the domain concepts we identified?</li>
+  <li>Do the design alternatives actually differ in meaningful ways?</li>
+  <li>Are the pros/cons accurate? (Use YOUR domain knowledge!)</li>
+  <li>Does it support "design for change"?</li>
+  <li>Is anything WRONG? (Hallucinated patterns, incorrect relationships)</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#e74c3c'}}>
+This is where YOUR expertise matters. AI can generate; only YOU can evaluate.
+</p>
+
+<aside className="notes">
+**Evaluation in practice:**
+- Read through each alternative carefully
+- Check: Do these relationships make sense?
+- Check: Are the pros/cons reasonable?
+- Check: Did AI miss anything important?
+
+**Common issues to look for:**
+- Missing domain concepts
+- Overcomplicated designs (AI sometimes over-engineers)
+- Patterns that look right but don't fit the domain
+- Pros that aren't really pros for YOUR context
+
+**Connection to L4 (specs):**
+- We're evaluating if the output is CORRECT
+- Same mental process as code review
+
+**If output is good:** Move to Calibrate/Tweak
+**If output is poor:** Either Calibrate (redirect) or re-Identify (we missed something)
+
+→ **Transition:** Let's calibrate toward our goals... [LIVE DEMO continues]
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Step 4: Calibrate Toward Your Goals
+
+<p style={{fontSize: '0.9em', fontStyle: 'italic', color: '#666'}}>
+Example calibration prompts:
+</p>
+
+<div style={{fontSize: '0.75em'}}>
+
+> "Alternative 2 is interesting, but I'm concerned about type safety. Can you show how a client would call methods on a generic Device without knowing its type?"
+
+> "The Scene design assumes devices are always online. What happens when a device is offline when a scene is activated?"
+
+> "I like the hybrid approach, but we should use interfaces instead of abstract classes for the plugin system—show me what that looks like."
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+Calibration is a <strong>conversation</strong>—guide AI toward better solutions.
+</p>
+
+<aside className="notes">
+**Calibration techniques:**
+- Point to specific concerns
+- Ask "what if" questions
+- Request modifications to promising approaches
+
+**This is iterative:**
+- You might calibrate 3-4 times
+- Each round refines the output
+- This is NORMAL and EXPECTED
+
+**When calibration isn't working:**
+- If 3-4 rounds don't improve things
+- You might need to go back to Identify
+- Maybe AI needs different context
+
+**Connection to L9 (requirements):**
+- This is like stakeholder dialogue!
+- You're the "stakeholder" with domain knowledge
+- AI is the "developer" who needs guidance
+
+→ **Transition:** Let's see calibration in action... [LIVE DEMO continues]
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Steps 5-6: Tweak and Finalize
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
+
+<div>
+
+**Step 5: Tweak**
+
+Manual refinements after AI generation:
+
+- Naming: Match your conventions
+- Edge cases: Add handling AI missed
+- Comments: Explain WHY, not just WHAT
+- Style: Adjust to team standards
+
+**How do you know you're done?**
+- It meets your plan/spec criteria
+- It passes your tests
+- You can explain every decision
+
+</div>
+
+<div>
+
+**Step 6: Finalize**
+
+Document for future reference:
+
+- Update DESIGN.md with chosen approach
+- Record rejected alternatives and WHY
+- Note any assumptions made
+- Commit with descriptive message
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+The goal isn't AI-generated code. It's code YOU understand and can maintain.
+</p>
+
+<aside className="notes">
+**Tweak is always necessary:**
+- AI output is rarely perfect
+- This is EXPECTED, not a failure
+- Your tweaks add the domain knowledge AI lacks
+
+**How do you know you're done tweaking?**
+- Connect back to your definition of done (from Plan Mode)
+- Check against the success criteria in your original prompt
+- Apply the Documentation Test: can you justify it? will you understand in 6 months?
+- Tweaking ends when: it meets the spec, passes tests, and you can explain every decision
+
+**Finalize is often skipped but critical:**
+- Document what you decided
+- Document WHY (not just what)
+- Future-you will thank present-you
+
+**Connection to L7 (design for change):**
+- Good documentation enables change
+- If you don't know WHY something was chosen, you can't safely change it
+
+**The deliverable isn't AI output:**
+- It's code YOU understand
+- Code YOU can maintain
+- Code YOU can explain to others
+
+→ **Transition:** Let's complete the demo and see the final result... [LIVE DEMO concludes]
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Demo Recap: What We Built
+
+<p style={{fontSize: '0.9em'}}>
+Using the 6-step workflow with GitHub Copilot, we:
+</p>
+
+<ol style={{fontSize: '0.8em'}}>
+  <li><strong>Identified</strong> context needs: domain concepts, design constraints, desired outputs</li>
+  <li><strong>Engaged</strong> with a context-rich prompt specifying what, not how</li>
+  <li><strong>Evaluated</strong> multiple design alternatives using our domain knowledge</li>
+  <li><strong>Calibrated</strong> toward our goals through iterative dialogue</li>
+  <li><strong>Tweaked</strong> the output to match our conventions and add missing details</li>
+  <li><strong>Finalized</strong> by documenting our choice and rationale</li>
+</ol>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold'}}>
+AI accelerated exploration. Human judgment made the decisions.
+</p>
+
+<aside className="notes">
+**What AI provided:**
+- Multiple design alternatives quickly
+- Mermaid diagrams for visualization
+- Initial pros/cons analysis
+
+**What we provided:**
+- Domain understanding to evaluate
+- Design constraints (design for change)
+- Final judgment on tradeoffs
+
+**The key insight:**
+- We didn't accept the first output
+- We iterated, calibrated, refined
+- The final result is OURS, not AI's
+
+→ **Transition:** Let's summarize the key takeaways...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* KEY TAKEAWAYS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Key Takeaways
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>AI amplifies, doesn't replace:</strong> Quality of output depends on quality of YOUR input</li>
+  <li><strong>Use the 6-step workflow:</strong> Identify → Engage → Evaluate → Calibrate → Tweak → Finalize</li>
+  <li><strong>Task familiarity determines appropriateness:</strong> If you can't evaluate the output, don't use AI for that task</li>
+  <li><strong>Avoid "vibe coding":</strong> You must evaluate CODE, not just execution</li>
+  <li><strong>Document decisions:</strong> The FINALIZE step prevents "why did we do this?" moments</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+The spec-writing skills from L4 directly apply to writing effective prompts. Ambiguous prompts → unpredictable outputs.
+</p>
+
+<aside className="notes">
+**The core message:**
+- AI is a powerful tool
+- Like any tool, effectiveness depends on skill
+- Your expertise determines AI's usefulness
+
+**Connections to prior lectures:**
+- L4 Specs: Same principles for prompts
+- L7-L8 Design: AI helps explore alternatives
+- L9 Requirements: Context management parallels stakeholder engagement
+
+**Looking ahead:**
+- Assignment 4 will use AI assistance
+- Apply these principles deliberately
+- Document your process
+
+→ **Transition:** Next steps...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Next Steps
+
+<ul style={{fontSize: '0.9em'}}>
+  <li>Set up GitHub Copilot if you haven't already (free with GitHub Education)</li>
+  <li>Lab 6: AI Coding Agents, HW3: CYB with AI</li>
+</ul>
+
+<p style={{marginTop: '1.5em', fontSize: '0.9em'}}><strong>Recommended reading:</strong></p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li><a href="https://arxiv.org/abs/2506.00202">Developer-AI Collaboration research paper</a> (source of the 6-step workflow)</li>
+  <li><a href="https://docs.github.com/en/copilot">GitHub Copilot documentation</a></li>
+</ul>
+
+
+<aside className="notes">
+**Preparation for next assignment:**
+- Get Copilot working in your IDE
+- Try it on something simple first
+- Practice the workflow before you need it
+
+**Reading:**
+- The Google research paper is accessible and insightful
+- Copilot docs have good tips for effective prompting
+
+</aside>
+
+</Slide>
+
+</RevealJS>

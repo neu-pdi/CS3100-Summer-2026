@@ -1,0 +1,2110 @@
+---
+sidebar_position: 1
+title: Course Overview and Introduction to Java
+image: /img/lectures/web/l1.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import QuoteSlide from '@site/src/components/QuoteSlide';
+import ImageSlide from '@site/src/components/ImageSlide';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l1.png"
+    alt="Lecture 1 Cover"
+
+  />
+
+<aside class="notes">
+**Welcome to CS 3100!**
+- Let students settle in—first day energy
+- This lecture covers: history → logistics → Java intro
+- Total time: ~55 minutes of content
+- Pace yourself—lots of ground to cover
+
+→ **Transition:** Let's begin with our title slide and set expectations for the course.
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 1: Course Overview & Introduction to Java
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2025 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside class="notes">
+**Frame the course:**
+- Builds on CS 2100 but scales up significantly
+- Larger systems, professional practices, language-agnostic principles
+- Java is the vehicle, not the destination
+
+**Roadmap for today:** History first, then logistics—understanding *why* before *what*
+
+→ **Transition:** Let's look at today's specific learning objectives...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Learning Objectives
+
+1. Understand the structure of this course and what will be expected of you
+2. Review the Systematic Program Design and Implementation Process
+3. Describe the context of Java in the historical development of OO languages and JIT runtimes
+4. Compare the Java runtime environment to Python
+5. Recognize Java syntax
+6. Understand the difference between core datatypes in Java: primitives, objects and arrays
+
+<aside class="notes">
+**Time allocation across objectives:**
+- Objectives 1-2: Course mechanics & philosophy (~15 min)
+- Objectives 3-4: Historical context for Java (~15 min)
+- Objectives 5-6: Practical Java fundamentals (~20 min)
+
+**Goal by end:** Students oriented to course AND ready to start Lab 1 this week
+
+→ **Transition:** First, let me introduce myself briefly...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* INTRODUCTIONS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Introduction
+
+- Jon, Prof Bell, Prof Jon, Dr Bell, Dr Jon, etc…
+- Research: Software Engineering, Program Analysis
+- Open source contributor & project founder
+
+<aside class="notes">
+**Keep brief (2-3 min):**
+- Share your preferred name/title
+- Mention research interests—students like knowing you're active in the field
+- Open source work = real-world SE example
+
+**Why this matters:** Humanizes the course, models professional identity
+
+→ **Transition:** Let me introduce our full course team...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Your Course Team
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.9em'}}>
+  <div>
+    <h3 style={{marginTop: 0}}>5 Instructors</h3>
+    <ul style={{marginTop: '0.3em'}}>
+      <li><strong>Boston:</strong> Prof. Bell, Prof. Shesh, Prof. Vesely</li>
+      <li><strong>Oakland:</strong> Prof. Spertus</li>
+      <li><strong>New York City:</strong> Prof. Lee</li>
+    </ul>
+    <p style={{fontSize: '0.85em', color: '#666', marginTop: '0.5em'}}>
+      Coordinating across campuses for a consistent experience
+    </p>
+  </div>
+  <div>
+    <h3 style={{marginTop: 0}}>28 Teaching Assistants</h3>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Office hours</li>
+      <li>Discussion board</li>
+      <li>Lab support</li>
+      <li>Grading & feedback</li>
+    </ul>
+    <p style={{fontSize: '0.85em', color: '#666', marginTop: '0.5em'}}>
+      All working together to support your learning
+    </p>
+  </div>
+</div>
+
+<p style={{textAlign: 'center', marginTop: '1em', fontSize: '1.1em'}}>
+  📋 See the <a href="/staff">Staff Page</a> for photos, bios & office hours
+</p>
+
+<aside class="notes">
+**Key points:**
+- 28 TAs = almost always someone available to help
+- Multi-campus coordination = consistent experience across sections
+- Round-the-clock coverage (in-person + virtual)
+
+**Message:** This is a resource-rich environment—USE IT!
+
+→ **Transition:** Before we dive into logistics, let me tell you a story about where software engineering came from...
+</aside>
+
+</Slide>
+
+
+{/* ============================================ */}
+{/* ACT 1: A BRIEF HISTORY OF SOFTWARE ENGINEERING */}
+{/* ============================================ */}
+
+{/* 1950s ENIAC slide - image right, side text */}
+<Slide>
+
+## Let's Start with a Story...
+
+  <ImageSlide
+    sideText={
+      <>
+        <p style={{fontSize: '1.3em'}}>The 1950s</p>
+        <p style={{marginTop: '0.5em'}}>Computers exist, but programming them is... tedious.</p>
+      </>
+    }
+    imageSrc="/img/lectures/l1-intro/Glen_Beck_and_Betty_Snyder_program_the_ENIAC_in_building_328_at_the_Ballistic_Research_Laboratory-public-domain.jpg"
+    imageAlt="Glen Beck and Betty Snyder programming the ENIAC"
+    source="Glen Beck and Betty Snyder program the ENIAC (Public Domain)"
+  />
+
+<aside class="notes">
+**Historical arc (~5-7 min total):** Move briskly to set up *why* we study SE
+
+**1950s context:**
+- Programming = physically rewiring machines or entering machine code
+- Betty Snyder (later Holberton) and others doing something genuinely new
+- No discipline, no best practices, no textbooks
+
+→ **Transition:** Then came a radical idea from Grace Hopper...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 1952: "Automatic Programming"
+
+  <ImageSlide
+    imagePlacement="left"
+    sideText={
+      <>
+        <p><strong>Grace Hopper</strong> develops the first compiler (A-0)</p>
+        <p style={{marginTop: '0.75em'}}>Her radical idea: let the <em>machine</em> translate human-readable code into machine code</p>
+        <p style={{marginTop: '0.75em', color: '#666'}}>The skeptics: "Machines can't write programs."</p>
+      </>
+    }
+    imageSrc="/img/lectures/l1-intro/Grace_Murray_Hopper,_in_her_office_in_Washington_DC,_1978,_by-Lynn_Gilbert-cc-by-sa-4.jpg"
+    imageAlt="Grace Hopper"
+    imageHeight="35vh"
+    source="Photo: Lynn Gilbert, CC BY-SA 4.0"
+  />
+
+<aside class="notes">
+**Grace Hopper's compiler (A-0, 1952):**
+- Revolutionary AND resisted: "Computers can only do arithmetic"
+- Machine translating human intentions → seemed impossible
+
+**Pattern to highlight:** Each generation redefines "automatic programming" upward, faces skepticism
+
+**Connection:** Her work → foundation for every language today. We're in another such moment with AI.
+
+→ **Transition:** This pattern of skepticism about automation repeats throughout history...
+</aside>
+
+</Slide>
+
+
+<Slide>
+## Every generation redefines what "automatic programming" means
+  <Img
+    src="/img/lectures/web/l1-skepticism.png"
+    alt="Skepticism about automatic programming"
+  />
+
+<aside class="notes">
+**The pattern through history:**
+- 1950s: FORTRAN = "automatic programming"
+- 1980s: OOP = "automatic programming"
+- Today: AI-assisted coding = new "automatic programming"
+
+**Same skepticism each time:** "That's not *real* programming"
+
+**Takeaway:** Historical perspective → approach AI thoughtfully (neither dismiss nor over-hype)
+
+→ **Transition:** Another pioneer who faced skepticism was Margaret Hamilton...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 1960s: Margaret Hamilton
+
+  <ImageSlide
+    imagePlacement="right"
+    sideText={
+      <>
+        <p style={{fontSize: '0.95em'}}>Led <strong>Apollo flight control software</strong> — popularly attributed with origin of the term "software engineering"</p>
+        <blockquote style={{fontSize: '0.8em', fontStyle: 'italic', borderLeft: '4px solid #9370DB', paddingLeft: '1em', marginTop: '0.5em'}}>
+          "I fought to bring the software legitimacy so that it—and those building it—would be given its due respect."
+        </blockquote>
+        <p style={{marginTop: '0.5em', fontSize: '0.8em'}}>Her "radical" approach: rigorous testing, error handling, treating software like hardware</p>
+      </>
+    }
+    imageSrc="/img/lectures/l1-intro/Margaret_Hamilton_apollo-guidance-public-domain.jpg"
+    imageAlt="Margaret Hamilton with Apollo guidance software"
+    source="Margaret Hamilton with Apollo guidance software printouts (Public Domain)"
+  />
+
+<aside class="notes">
+**Margaret Hamilton (Apollo guidance software):**
+- That stack of code is taller than she is!
+- Coined/popularized "software engineering" *deliberately*
+- Software was seen as secondary to hardware—she insisted on rigor
+
+**Key practices she championed:** Testing, error handling, documentation
+
+**Fun fact:** Her code saved Apollo 11 during unexpected landing errors
+
+**Lesson:** Treating software as serious engineering discipline saves lives. We stand on her shoulders.
+
+→ **Transition:** Despite these brilliant individuals, the industry as a whole was struggling...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Despite Progress, Software Projects Were Failing
+Despite innovations in programming:
+<ul style={{fontSize: '0.95em'}}>
+  <li>Software was very inefficient</li>
+  <li>Software was of low quality</li>
+  <li>Software often did not meet requirements</li>
+  <li>Projects were unmanageable</li>
+  <li>Software was, sometimes, never delivered</li>
+</ul>
+<p style={{marginTop: '1.5em', fontSize: '1em', color: '#9370DB'}}>
+  <strong>Something had to change</strong>
+</p>
+
+<aside class="notes">
+**The 1960s "software crisis":**
+- Projects: late, over budget, buggy, or never delivered
+- Sound familiar? These problems haven't fully disappeared
+
+**Discussion prompt:** Ask students if they've experienced any of these
+
+**Key question the field asked:** Can we study software development scientifically? Can we develop engineering principles?
+
+→ **Transition:** This led to a watershed moment in 1968...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 1968: NATO Software Engineering Conference
+
+<p style={{fontSize: '1em'}}>
+  Garmisch, Germany — 50 experts from 11 countries
+</p>
+<p style={{marginTop: '0.75em', fontSize: '0.95em'}}>
+  The term <strong>"software engineering"</strong> was deliberately provocative:
+</p>
+<blockquote style={{fontSize: '0.85em', fontStyle: 'italic', borderLeft: '4px solid #9370DB', paddingLeft: '1em', textAlign: 'left', marginTop: '0.5em'}}>
+  Software should be built with the same rigor as bridges and buildings
+</blockquote>
+<p style={{marginTop: '0.75em', fontSize: '0.85em', color: '#666'}}>
+  A formal call to action: we must <strong>study</strong> how to build software
+</p>
+
+<aside class="notes">
+**1968 NATO Conference (Garmisch, Germany):**
+- "Software engineering" was intentional provocation
+- Engineering = discipline, methodology, professional standards (not just clever hacking)
+- Proceedings still readable today—many concerns remain relevant
+
+**Connection to this course:** CS 3100 is part of that 55+ year tradition
+
+→ **Transition:** The conference established that systematic techniques were possible...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Systematic Techniques for Building Software Are Possible
+
+<p style={{fontSize: '1.1em', color: '#9370DB'}}>
+  <strong>There could be systematic techniques for writing software</strong>
+</p>
+
+<p style={{marginTop: '1em', fontSize: '0.95em'}}>
+  Just as civil engineering has methods for building bridges...
+</p>
+<p style={{fontSize: '0.95em'}}>
+  ...software engineering could have methods for building programs.
+</p>
+
+<p style={{marginTop: '1.5em', fontSize: '0.9em', color: '#666'}}>
+  The rest is history: new processes, tools, languages, and paradigms emerged over the following decades — and continue to emerge today.
+</p>
+
+<aside class="notes">
+**The hopeful message from 1968:**
+- We CAN develop systematic techniques
+- Don't have to rely on heroic individual effort
+
+**What the decades since produced:** Design patterns, testing methodologies, version control, agile, CI/CD...
+
+**Message to students:** You're not starting from scratch—you inherit 55+ years of accumulated wisdom
+
+→ **Transition:** But did the software crisis actually end? Let's hear from Dijkstra...
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## Did the software crisis end?
+
+   <QuoteSlide
+     quote="The major cause of the software crisis is that the machines have become several orders of magnitude more powerful! To put it quite bluntly: as long as there were no machines, programming was no problem at all; when we had a few weak computers, programming became a mild problem, and now we have gigantic computers, programming has become an equally gigantic problem."
+     imageSrc="/img/lectures/l1-intro/Edsger_Wybe_Dijkstra-cc-by-sa-3-Hamilton-Richards.jpg"
+     author="Edsger Dijkstra"
+     credit="Photo: Hamilton Richards, CC BY-SA 3.0 · Quote: Dijkstra's 1972 Turing Award lecture"
+   />
+
+<aside class="notes">
+**Dijkstra's profound insight (1972 Turing Award):**
+- Software crisis didn't end—our ambitions grew with capabilities
+- Weak computers → simple programs; powerful computers → proportionally larger problems
+
+**Discussion prompt:** "Do you think we're still in a software crisis?" (Expect: buggy apps, security breaches, failed projects)
+
+**Why SE remains relevant:** Challenges scale with our ambitions
+
+→ **Transition:** Let's put this in perspective with Moore's Law...
+</aside>
+
+</Slide>
+
+
+
+<Slide>
+## Moore's Law: Computing Power Has Grown 67 Million Times Since 1972
+  <Img
+    src="/img/lectures/web/l1-moore.webp"
+    alt="Moore's Law visualization"
+  />
+
+<aside class="notes">
+**Putting Dijkstra in perspective:**
+- Computing power: 67 million × since 1972
+- Your phone > Apollo guidance computers
+
+**Correspondingly complex software:**
+- Operating systems: millions of lines of code
+- Distributed systems spanning continents
+- AI models with billions of parameters
+
+**Why this course matters:** Systematic techniques help manage this complexity
+
+→ **Transition:** This leads to a key framing from Titus Winters...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Software Engineering is the Integral of Programming Over Time
+
+<p style={{marginTop: '0.75em', fontSize: '0.95em'}}>
+  This explains why we care about <em>changeability</em>, <em>readability</em>, and <em>testing</em>
+</p>
+<p style={{marginTop: '0.75em', fontSize: '0.9em'}}>
+  Questions that seem "non-technical" become engineering concerns:
+</p>
+<ul style={{fontSize: '0.85em', marginTop: '0.25em'}}>
+  <li>Who uses our software?</li>
+  <li>Who maintains it?</li>
+  <li>What assumptions do we bake in?</li>
+</ul>
+<p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#666'}}>
+  These costs compound over time
+</p>
+
+<aside class="notes">
+**Titus Winters' framing** (former Google, now Adobe, co-author "Software Engineering at Google"):
+- Code written once and thrown away → can be sloppy
+- Real software lives years/decades, maintained by changing teams
+
+**Bad decisions compound:**
+- Hard-to-read code slows every future change
+- Untested code accumulates bugs
+- Biased assumptions affect users for years
+
+**Why principles over syntax:** Principles help software age well
+
+→ **Transition:** This brings us to software sustainability...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Most Software Cost Is Maintenance, Not Initial Development
+
+<p style={{fontSize: '1.1em', color: '#9370DB'}}>
+  <strong>Sustainability</strong> — the ability of software to continue providing value over time
+</p>
+<p style={{marginTop: '1em', fontSize: '0.95em'}}>
+  Four dimensions we'll consider:
+</p>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', marginTop: '0.5em', fontSize: '0.85em'}}>
+  <div><strong>Technical:</strong> Can we maintain it?</div>
+  <div><strong>Economic:</strong> Can we afford it?</div>
+  <div><strong>Social:</strong> Does it serve people well?</div>
+  <div><strong>Environmental:</strong> What resources does it consume?</div>
+</div>
+<p style={{marginTop: '1em', fontSize: '0.9em', color: '#666'}}>
+  These aren't separate from "real" engineering—they <em>are</em> engineering concerns when you think over time
+</p>
+
+<aside class="notes">
+**Key statistic:** 60-80% of software cost is maintenance, not initial development
+
+**Reframes everything:** We're creating something others (including future selves) must understand, modify, operate
+
+**Four sustainability dimensions (recurring theme):**
+- **Technical:** Can we maintain it?
+- **Economic:** Can the business support ongoing development?
+- **Social:** Does it serve users well?
+- **Environmental:** What resources does it consume? (increasingly relevant)
+
+→ **Transition:** So what does this mean for this class?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* COURSE OVERVIEW */}
+{/* ============================================ */}
+
+
+<Slide>
+
+## This Class
+
+<p style={{fontSize: '1.1em'}}>
+  50+ years of research, practice, and hard-won lessons
+</p>
+<p style={{marginTop: '0.75em', fontSize: '1em'}}>
+  How do we design, build, and maintain software that is <strong>sustainable at scale</strong>?
+</p>
+<p style={{marginTop: '0.75em', fontSize: '0.95em', color: '#666'}}>
+  Using Java to explore ideas that transcend any single language
+</p>
+
+<aside class="notes">
+**Transition from history to "what this means for you":**
+- This course distills 50+ years of accumulated wisdom
+- Java = teaching language; principles apply to ANY language
+
+**What students will learn:** Design patterns, testing strategies, architectural thinking, professional practices
+
+**Key message:** These skills transfer to any programming environment in their careers
+
+→ **Transition:** Let's talk about how good process helps...
+</aside>
+
+</Slide>
+
+
+{/* ============================================ */}
+{/* SOFTWARE DESIGN PROCESS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Good Process Helps You Design Better Programs
+
+  <ImageSlide
+    imageSrc="/img/software_design_process_fall_2025.png"
+    imageAlt="Software Design Process"
+    imageHeight="55vh"
+    belowText={
+      <p style={{fontSize: '0.8em'}}>
+      "Shift Left" on bugs: find issues faster to reduce the cost of fixing them
+      </p>
+    }
+  />
+
+<aside class="notes">
+**Learning Objective 2:** Systematic Program Design and Implementation Process
+
+**Walk through the diagram:**
+- Requirements → Design → Implementation → Validation → Operations
+- Each stage feeds forward; feedback flows backward
+
+**"Shift left" = find problems earlier:**
+- Bug in requirements = cheap to fix
+- Bug in production = expensive
+
+**Course structure note:** We start with implementation (given requirements), then step back to examine requirements—spiral approach builds intuition before abstraction
+
+→ **Transition:** We focus on principles, not just syntax...
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## We Focus on Principles, Not Just Syntax
+
+- We focus on the **big picture** and *why* things are the way they are
+- Not just the syntax of the language
+- Flashcards + resources provided for syntax—**use them!**
+- We move quickly past syntax in lecture
+
+<aside class="notes">
+**Set clear expectations:**
+- We WON'T spend lecture time drilling syntax
+- Flashcards, tutorials, labs = for syntax
+- Lecture = the *why* (designs, patterns, tradeoffs)
+
+**Deliberate choice:** Principles transfer across languages; syntax doesn't
+
+**If students struggle with syntax:** Use flashcards + office hours
+
+→ **Transition:** Let's talk about our perspective on AI...
+</aside>
+
+</Slide>
+
+
+<Slide>
+## Our perspective: AI is a noisy amplifier, but can still be useful
+  <Img
+    src="/img/lectures/web/l1-ai.jpeg"
+    alt="AI as amplifier diagram with intentional errors for students to find"
+    prompt="Concept: 'The Amplifier, Not the Signal' (Self-Demonstrating Version)
+A clean, technical diagram rendered in the style of an audio engineering schematic—but with intentional AI generation artifacts scattered throughout as Easter eggs. The central amplifier unit labeled 'AI' (or perhaps 'A.I.' with a slightly wonky period) has impressive specs and glowing indicators. The signal flow shows: Input (left side) with a human providing context—requirements documents, stakeholder interviews, domain knowledge. A hand points to the input, but the hand has six fingers (the classic tell). Output (right side) shows amplified results: code, documentation, test cases—generated at impressive speed. But look closely: one document is titled 'Archetecture Design' (misspelled), another shows a code snippet with a subtle logic error visible, and a label reads 'Ssoftware Engineering' or 'Qualty Assurance.' The feedback loop shows a human evaluator with a red pen, circling errors, with thought bubbles: 'Wait, that's not right,' 'This contradicts what we discussed,' 'That's... not how you spell that.'
+The reveal: A caption at the bottom breaks the fourth wall: 'This image was generated by AI. Did you spot all the errors? Neither can AI—that's why it needs you.' A small checklist appears: '☐ Extra finger ☐ Misspelled labels ☐ Logic error in code ☐ [Others hidden]' inviting students to find them all. The humor lands because the errors are genuinely the kind AI makes, and the message reinforces itself: the course staff used AI to create this image, but human review caught (most of?) the errors—demonstrating exactly the workflow being taught."
+  />
+
+<aside class="notes">
+**This image was AI-generated to demonstrate the point!**
+- Ask students to spot errors (six fingers, misspellings, etc.)
+
+**AI as amplifier:**
+- Have expertise → AI accelerates your work
+- Lack expertise → AI produces plausible-looking nonsense you can't evaluate
+
+**Key insight:** Hardest parts of SE ≠ typing code. It's:
+- Understanding requirements
+- Making tradeoffs
+- Reviewing work
+- Coordinating with humans
+
+AI helps with typing; humans do the hard parts.
+
+→ **Transition:** This is why AI isn't permitted early in the course...
+</aside>
+
+</Slide>
+
+<Slide>
+## AI coding assistance is not permitted in weeks 1-5
+  <Img
+    src="/img/lectures/web/l1-ai-review.webp"
+    alt="Split-panel showing bugs invisible without foundation vs visible with foundation"
+    prompt="Concept: 'The Reviewer's Paradox' (Can't Review What You Can't Write)
+A split-panel diagram rendered in the style of a thoughtful editorial illustration. On the left ('Without Foundation'), a student stares at AI-generated code on a screen. The code contains subtle bugs—a logic error here, a security vulnerability there, an inefficient algorithm—but the bugs are invisible, rendered in the same color as correct code. The student's thought bubble shows question marks and uncertainty: 'Is this... right?' A small demon labeled 'Subtle Bug' hides in the code, grinning. The student has no mental model to detect it. On the right ('With Foundation'), the same student, now having completed foundational exercises, reviews similar code. But now the bugs glow red—visible because the student has built the pattern-matching ability to recognize what 'wrong' looks like. Their thought bubble shows a checklist: 'Edge cases? ✓ Security? ⚠️ Performance? ✓' The demon is caught and highlighted. A timeline at the bottom shows the progression: 'Weeks 1-5: Build the detector → Weeks 6+: Use the detector.'
+This visualization addresses the common student question 'Why can't I just use AI from day one?' The answer is visceral: you literally cannot see the problems if you haven't developed the ability to recognize them. The 'invisible bugs becoming visible' transformation is the core pedagogical goal. Details include: specific bug types labeled (null pointer, off-by-one, SQL injection), the 'detector' visualized as a mental model being constructed piece by piece through practice, and quotes from the syllabus: 'You cannot effectively review code you could not have written yourself.' The timeline reinforces that this is a progression, not a permanent restriction. The style should be warm and encouraging—not punitive. Tagline: 'First, learn to see. Then, leverage AI.' or 'You can't catch what you can't recognize.'"
+  />
+
+<aside class="notes">
+**Crucial pedagogical point:**
+- Can't review code you couldn't write yourself
+- Bugs are invisible without pattern-matching ability
+
+**Weeks 1-5:** Build foundational skills without AI
+
+**This isn't anti-AI:** It's building capability to USE AI effectively later
+
+**Mid-course:** Introduce structured AI workflows
+
+**Message:** We're all learning effective human-AI collaboration together. This is a progression, not a permanent restriction.
+
+→ **Transition:** Now let's cover course logistics quickly...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Course Logistics
+
+**Deliverables:** Assignments → final project • Quizzes • Exams • Labs • Participation
+
+**Participation (required for an A):**
+1. Attendance + in-class polls
+2. Pre-lecture activities (flashcards)
+
+**Expectations:** Do readings before lecture • Bi-weekly assignments ~20 hours
+
+<p style={{marginTop: '1em', fontSize: '1.1em', color: '#c00'}}>
+  <strong>Do not wait until the last minute on assignments!</strong>
+</p>
+
+<aside class="notes">
+**Time commitment:**
+- 4-credit course = 200 min instruction + 8-12 hrs homework/week
+- Lab = 1 additional credit, no extra time outside lab
+- Bi-weekly assignments ≈ 20 hours each
+
+**Common misconception:** "I'll start the night before" → This will NOT work
+
+**Readings before lecture:** Essential—we assume background and move quickly
+
+→ **Transition:** Here's how grading works...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Grading: Letter Grade Thresholds
+
+<p style={{fontSize: '0.85em', marginBottom: '0.5em'}}>
+  Your letter grade requires meeting <strong>both</strong> total points AND category thresholds:
+</p>
+
+<table style={{margin: '0 auto', fontSize: '0.65em'}}>
+  <thead>
+    <tr>
+      <th style={{padding: '0.3em 0.5em'}}>Grade</th>
+      <th style={{padding: '0.3em 0.5em'}}>Total</th>
+      <th style={{padding: '0.3em 0.5em'}}>Individual</th>
+      <th style={{padding: '0.3em 0.5em'}}>Group</th>
+      <th style={{padding: '0.3em 0.5em'}}>Exams</th>
+      <th style={{padding: '0.3em 0.5em'}}>Labs</th>
+      <th style={{padding: '0.3em 0.5em'}}>Participation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{padding: '0.3em 0.5em'}}><strong>A</strong></td>
+      <td style={{padding: '0.3em 0.5em'}}>≥900</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥240 (80%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥160 (80%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥280 (70%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥11</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥40 (80%)</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.3em 0.5em'}}><strong>B</strong></td>
+      <td style={{padding: '0.3em 0.5em'}}>≥800</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥210 (70%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥140 (70%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥220 (55%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥9</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥25 (50%)</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.3em 0.5em'}}><strong>C</strong></td>
+      <td style={{padding: '0.3em 0.5em'}}>≥700</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥180 (60%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥120 (60%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥200 (50%)</td>
+      <td style={{padding: '0.3em 0.5em'}}>≥7</td>
+      <td style={{padding: '0.3em 0.5em'}}>—</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.3em 0.5em'}}><strong>D</strong></td>
+      <td style={{padding: '0.3em 0.5em'}}>≥600</td>
+      <td style={{padding: '0.3em 0.5em'}}>—</td>
+      <td style={{padding: '0.3em 0.5em'}}>—</td>
+      <td style={{padding: '0.3em 0.5em'}}>—</td>
+      <td style={{padding: '0.3em 0.5em'}}>—</td>
+      <td style={{padding: '0.3em 0.5em'}}>—</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style={{marginTop: '0.75em', fontSize: '0.8em', color: '#666'}}>
+  See the <a href="/syllabus">syllabus</a> for complete details
+</p>
+
+<aside class="notes">
+**Threshold system ensures well-rounded competence:**
+- Can't compensate bombing exams with perfect homework (or vice versa)
+- Exam threshold for B (55%) = accommodates those who struggle with timed assessments
+
+**Recovery path:** Final exam can replace midterm average if higher
+
+**Note:** Participation required for an A
+
+**Action:** Direct students to syllabus for full details
+
+→ **Transition:** Let's talk about attendance specifically...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Participation: Attendance Policy
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+  <div>
+    <h3 style={{marginTop: 0, fontSize: '1em'}}>How It Works</h3>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Poll Everywhere during ~34 lectures</li>
+      <li><strong>Must be physically present</strong></li>
+      <li>Headcount verification</li>
+      <li>6 free absences, no questions asked</li>
+    </ul>
+  </div>
+  <div>
+    <h3 style={{marginTop: 0, fontSize: '1em'}}>Points by Absences</h3>
+    <table style={{fontSize: '0.9em'}}>
+      <tbody>
+        <tr><td>0–6</td><td><strong>50</strong> (full)</td></tr>
+        <tr><td>7–11</td><td>42</td></tr>
+        <tr><td>12–17</td><td>32</td></tr>
+        <tr><td>18–23</td><td>20</td></tr>
+        <tr><td>24–29</td><td>10</td></tr>
+        <tr><td>30+</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p style={{marginTop: '1em', fontSize: '0.9em', color: '#c00'}}>
+  <strong>⚠️ Completing polls remotely = academic integrity violation → 0 for all participation</strong>
+</p>
+
+<p style={{marginTop: '0.5em', fontSize: '0.8em', color: '#666'}}>
+  No make-ups. If you'll miss many classes, contact your advisor + instructor to make a plan.
+</p>
+
+<aside class="notes">
+**⚠️ Be VERY clear about academic integrity:**
+- Completing polls remotely = serious violation → 0 for ALL participation
+- We verify via headcounts (not just honor system)
+
+**6 free absences is generous:**
+- No need to email about routine absences
+- Extended absences → contact us proactively to make a plan
+
+**Tiered system:** Occasional additional absences don't devastate grade
+
+→ **Transition:** Let me introduce the semester project...
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## Semester Project: CookYourBooks
+
+<p style={{fontSize: '1.05em'}}>
+  A comprehensive <strong>recipe management application</strong>
+</p>
+
+<div style={{marginTop: '1em', fontSize: '0.85em'}}>
+  <p><strong>What you'll build over the semester:</strong></p>
+  <ul style={{marginTop: '0.3em'}}>
+    <li>📝 <strong>Domain Model:</strong> Ingredients, quantities, recipes</li>
+    <li>💾 <strong>Persistence:</strong> JSON serialization, file storage</li>
+    <li>🧪 <strong>Testing:</strong> Unit tests, mutation testing</li>
+    <li>🏗️ <strong>Architecture:</strong> Service layers, clean separation</li>
+    <li>📷 <strong>OCR Integration:</strong> Import recipes from photos</li>
+    <li>🖥️ <strong>GUI:</strong> JavaFX graphical interface</li>
+  </ul>
+</div>
+
+<p style={{marginTop: '1em', fontSize: '0.9em', color: '#666'}}>
+  Each assignment builds on the previous — <strong>don't fall behind!</strong>
+</p>
+
+<aside class="notes">
+**CookYourBooks = semester-long project:**
+- Recipe management app that grows in sophistication
+- Individual assignments (A1-A5) build core; group adds advanced features
+
+**⚠️ Each assignment builds on previous:**
+- Falling behind = compounding problems
+- BUT: We provide working solutions as starting points (not stuck if you struggle)
+
+**Real-world concerns covered:** Domain modeling, persistence, testing, architecture, external APIs, UIs
+
+→ **Transition:** What we expect from each other...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## We Have Mutual Expectations
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
+  <div>
+    <h3 style={{marginTop: 0, fontSize: '1em'}}>What we expect from you</h3>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Prepare: readings + flashcards before class</li>
+      <li>Engage: ask questions, help classmates</li>
+      <li>Ask for help early (stuck &gt;30 min? reach out!)</li>
+      <li>Professional conduct in all interactions</li>
+    </ul>
+  </div>
+  <div>
+    <h3 style={{marginTop: 0, fontSize: '1em'}}>What you can expect from us</h3>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Round-the-clock office hours in-person and virtual</li>
+      <li>24-hour response on discussion board</li>
+      <li>Clear rubrics and expectations</li>
+      <li>Feedback that helps you improve</li>
+      <li>Treat you as colleagues-in-training</li>
+    </ul>
+  </div>
+</div>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666', textAlign: 'center'}}>
+  Learning how to get unstuck is one of the objectives of this course
+</p>
+
+<aside class="notes">
+**Mutual compact:** We support you seriously; we expect engagement in return
+
+**The 30-minute rule:**
+- Stuck > 30 min? You're probably missing something—seek help!
+- Struggling alone isn't noble; it's missing an opportunity
+
+**Colleagues-in-training:** That's what students are—future professionals. We model professional behavior and expect it in return.
+
+→ **Transition:** Now let's shift to understanding Java's historical context...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The 1990s Brought Platform Fragmentation and the Internet
+
+- Platform fragmentation (Windows, Mac, Unix)
+- The Internet
+- 32,000× increase in complexity
+
+**C/C++ dominated, but:**
+- Manual memory management → crashes
+- Platform-specific code everywhere
+- "It works on my machine" 🤷
+
+**Java & Python responded with:**
+- Garbage collection
+- Platform abstraction
+- Large standard libraries
+- Object-oriented design
+
+<aside class="notes">
+**Learning Objective 3:** Historical context for Java
+
+**1990s explosion of complexity:**
+- Multiple platforms (Windows, Mac, Unix)
+- The Internet
+- Massively more powerful machines
+
+**C/C++ problems:**
+- Manual memory management → crashes, security vulnerabilities
+- Platform-specific code → writing same thing multiple times
+- "It works on my machine" frustration
+
+**Java & Python response:** Managed memory, platform abstraction, rich standard libraries. Java added static typing + JIT for performance.
+
+→ **Transition:** Let's compare Java and Python directly...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Java vs Python: Same Problems, Different Philosophies
+
+<table style={{margin: '0 auto', fontSize: '0.8em'}}>
+  <thead>
+    <tr>
+      <th style={{padding: '0.4em 0.8em'}}></th>
+      <th style={{padding: '0.4em 0.8em'}}>Java (1995)</th>
+      <th style={{padding: '0.4em 0.8em'}}>Python (1991)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{padding: '0.4em 0.8em'}}><strong>Origin</strong></td>
+      <td style={{padding: '0.4em 0.8em'}}>Sun Microsystems (corporate)</td>
+      <td style={{padding: '0.4em 0.8em'}}>CWI research (community)</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.4em 0.8em'}}><strong>Types</strong></td>
+      <td style={{padding: '0.4em 0.8em', color: '#060'}}>Static — errors at compile time</td>
+      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>Dynamic — errors at runtime</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.4em 0.8em'}}><strong>Speed</strong></td>
+      <td style={{padding: '0.4em 0.8em', color: '#060'}}>Fast (JIT compilation)</td>
+      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>Slower (interpreted)</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.4em 0.8em'}}><strong>Style</strong></td>
+      <td style={{padding: '0.4em 0.8em'}}>Verbose, explicit</td>
+      <td style={{padding: '0.4em 0.8em'}}>Concise, "readability counts"</td>
+    </tr>
+  </tbody>
+</table>
+<p style={{marginTop: '0.75em', fontSize: '0.9em', color: '#666'}}>
+  Discussion: If Java is faster, why use Python?
+</p>
+
+<aside class="notes">
+**Learning Objective 4:** Compare Java and Python
+
+**Different tradeoffs:**
+- Java (Sun Microsystems, corporate) → performance + type safety
+- Python (community, research) → developer productivity + readability
+
+**Static vs dynamic typing:** Errors at compile time vs runtime
+
+**Discussion:** "If Java is faster, why use Python?"
+- Faster dev cycle, scripting, ML/data science ecosystem, readability
+- Neither universally better—context determines choice
+
+**Sidebar:** Sun → Oracle; Google v. Oracle lawsuit over Java APIs
+
+→ **Transition:** Industry is trending in an interesting direction...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Industry Is Trending Toward Static Typing
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', marginBottom: '1.5em'}}>
+  <div>
+    <strong>Java</strong>
+    <ul style={{marginTop: '0.5em', fontSize: '0.9em'}}>
+      <li>Android</li>
+      <li>Enterprise</li>
+      <li>Big Data</li>
+    </ul>
+  </div>
+  <div>
+    <strong>Python</strong>
+    <ul style={{marginTop: '0.5em', fontSize: '0.9em'}}>
+      <li>ML/AI</li>
+      <li>Data Science</li>
+      <li>Scripting</li>
+    </ul>
+  </div>
+</div>
+
+**Plot twist:** Industry trending toward static typing
+- PHP → Hack
+- JavaScript → TypeScript
+- Python → mypy
+
+<aside class="notes">
+**Industry trend toward static typing:**
+- Facebook built Hack (typed PHP) → dynamic typing too hard at scale
+- TypeScript surpassed JavaScript in popularity
+- Python added type hints + mypy
+
+**Key insight:** Static typing benefits compound as codebases grow
+
+**Why Java:** Understanding static typing prepares you for this industry-wide shift
+
+→ **Transition:** But there's another major difference between these languages...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* BREAKING CHANGES & SUSTAINABILITY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Breaking Changes: A Tale of Two Philosophies
+
+<p style={{fontSize: '1.1em'}}>
+  <strong>How do languages evolve without breaking existing code?</strong>
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', marginTop: '1em'}}>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Python 2 → 3</p>
+    <ul style={{fontSize: '0.85em', marginTop: '0.3em'}}>
+      <li><code>print "hello"</code> → <code>print("hello")</code></li>
+      <li><code>3 / 2 = 1</code> → <code>3 / 2 = 1.5</code></li>
+      <li>Strings became Unicode by default</li>
+      <li><strong>12+ years to sunset Python 2</strong></li>
+    </ul>
+  </div>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Java 1.0 → 21</p>
+    <ul style={{fontSize: '0.85em', marginTop: '0.3em'}}>
+      <li>Code from 1995 still compiles</li>
+      <li>Deprecated features stay for years</li>
+      <li>Binary compatibility guaranteed</li>
+      <li><strong>Your old code keeps working</strong></li>
+    </ul>
+  </div>
+</div>
+
+<aside class="notes">
+**The Python 2→3 migration is legendary:**
+- Announced 2006, Python 2 EOL in 2020
+- Many organizations stuck on Python 2 for years
+- Some Python 2 code STILL running in production
+
+**Java's approach = extreme backward compatibility:**
+- Code from 1995 compiles on Java 21
+- Deprecated doesn't mean removed (for a LONG time)
+- Even bytecode from 25 years ago runs
+
+**Question for class:** "Which approach is better?"—this is a values question!
+
+→ **Transition:** Why such different approaches?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Governance Shapes Evolution
+
+  <Img
+    src="/img/lectures/web/l1-governance.webp"
+    alt="Concept: 'Two Kinds of Community' (Governance Models Shape Language Evolution)
+
+A split-panel illustration in the style of a vintage technical manual, contrasting two approaches to language stewardship.
+
+On the LEFT ('The Open Commons'), a public park where diverse individuals gather around a shared garden plot. A teacher, a hobbyist, a startup founder, a student, and a few corporate representatives (visibly outnumbered) all have equal-sized voting cards. A sign reads 'Python Software Foundation - All Welcome.' In the foreground, a small ceremonial bonfire where old code labeled 'Python 2' is being retired—some people cheer while a few look wistful. A banner overhead reads 'Sometimes we break things to make them better.' The community bulletin board shows a PEP titled 'Breaking Change Proposal' with many thumbs-up stickers. The mood is: progress sometimes requires letting go of the old.
+
+On the RIGHT ('The Corporate Boardroom'), a polished conference room with a long table. At the head sits an Oracle representative; around the table are six other seats with nameplates reading: 'Acme Systems,' 'GlobalTech Industries,' 'Nexus Financial,' 'Titan Enterprises,' 'Synergy Corp,' and 'MegaBank Holdings.' All wear business attire. A sign on the wall reads 'Java Community Process - Executive Committee.' Prominently displayed: a glass museum case containing ancient code labeled 'Java 1.0 (1995) - STILL RUNS' like a sacred artifact. Red warning signs everywhere: 'DO NOT BREAK BACKWARD COMPATIBILITY' and 'Our customers have millions of lines of code.' A velvet rope separates the table from a small 'observer gallery' where several individual developers can watch but not vote. One observer holds a sign: 'Can we please have nullness annotations?' A committee member responds: 'That might break existing code.'
+
+The visual contrast captures two attitudes toward breaking changes: LEFT embraces them when the community decides the benefit is worth the cost; RIGHT treats them as existential threats because enterprise customers demand stability. Both are legitimate—but 'community' and 'progress' mean very different things in each context.
+
+Tagline options: 'Two definitions of community' / 'Who decides when to break things?' / 'Move fast vs. never break'"
+  />
+
+<aside class="notes">
+**The image contrasts governance models:**
+- Python = community garden (PSF), decisions by consensus
+- Java = corporate greenhouse (Sun → Oracle), decisions by business interests
+
+**Why Java prioritizes compatibility:**
+- Enterprises pay for stability (literally—Oracle licenses)
+- Breaking code = breaking trust = losing customers
+- "Write once, run anywhere" promise extends through time
+
+**Why Python accepted breaking changes:**
+- Community wanted cleaner language (Unicode strings, print function)
+- No commercial contracts demanding compatibility
+- Innovation over preservation
+
+→ **Transition:** This connects directly to the sustainability framework we introduced earlier...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Language Choice Is a Sustainability Decision
+
+<p style={{fontSize: '1em', marginBottom: '0.5em'}}>
+  Remember: software engineering is "the integral of programming over time."
+</p>
+
+<p style={{fontSize: '0.95em'}}>
+  The Python/Java comparison shows the four sustainability dimensions in action:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', marginTop: '0.5em', fontSize: '0.8em'}}>
+  <div><strong>Technical:</strong> Will my code still run in 10 years?</div>
+  <div><strong>Economic:</strong> What will migration cost?</div>
+  <div><strong>Social:</strong> Who decides when to break things?</div>
+  <div><strong>Environmental:</strong> What resources does evolution consume?</div>
+</div>
+
+<p style={{marginTop: '0.75em', fontSize: '0.9em'}}>
+  🔄 <strong>Recurring theme:</strong> We'll apply this framework to every major topic this semester.
+</p>
+
+<aside class="notes">
+**Connect back to earlier slide:** We introduced sustainability with four dimensions—now we see it applied to a real decision (language/platform choice).
+
+**Concrete examples from Python/Java:**
+- **Technical:** Java code from 1995 runs; Python 2 code doesn't
+- **Economic:** Instagram spent months of engineer-years on Py3 migration
+- **Social:** PSF = individuals vote; JCP = corporations vote
+- **Environmental:** Migration = compute cycles, energy, e-waste from obsolete systems
+
+**Key message:** This isn't a one-time topic. Every lecture this semester touches sustainability:
+- Readability → technical sustainability
+- Testing → technical sustainability
+- Architecture → technical + economic
+- Accessibility → social sustainability
+- Performance → environmental sustainability
+
+**This is the first concrete example; it won't be the last.**
+
+→ **Transition:** Now let's see how Java delivers on its technical promises...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* HOW JAVA WORKS */}
+{/* ============================================ */}
+
+<Slide>
+
+## How Does Java Deliver on Its Promise?
+
+<p style={{fontSize: '1.4em', color: '#9370DB'}}>
+  <strong>"Write Once, Run Anywhere"</strong>
+</p>
+<p style={{marginTop: '1em', fontSize: '1.1em'}}>
+  ...with <em>performance</em>
+</p>
+
+<aside class="notes">
+**Java's promise:** "Write Once, Run Anywhere" — WITH performance
+
+**Key differentiator:** Other languages ran anywhere via interpreters, but Java promised native-like speed
+
+**How?** Bytecode + JIT compilation (coming up)
+
+→ **Transition:** First, why is running anywhere hard?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Different CPUs and OSes Require Different Code
+
+- CPUs have different instruction sets
+- OS's have different APIs
+- How do you run a program on *any* machine?
+
+<aside class="notes">
+**The fundamental problem:**
+- Intel CPUs ≠ ARM CPUs (different instruction sets)
+- Windows ≠ Linux ≠ macOS (different APIs)
+- Traditional solution: platform-specific code or recompile → expensive, error-prone
+
+**Java's solution:** Compile to intermediate representation → virtual machine runs it anywhere
+
+**But:** How do you make that fast?
+
+→ **Transition:** Enter bytecode...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* BYTECODE & JIT */}
+{/* ============================================ */}
+
+<Slide>
+## Bytecode Provides Platform Independence
+  <Img
+    src="/img/lectures/web/l1-bytecode.webp"
+    alt="Bytecode visualization"
+  />
+
+<aside class="notes">
+**Bytecode = intermediate representation:**
+- Java source → bytecode
+- JVM on each platform executes bytecode
+- You write once; JVM handles platform differences
+
+**Both Python and Java use this approach** (in principle)
+
+**Discussion:** "Is it really that easy?" Anyone compiled native Python extensions? That's when platform differences bite back.
+
+→ **Transition:** But interpretation is slow...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Compilation Enables Optimization
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Interpreted</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Reads & executes line by line</li>
+      <li>100s of instructions per statement</li>
+      <li>Executes every branch, every time</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Native Compiled</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Already in machine code</li>
+      <li>Direct CPU execution</li>
+      <li>Dead code eliminated, functions inlined</li>
+    </ul>
+  </div>
+</div>
+
+<aside class="notes">
+**Why interpretation is slower:**
+- Interpreter: decode instruction → look up action → execute (100s of extra instructions)
+- Native: CPU executes machine code directly
+
+**Compiler optimizations interpreters can't do:**
+- Dead code elimination, function inlining, loop optimizations
+
+**Key difference:** Interpreter checks every branch every time. Compiler analyzes whole program and removes unnecessary work ahead of time.
+
+→ **Transition:** Java's innovation: combine both approaches...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## JIT Combines Interpretation with Native Compilation
+
+<p style={{fontSize: '1.1em'}}>
+  <strong>Just-In-Time (JIT)</strong> compilation
+</p>
+<p style={{marginTop: '1em'}}>
+  Dynamically compiles bytecode <em>as it executes</em>
+</p>
+<p style={{marginTop: '1em', fontSize: '0.95em'}}>
+  The program that runs Java code: <strong>JVM</strong> (Java Virtual Machine)
+</p>
+
+<aside class="notes">
+**JIT = Java's innovation:**
+- JVM starts interpreting, monitors "hot" code (frequently run)
+- Hot code → compiled to native on the fly
+- Combines: bytecode portability + native speed
+
+**Bonus:** JVM optimizes based on runtime behavior (ahead-of-time compilers can't!)
+
+**Sidebar:** Other JVM languages: Kotlin (Android), Scala (big data), Clojure (functional), Groovy (scripting)—all benefit from JIT
+
+→ **Transition:** Here's a concrete example of JIT optimization...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## JIT Optimizes Your Code as It Runs
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+  <div>
+    <p style={{fontWeight: 'bold', marginBottom: '0.5em'}}>What you write:</p>
+
+```java
+for (int i = 0; i < 1000000; i++) {
+    int result = x * y;  // x, y never change
+    sum += result + i;
+}
+```
+
+  </div>
+  <div>
+    <p style={{fontWeight: 'bold', marginBottom: '0.5em'}}>What JIT executes:</p>
+
+```java
+int result = x * y;  // hoisted out!
+for (int i = 0; i < 1000000; i++) {
+    sum += result + i;
+}
+```
+
+  </div>
+</div>
+  <Img
+    src="/img/lectures/web/l1-jit.webp"
+    alt="JIT compilation visualization"
+  />
+
+<aside class="notes">
+**Concrete example: loop-invariant code motion**
+- You write: compute x*y inside loop (1 million iterations)
+- x and y never change
+- Interpreter: computes x*y 1 million times
+- JIT: "hoists" computation out—computes once before loop
+
+**Other JIT optimizations:** Method inlining, dead code elimination, runtime-behavior optimization
+
+**Key:** These happen automatically—you benefit without changing code
+
+→ **Transition:** Why can't Python just do this?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Dynamic Typing Makes JIT Optimization Hard
+
+PyPy and others have tried...
+
+<p style={{marginTop: '1em', fontSize: '1.1em'}}>
+  <strong>Fundamental language design differences</strong>
+  <br/>make it hard to match Java's performance
+</p>
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
+  (Dynamic typing makes optimization very hard)
+</p>
+
+<aside class="notes">
+**Why can't Python just add JIT?**
+- People tried: PyPy is JIT-compiled Python, faster than CPython, but still can't match Java
+
+**Fundamental problem = dynamic typing:**
+- Java `x * y` (both int) → JIT knows exactly which instruction
+- Python `x * y` → could be int, float, string, matrix, custom object... and could CHANGE between iterations!
+
+**Result:** JIT must check every time or speculatively optimize with fallbacks
+
+**Lesson:** Static typing enables better optimization
+
+→ **Transition:** Let's map your Python tools to Java equivalents...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* PRACTICAL TRANSITION */}
+{/* ============================================ */}
+
+<Slide>
+
+## Tool Mapping: Python → Java
+
+<table style={{margin: '0 auto', fontSize: '1em'}}>
+  <thead>
+    <tr>
+      <th style={{padding: '0.5em 1em'}}>Python</th>
+      <th style={{padding: '0.5em 1em'}}>Java</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{padding: '0.5em 1em'}}><code>pip</code></td>
+      <td style={{padding: '0.5em 1em'}}><code>gradle</code></td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.5em 1em'}}><code>pytest</code></td>
+      <td style={{padding: '0.5em 1em'}}><code>junit</code></td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.5em 1em'}}>VSCode</td>
+      <td style={{padding: '0.5em 1em'}}>IntelliJ IDEA | VSCode</td>
+    </tr>
+  </tbody>
+</table>
+
+<aside class="notes">
+**Tool mapping:**
+- pip → Gradle (packages + building + testing)
+- pytest → JUnit
+- VSCode → VSCode or IntelliJ IDEA (Java-specialized, excellent features)
+
+**Both ecosystems:** Large open-source library ecosystems
+
+**Action:** Lab 1 sets up these tools—complete it THIS WEEK!
+
+→ **Transition:** One practical difference in workflow...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Java Requires an Explicit Compile Step
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '1em'}}>
+  <div style={{display: 'flex', flexDirection: 'column', textAlign: 'center', padding: '1em'}}>
+    <p><strong>Python</strong></p>
+    <p>Source → Interpreter</p>
+  </div>
+  <div style={{display: 'flex', flexDirection: 'column', textAlign: 'center', padding: '1em'}}>
+    <p><strong>Java</strong></p>
+    <p>Source → Bytecode → JVM</p>
+  </div>
+</div>
+<p style={{marginTop: '1em', fontSize: '0.9em'}}>
+  Java requires an explicit compile step
+</p>
+
+<aside class="notes">
+**Key practical difference:**
+- Python: execute source directly
+- Java: compile to bytecode first (`javac` → `java`, or Gradle handles both)
+
+**Major benefit:** Compile step catches type errors BEFORE running
+
+**Workflow change:** Compile → fix errors → run (vs. run → discover errors)
+
+→ **Transition:** Let me ask about your prior experience...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Discussion
+
+<p style={{fontSize: '1.1em'}}>
+  Did anyone have Python experience before CS 2100?
+</p>
+<p style={{marginTop: '0.5em'}}>(without mypy)</p>
+<p style={{marginTop: '1.5em', fontSize: '0.9em', color: '#666'}}>
+  How did you find errors in your code?
+</p>
+
+<aside class="notes">
+**Discussion prompt:** "How did you find errors in Python without types?"
+- Likely answer: run code → hit exceptions (runtime errors)
+
+**Follow-up:** "Was it frustrating when code 'worked' in testing but crashed in production?"
+
+**Key insight:** Static typing moves many errors to compile time. As codebases grow, manually testing every path = impossible. Type system = automated partial testing.
+
+→ **Transition:** Let's take a brief tour of Java syntax...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* JAVA SYNTAX */}
+{/* ============================================ */}
+
+<Slide>
+
+## Java Syntax: A Brief Tour
+
+<p style={{fontSize: '0.95em'}}>
+  We won't teach syntax explicitly in lectures
+</p>
+<p style={{marginTop: '0.5em', fontSize: '0.95em'}}>
+  But for this first lecture...a quick introduction
+</p>
+
+<aside class="notes">
+**Learning Objective 5:** Recognize Java syntax
+
+**Reminder:** Not teaching syntax systematically in lectures (flashcards + labs for that)
+
+**Goal for today:** Recognition, not mastery. Read Java code and understand structure, even if can't write fluently yet.
+
+→ **Transition:** Here's the classic Hello World...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Hello, World!
+
+```java
+package io.github.neu_pdi.cs3100.lecture2;
+
+import io.github.neu_pdi.cs3100.utils.OtherClass;
+
+/**
+ * This is a simple program that prints "Hello, World" 10 times.
+ * It also instantiates an object and calls a method on it.
+ */
+public class HelloWorld {
+    public static void main(String[] args) {
+        OtherClass other = new OtherClass(10);
+        for (int i = 0; i < 10; i++) {
+            // Print a message to the console
+            System.out.println("Hello, World #" + i);
+        }
+        other.doSomething();
+    }
+}
+```
+
+<aside class="notes">
+**Walk through complete example:**
+- Package declaration, import, class, method, loop, print
+
+**Point out:** More verbose than Python's equivalent—intentionally explicit
+
+**Goal:** Understand STRUCTURE, not memorize syntax
+
+→ **Transition:** Let's break down each piece, starting with packages...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Java File Structure: Packages, Imports, Comments
+
+```java
+package io.github.neu_pdi.cs3100.lecture2;  // Reverse domain convention
+
+import io.github.neu_pdi.cs3100.utils.OtherClass;  // java.lang.* auto-imported
+
+// Single-line comment
+/* Multi-line comment */
+/** Javadoc comment — generates documentation */
+```
+
+<aside class="notes">
+**Packages = like Python modules**
+- Convention: Reverse domain name (GitHub user octocat → io.github.octocat.*)
+- Prevents naming collisions
+
+**Imports:**
+- `java.lang.*` auto-imported (String, System, Object)
+- Everything else: explicit import
+
+**Three comment types:** `//`, `/* */`, `/** */` (Javadoc)
+
+→ **Transition:** All Java code lives in classes...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## All Java Code Must Live in a Class
+
+```java
+public class HelloWorld {
+    // contents here
+}
+```
+
+- **All code** must be in a class
+- `public` → usable by other classes
+- `{ }` delimit scope (not indentation!)
+
+<aside class="notes">
+**Unlike Python:** Can't have module-level functions—ALL code in classes
+
+**Requirements:**
+- Class name MUST match filename (HelloWorld.java → public class HelloWorld)
+- `public` = visible to other classes; without it = package-private
+
+**⚠️ Common misconception:** Braces `{ }` delimit scope, NOT indentation (indentation is for humans only)
+
+→ **Transition:** Let's decode the main method signature...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Method Declaration
+
+```java
+public static void main(String[] args) {
+    // method body
+}
+```
+
+<table style={{margin: '0.5em auto', fontSize: '0.8em'}}>
+  <tbody>
+    <tr><td><code>public</code></td><td>→ accessible by other classes</td></tr>
+    <tr><td><code>static</code></td><td>→ class method (no instance needed)</td></tr>
+    <tr><td><code>void</code></td><td>→ returns nothing</td></tr>
+    <tr><td><code>main</code></td><td>→ JVM entry point</td></tr>
+  </tbody>
+</table>
+
+<aside class="notes">
+**Every piece has meaning:**
+- `public` = callable from anywhere
+- `static` = belongs to class, not instance (like Python's @classmethod)
+- `void` = returns nothing
+- `main(String[] args)` = JVM entry point, args = command-line arguments
+
+**Magical signature:** `java HelloWorld` → JVM looks for exactly this signature
+
+→ **Transition:** Let's dissect a statement...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Dissecting a Statement
+
+```java
+System.out.println("Hello, World #" + i);
+```
+
+- `System` → class in `java.lang`
+- `out` → static field of type `PrintStream`
+- `println` → method that prints + newline
+- `+` → string concatenation
+- `;` → **required!** (not Python)
+
+<aside class="notes">
+**Unpacking `System.out.println("Hello, World #" + i);`:**
+- `System` = class in java.lang (auto-imported)
+- `out` = static field, PrintStream for stdout
+- `println` = method that prints + newline
+- `+` = string concatenation (auto-converts i to string)
+- `;` = REQUIRED (not Python!)
+
+**Common beginner mistake:** Forgetting semicolons (compiler catches it)
+
+→ **Transition:** Here's a supporting class showing more features...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## A Supporting Class
+
+```java
+public class OtherClass {
+    private int x;
+
+    public OtherClass(int x) {
+        this.x = x;
+    }
+
+    public void doSomething() {
+        System.out.println("Doing something with x = " + x);
+    }
+
+    public int getX() {
+        return x;
+    }
+}
+```
+
+<aside class="notes">
+**Class features shown:**
+- `private int x` = only accessible inside this class
+- Constructor = same name as class, initializes fields
+- `this.x` = refers to field (disambiguates from parameter)
+- `doSomething()` = public method anyone can call
+- `getX()` = "getter" for controlled read access
+
+**Key concept:** Encapsulation = hide internal state, expose controlled access
+
+→ **Transition:** Let's summarize the key syntax points...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Key Syntax Points
+
+- `private int x` → field only accessible within class
+- Constructor has same name as class
+- `this.x` → refers to the field (not parameter)
+- Can have **multiple constructors** (unlike Python)
+- `getX()` → getter method (encapsulation)
+
+<aside class="notes">
+**Summary of key points:**
+- Private fields = external code can't mess with internal state
+- Multiple constructors allowed (unlike Python's single `__init__`)
+- `this` = current object (useful when parameters shadow fields)
+- Getters = controlled read access
+
+**Foundation:** These patterns = Java's approach to OO design
+
+→ **Transition:** Now let's discuss Java's two categories of types...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* DATA TYPES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Java Has Two Categories of Types
+
+<p style={{fontSize: '1.2em'}}>
+  Two categories:
+</p>
+
+1. **Primitive types** (values)
+2. **Reference types** (pointers to objects)
+
+<aside class="notes">
+**Learning Objective 6:** Understand primitives, objects, and arrays
+
+**Fundamental distinction (doesn't exist in Python where everything is object):**
+- Primitives = values directly in memory (fast, efficient)
+- References = pointers to objects on heap
+
+**Why this matters:** Crucial for understanding parameter passing and equality comparison
+
+→ **Transition:** Here are the eight primitive types...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Primitive Types
+
+<table style={{margin: '0 auto', fontSize: '0.85em'}}>
+  <thead>
+    <tr><th>Type</th><th>Size</th><th>Values</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>byte</code></td><td>1 byte</td><td>-128 to 127</td></tr>
+    <tr><td><code>short</code></td><td>2 bytes</td><td>-32,768 to 32,767</td></tr>
+    <tr><td><code>char</code></td><td>2 bytes</td><td>Unicode character</td></tr>
+    <tr><td><code>int</code></td><td>4 bytes</td><td>±2 billion</td></tr>
+    <tr><td><code>long</code></td><td>8 bytes</td><td>±9 quintillion</td></tr>
+    <tr><td><code>float</code></td><td>4 bytes</td><td>~7 decimal digits</td></tr>
+    <tr><td><code>double</code></td><td>8 bytes</td><td>~15 decimal digits</td></tr>
+    <tr><td><code>boolean</code></td><td>1 byte</td><td><code>true</code> / <code>false</code></td></tr>
+  </tbody>
+</table>
+
+<aside class="notes">
+**Eight primitive types:**
+- Integers: byte(1), short(2), int(4), long(8) bytes
+- Floating-point: float(4, ~7 digits), double(8, ~15 digits)
+- Character: char(2 bytes, Unicode)
+- Boolean: true/false
+
+**Most common:** int, double, boolean
+
+**Size determines:** Value range AND memory used (matters at scale)
+
+→ **Transition:** Important warning for Python programmers...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## ⚠️ Java Integers Have Fixed Sizes and Can Overflow
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Unlike Python:</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Python integers grow arbitrarily</li>
+      <li>Java integers <strong>wrap around</strong> silently!</li>
+      <li>`int` max ≈ 2 billion ($2^{31}$)</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Why it matters at scale:</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>`byte` (1B) × 8 billion = 8 GB</li>
+      <li>`long` (8B) × 8 billion = 64 GB</li>
+      <li>numpy/pandas use fixed-size types</li>
+    </ul>
+  </div>
+</div>
+
+<aside class="notes">
+**⚠️ Major warning for Python programmers:**
+- Python integers grow to any size automatically
+- Java integers WRAP AROUND silently at limits!
+- Example: Integer.MAX_VALUE + 1 = large NEGATIVE number
+
+**Quick math:** 4 bytes = 32 bits ≈ 4 billion values; 8 bytes ≈ 18 quintillion
+
+**Why type size matters:** Storing ages for 8 billion people: byte = 8GB, long = 64GB. When scale matters, type size matters.
+
+→ **Transition:** Reference types work differently...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Reference Variables Store Pointers, Not Values
+
+- **Objects** (anything extending `Object`)
+- **Arrays** (e.g., `int[]`, `String[]`)
+- Can be `null` (no object)
+
+<p style={{marginTop: '1em', fontSize: '0.95em'}}>
+  Variables store a <strong>pointer</strong> to memory
+</p>
+
+<aside class="notes">
+**Reference types = everything else (objects, arrays)**
+
+**Key concept:** Variable stores POINTER to object, not object itself
+- Multiple variables can point to same object
+- Can be `null` (points to nothing → NullPointerException source!)
+
+**Implication:** Pass reference to method = pass pointer → method can modify object
+
+→ **Transition:** This leads to a critical gotcha...
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## == Compares References, Not Values
+
+```java
+String a = new String("hello");
+String b = new String("hello");
+System.out.println(a == b);  // false!
+```
+<p style={{marginTop: '1em', fontSize: '0.95em'}}>
+  <code>==</code> compares <strong>references</strong> (memory addresses)
+</p>
+<p style={{fontSize: '0.95em'}}>
+  Not <strong>values</strong> like in Python
+</p>
+<p style={{marginTop: '0.5em', fontSize: '0.9em', color: '#060'}}>
+  Use <code>.equals()</code> for value comparison
+</p>
+
+<aside class="notes">
+**⚠️ Critical gotcha for Python programmers!**
+- `==` on references compares MEMORY ADDRESSES, not values
+- Two String objects with "hello" are NOT == (different objects)
+
+**Solution:** Use `.equals()` for value comparison
+
+**One of most common Java bugs:** Using == when you meant .equals(). Compiler won't catch it!
+
+**Rule:** Always use .equals() for objects (unless you want identity comparison)
+
+→ **Transition:** Arrays also differ from Python lists...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Java Arrays Are Fixed-Size and Single-Type
+
+<table style={{margin: '0 auto', fontSize: '0.9em'}}>
+  <thead>
+    <tr>
+      <th style={{padding: '0.5em'}}>Java Array</th>
+      <th style={{padding: '0.5em'}}>Python List</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{padding: '0.5em'}}>Fixed size</td>
+      <td style={{padding: '0.5em'}}>Dynamic size</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.5em'}}>Single type</td>
+      <td style={{padding: '0.5em'}}>Mixed types</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.5em'}}>Contiguous memory</td>
+      <td style={{padding: '0.5em'}}>Pointers to objects</td>
+    </tr>
+  </tbody>
+</table>
+
+<aside class="notes">
+**Java arrays ≠ Python lists:**
+- Java: Fixed size, single type, contiguous memory
+- Python: Dynamic size, mixed types, pointers scattered in memory
+
+**Java's constraints enable:** Fast access via contiguous memory
+
+**For dynamic behavior:** Use ArrayList (wraps array, handles resizing)—collections covered later
+
+→ **Transition:** Let's wrap up with key takeaways...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* WRAP UP */}
+{/* ============================================ */}
+
+<Slide>
+
+## Summary
+
+- Course: principles-based, large-scale design
+- Java: "write once, run anywhere" with JIT performance
+- Static typing is winning the industry debate
+- Primitives vs references: understand the difference!
+
+<aside class="notes">
+**Key takeaways:**
+- Course = principles over syntax, software design at scale
+- Java = "write once, run anywhere" with JIT performance
+- Industry trending toward static typing—Java prepares you
+- Primitives vs references = essential to understand
+
+**These foundations set us up for deeper topics ahead.**
+
+→ **Transition:** Here's what you need to do this week...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Lab 1: Java Tooling & Setup
+
+<p style={{fontSize: '1.1em', color: '#9370DB'}}>
+  <strong>Complete this week!</strong>
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.9em'}}>
+  <div>
+    <h3 style={{marginTop: 0}}>Setup Tasks</h3>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Install <strong>Java 21</strong> (Temurin)</li>
+      <li>Configure VS Code with extensions</li>
+      <li>Clone from GitHub with SAML auth</li>
+      <li>Build your first Gradle project</li>
+    </ul>
+  </div>
+  <div>
+    <h3 style={{marginTop: 0}}>Learning Tasks</h3>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Fix static analysis warnings</li>
+      <li>Debug a failing test</li>
+      <li>Implement a method</li>
+      <li>Write your own test</li>
+    </ul>
+  </div>
+</div>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#c00'}}>
+  ⚠️ Use Java 21, not Java 25! (Gradle compatibility)
+</p>
+
+<aside class="notes">
+**Lab 1 is CRITICAL—complete this week!**
+
+**Setup:**
+- Install JDK (Java 21, NOT 25—Gradle compatibility!)
+- VS Code with Java extensions
+- Clone from GitHub (SAML auth with NEU account)
+- Build with Gradle
+
+**Practice:** Fix static analysis, debug test, implement method, write test
+
+**⚠️ If problems:** Office hours IMMEDIATELY. Don't wait until A1 due!
+
+→ **Transition:** Speaking of Assignment 1...
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## Assignment 1: Recipe Domain Model
+
+<p style={{fontSize: '1.2em', color: '#c00'}}>
+  <strong>Due: Thursday, January 15 at 11:59 PM</strong>
+</p>
+
+<div style={{marginTop: '1em', fontSize: '0.9em'}}>
+  <p>Implement the foundation of CookYourBooks:</p>
+  <ul style={{marginTop: '0.3em'}}>
+    <li>Two class hierarchies: <code>Quantity</code> and <code>Ingredient</code></li>
+    <li>Enums for <code>Unit</code>, <code>UnitSystem</code>, <code>UnitDimension</code></li>
+    <li>Comprehensive JUnit 5 test suite</li>
+    <li>Javadoc documentation</li>
+  </ul>
+</div>
+
+<p style={{marginTop: '1em', fontSize: '0.95em', color: '#9370DB'}}>
+  <strong>No AI assistance</strong> — demonstrate your Java fundamentals
+</p>
+<p style={{fontSize: '0.85em', color: '#666'}}>
+  Start early! Estimated ~20 hours of work.
+</p>
+
+<aside class="notes">
+**Assignment 1 = CookYourBooks foundation:**
+- Domain model classes for quantities + ingredients
+- JUnit tests + Javadoc documentation
+
+**⚠️ NO AI assistance:** We need to assess your Java fundamentals
+
+**20-hour estimate is realistic:**
+- START EARLY!
+- Students who start night before WILL NOT finish
+- Read spec carefully, office hours for questions
+
+→ **Transition:** Final summary of next steps...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Next Steps
+
+- Optional follow-up reading: [A Short History of Java (Horstmann)](https://learning.oreilly.com/library/view/core-java-volume/9780135328385/v1/ch1/index.xhtml#ch01lev1sec4)
+- Complete the lecture 1 Java flashcards
+- **Lab 1:** Java setup and first program, ASAP
+- **Assignment 1:** Recipe Domain Model (due Jan 15)
+- Review [Lecture 2 notes](/lecture-notes/l2-java-new)
+
+
+<aside class="notes">
+**Closing actions:**
+- Optional: Horstmann reading for more Java history
+- Complete flashcards (build syntax fluency we won't cover in lecture)
+- Lab 1 ASAP (need working environment for A1)
+- Read Lecture 2 notes before next class
+
+**Ask:** Any questions before we wrap up?
+
+**End of Lecture 1** (~55 minutes)
+</aside>
+
+</Slide>
+
+</RevealJS>
