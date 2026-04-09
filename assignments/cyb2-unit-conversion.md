@@ -145,6 +145,7 @@ Your implementation must support three types of recipe transformations (defined 
      - Converting the ingredient's current quantity (2 cups) to the target unit (grams) using a density conversion rule: 2 cups × 125 g/cup = 250g
      - Calculating the scale factor: 500g / 250g = 2.0
      - Scaling the entire recipe by that factor
+     
    Some additional requirements follow:
      - Notice the target ingredient ends up in the target unit (grams in the example above). Other ingredients that can be converted to the target unit should also be converted to the target unit as well.
        Continuing the example, if the recipe has "1 cup white sugar", then it must also be converted to "250g white sugar" when scaling the recipe to "500g flour".
@@ -223,7 +224,7 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
   - Review the required transformation types
   - Decide where will your transformation methods go and what their method signatures will be.
   - Consider what helper methods you might need to implement those transformation methods.
-4. Implement and test the scaling transformations in `Multiplier`. You will need to add or enhance the tests in `RecipeTest.java` related to scaling behavior.
+4. Implement and test the scaling transformations by multiplier. You will need to add or enhance the tests in `RecipeTest.java` related to scaling behavior.
 5. Implement and test conversion with `LayeredConversionRegistry`.
   - We suggest starting with building the collection of rules first, then work on the `convert()` methods. Keep in mind the priority ordering mentioned in [Unit Conversion](#unit-conversion)
   - Use the `ConversionRegistry` interface when testing your implementation. Make sure your tests cover the specification requirements for conversions from [Unit Conversion](#unit-conversion) We have you some to start but you **must** write your own.
