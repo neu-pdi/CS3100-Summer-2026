@@ -5,6 +5,8 @@ interface ImgProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
   /** The LLM prompt used to generate this image (stored as data-prompt) */
   prompt?: string;
+  /** When true, use block display and horizontal auto margins to center the image */
+  center?: boolean;
 }
 
 /**
@@ -15,12 +17,29 @@ interface ImgProps extends React.ImgHTMLAttributes<HTMLImageElement> {
  * Accepts an optional `prompt` attribute for AI-generated images,
  * which stores the generation prompt as a data attribute.
  */
-export default function Img({ src, prompt, ...props }: ImgProps) {
+export default function Img({
+  src,
+  prompt,
+  style,
+  center = false,
+  ...props
+}: ImgProps) {
   // If src starts with /, it's an absolute path from static folder
   // useBaseUrl will prepend the baseUrl automatically
   const imageSrc = src.startsWith('/') ? useBaseUrl(src) : src;
-  
-  return <img src={imageSrc} data-prompt={prompt} {...props} />;
+
+  return (
+    <img
+      src={imageSrc}
+      data-prompt={prompt}
+      style={{
+        objectFit: 'contain',
+        ...(center ? { display: 'block', margin: '0 auto' } : {}),
+        ...style,
+      }}
+      {...props}
+    />
+  );
 }
 
 

@@ -572,7 +572,7 @@ Instructions:
 cyb> search chicken
 ```
 
-Finds all recipes containing the specified ingredient (case-insensitive substring matching). Search operates on the `RecipeRepository` only — it does not separately iterate `RecipeCollectionRepository`. Displays matching recipe titles with their collection membership. Your service layer should provide this search capability.
+Finds all recipes containing the specified ingredient (case-insensitive substring matching). Displays matching recipe titles with their collection membership. Your service layer should provide this search capability.
 
 **Example output:**
 ```text
@@ -1353,7 +1353,7 @@ See [Reflection](#reflection) for the 6 questions. Answers should demonstrate ge
 
 ## Submission
 
-Submit via Gradescope. The autograder will run the provided test suite against your CLI.
+Submit via Pawtograder. 
 
 **Required submission structure:**
 
