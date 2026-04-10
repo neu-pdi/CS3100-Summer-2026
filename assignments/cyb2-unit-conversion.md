@@ -224,19 +224,21 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
   - Review the required transformation types
   - Decide where will your transformation methods go and what their method signatures will be.
   - Consider what helper methods you might need to implement those transformation methods.
-4. Implement and test the scaling transformations by multiplier. You will need to add or enhance the tests in `RecipeTest.java` related to scaling behavior.
+  - Now go ahead and implement `convert()` in `ConversionRule` with your design in mind.
+4. Implement `scale` in `Recipe` and test the method. You will need to add or enhance the tests in `RecipeTest.java` related to scaling behavior.
 5. Implement and test conversion with `LayeredConversionRegistry`.
   - We suggest starting with building the collection of rules first, then work on the `convert()` methods. Keep in mind the priority ordering mentioned in [Unit Conversion](#unit-conversion)
   - Use the `ConversionRegistry` interface when testing your implementation. Make sure your tests cover the specification requirements for conversions from [Unit Conversion](#unit-conversion) We have you some to start but you **must** write your own.
   - Run your tests with `./gradlew test --tests ConversionRegistryTest`. 
-6. Implement scaling an ingredient to a specific target and amount.
+6. Implement `scaleToTarget` in `Recipe` and test the method.
   - As a rule of thumb, return to the example of conversion from [Recipe Transformations](#recipe-transformations) subsection for a regular case. Then consider the exceptional cases, like ingredients appearing multiple times.
   - Add or enhance the tests in `RecipeTest.java` to check correctness locally. Again, we always test as we go.
   - **Hint:** You will find your `ConversionRegistry` very useful to actually convert the units. If you depend on the `ConversionRegistry` to do its job, what is left for you to handle?
-7. Finally, implement the conversion for the entire recipe. This means all `MeasuredIngredient` quantities are converted to whatever target unit is provided. If any conversion fails, you **must** throw the `UnsupportedConversionException`.
+7. Finally, implement `convert` in `Recipe` and test the method. This means all `MeasuredIngredient` quantities are converted to whatever target unit is provided. If any conversion fails, you **must** throw the `UnsupportedConversionException`.
   - Reminder that recipe-specific conversion rules should be at `RECIPE` priority.
   - Make use of `ConversionRegistry.convert()` to handle actual conversions for you.
   - Enhance the tests in `RecipeTest.java` to test the expected recipe unit conversion behavior.
+  
 ## Design and Implementation Hints
 
 The `Recipe` class defines transformation methods (`scale()`, `scaleToTarget()`, `convert()`) that you must implement. As you implement these methods and the supporting classes, keep the questions in the [Reflection](#reflection) open and address them in your design.
