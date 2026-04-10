@@ -7,7 +7,7 @@ import path from 'path';
 import fs from 'fs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-const baseUrl = process.env.BASE_URL || '/cs3100-public-resources/';
+const baseUrl = process.env.BASE_URL || '/cs3100-summer-public-resources/';
 const courseConfigPath = path.resolve(__dirname, 'course.config.json');
 type CourseConfigLite = { lectures?: { lectureId: string }[] };
 
@@ -45,8 +45,8 @@ const config: Config = {
   baseUrl: baseUrl,
 
   // GitHub pages deployment config.
-  organizationName: 'neu-pdi', // Usually your GitHub org/user name.
-  projectName: 'cs3100-public-resources', // Usually your repo name.
+  organizationName: 'dnunez02', // Usually your GitHub org/user name.
+  projectName: 'cs3100-summer-public-resources', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
