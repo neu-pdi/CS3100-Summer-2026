@@ -8,7 +8,7 @@ import fs from 'fs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 // LUCIA: The other baseURL needs to be the repo name as that is how it will be deployed on neu-pdi
-const baseUrl = process.env.BASE_URL || '/';
+const baseUrl = process.env.BASE_URL || 'cs3100-summer-public-resources/';
 const courseConfigPath = path.resolve(__dirname, 'course.config.json');
 type CourseConfigLite = { lectures?: { lectureId: string }[] };
 
