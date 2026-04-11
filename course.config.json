@@ -774,6 +774,25 @@
       ],
       "topics": [
         "Safety and Reliability"
+      ],
+      "sections": [
+        "03"
+      ]
+    },
+    {
+      "lectureId": "l35-java-puzzlers",
+      "dates": [
+        "2026-04-08"
+      ],
+      "topics": [
+        "Java Puzzlers"
+      ],
+      "sections": [
+        "01",
+        "02",
+        "04",
+        "05",
+        "06"
       ]
     },
     {
@@ -783,6 +802,25 @@
       ],
       "topics": [
         "Sustainability"
+      ],
+      "sections": [
+        "03",
+        "04",
+        "05",
+        "06"
+      ]
+    },
+    {
+      "lectureId": "l36-kotlin",
+      "dates": [
+        "2026-04-09"
+      ],
+      "topics": [
+        "Kotlin: A Better Java"
+      ],
+      "sections": [
+        "01",
+        "02"
       ]
     },
     {
