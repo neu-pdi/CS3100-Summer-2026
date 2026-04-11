@@ -7,7 +7,7 @@ import path from 'path';
 import fs from 'fs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-const baseUrl = process.env.BASE_URL || '/cs3100-summer-public-resources/';
+const baseUrl = process.env.BASE_URL || '/';
 const courseConfigPath = path.resolve(__dirname, 'course.config.json');
 type CourseConfigLite = { lectures?: { lectureId: string }[] };
 
