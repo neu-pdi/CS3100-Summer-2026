@@ -7,6 +7,7 @@ import path from 'path';
 import fs from 'fs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+// LUCIA: The other baseURL needs to be the repo name as that is how it will be deployed on neu-pdi
 const baseUrl = process.env.BASE_URL || '/';
 const courseConfigPath = path.resolve(__dirname, 'course.config.json');
 type CourseConfigLite = { lectures?: { lectureId: string }[] };
@@ -39,12 +40,14 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
+  // LUCIA: The url needs to be changed to the organization neu-pdi.github.io to allow for proper deployment
   url: 'https://dnunez02.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: baseUrl,
 
   // GitHub pages deployment config.
+  // LUCIA: The organization and project name need to match where this is deployed!
   organizationName: 'dnunez02', // Usually your GitHub org/user name.
   projectName: 'cs3100-summer-public-resources', // Usually your repo name.
 
