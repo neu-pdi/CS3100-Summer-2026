@@ -4,7 +4,7 @@ lecture_number: 34
 title: Performance
 ---
 
-Throughout this course, we've touched on performance in passing — ArrayList vs LinkedList in [L3](/lecture-notes/l3-more-java), network latency in [L20](/lecture-notes/l20-networks), thread overhead in [L31](/lecture-notes/l31-concurrency1), the I/O scaled-time table in [L32](/lecture-notes/l32-concurrency2), rate limiting in [L33](/lecture-notes/l33-event-architecture). Today we bring those threads together into a coherent approach to performance engineering.
+Throughout this course, we've touched on performance in passing — ArrayList vs LinkedList in [L3](/lecture-notes/l3-more-java-new), network latency in [L20](/lecture-notes/l20-networks), thread overhead in [L31](/lecture-notes/l31-concurrency1), the I/O scaled-time table in [L32](/lecture-notes/l32-concurrency2), rate limiting in [L33](/lecture-notes/l33-event-architecture). Today we bring those threads together into a coherent approach to performance engineering.
 
 The core principle: **measure, don't guess.** Developers have notoriously bad intuitions about where their code spends time. The scientific method from [L14 (Debugging)](/lecture-notes/l14-program-understanding) applies here too — form a hypothesis about the bottleneck, measure to test it, and iterate. The worst performance bugs come from optimizing the wrong thing.
 
@@ -132,7 +132,7 @@ Every piece of data your program uses lives somewhere in a hierarchy of storage,
 You've seen this table before — in [L32](/lecture-notes/l32-concurrency2) we used it to motivate async programming. Here the lesson is different: **architectural decisions determine where data lives, and that determines performance.**
 
 :::note Recall
-In [L3](/lecture-notes/l3-more-java), we said "use ArrayList by default" but deferred the explanation. Now we can see why: `ArrayList` stores elements contiguously in memory. When you iterate, the CPU loads a cache line (64 bytes) and gets multiple elements for free. `LinkedList` scatters nodes across the heap — every `next` pointer follows a random memory address, causing cache misses. The algorithmic complexity is the same (O(n) iteration), but the constant factor differs by 10-100x because of cache behavior.
+In [L3](/lecture-notes/l3-more-java-new), we said "use ArrayList by default" but deferred the explanation. Now we can see why: `ArrayList` stores elements contiguously in memory. When you iterate, the CPU loads a cache line (64 bytes) and gets multiple elements for free. `LinkedList` scatters nodes across the heap — every `next` pointer follows a random memory address, causing cache misses. The algorithmic complexity is the same (O(n) iteration), but the constant factor differs by 10-100x because of cache behavior.
 :::
 
 ### Latency Budgets: Where Does Time Go?
