@@ -52,7 +52,7 @@ STYLE: Retro pixel art, Hollywood golds and dramatic reds, studio lighting." />
 - We're about to scale up to larger codebases
 - As systems grow, testing becomes harder—dependencies multiply
 - This lecture gives you tools to keep tests fast, focused, and reliable
-- Like AI lecture (AI coding assistants): **tools change, responsibility doesn’t**
+- Like L13 (AI coding assistants): **tools change, responsibility doesn’t**
 - If you can’t evaluate a test (or a mock), you can’t trust it—AI or not
 
 **Structure:**
@@ -527,7 +527,7 @@ did I MISS testing).
 - Boundary testing: barely legal / barely illegal inputs (4 digits vs 5 digits vs 6 digits,
   non-numeric strings, leading zeros)
 
-**AI connection (AI lecture):**
+**AI connection (L13):**
 
 - AI is good at enumerating plausible equivalence classes and boundary cases quickly
 - But the **Evaluate** step is on you: are these classes actually relevant to the spec? are expected
@@ -593,6 +593,9 @@ void shouldConvert2CupsTo32Tablespoons() {
 
 <p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Write the test logic once; run it with many inputs.</p>
 
+<p style={{ fontSize: '0.85em', color: '#666' }}>
+  From the HW3 handout — test the same behavior with different data
+</p>
 
 ```java
 static Stream<Arguments> toStringTestCases() {
@@ -727,7 +730,7 @@ we're focusing on fundamentals.
 <p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Passing tests + high coverage ≠ tests that detect bugs.</p>
 
 <p style={{ fontSize: '0.95em' }}>
-  The failure mode looks just like “vibe coding” (AI lecture), but for tests:
+  The failure mode looks just like “vibe coding” (L13), but for tests:
 </p>
 
 <ol style={{ fontSize: '0.85em' }}>
@@ -745,7 +748,7 @@ we're focusing on fundamentals.
 </div>
 
 <aside class='notes'>
-  **AI lecture connection:** evaluating “it runs” is not enough.\n \n **Testing equivalent:** evaluating
+  **L13 connection:** evaluating “it runs” is not enough.\n \n **Testing equivalent:** evaluating
   “tests pass” / “coverage is high” is not enough.\n \n **How we catch this in CS3100:** mutation
   testing. If a bug can be introduced and your tests still pass, your tests aren’t doing their
   job.\n \n → **Transition:** So what does a strong test actually assert?\n
@@ -791,7 +794,7 @@ we're focusing on fundamentals.
 <aside class='notes'>
   **Module 11 takeaway:** oracle strength is often the difference between “high coverage” and “finds
   bugs.”\n \n **AI implication:** AI is great at generating *tests*, but it will often default to
-  weak oracles unless you specify what correctness means.\n \n **AI lecture principle:** if you can’t
+  weak oracles unless you specify what correctness means.\n \n **L13 principle:** if you can’t
   explain the oracle, you can’t evaluate the test.\n \n → **Transition:** Good inputs + strong
   oracles. Now let's see how different test types make different tradeoffs...
 </aside>
@@ -910,7 +913,7 @@ expected behavior from the test name and structure.
 
 <Slide>
 
-## Unit Test Example
+## Unit Test Example: From HW3 Handout
 
 <p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>If it fails, you know exactly where the bug is.</p>
 
@@ -993,7 +996,7 @@ void shouldFormatCorrectly(int stepNumber, String text, String expected) {
 
 <Slide>
 
-## Integration Test Example
+## Integration Test Example: From HW3 Handout
 
 <p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Round-trip tests catch serialization and format issues.</p>
 
@@ -1741,7 +1744,7 @@ public void savesGradeWhenAllTestsPass() {
 </ol>
 
 <aside class='notes'>
-  **AI lecture workflow applied to Mockito:** Identify → Engage → Evaluate → Calibrate → Tweak →
+  **L13 workflow applied to Mockito:** Identify → Engage → Evaluate → Calibrate → Tweak →
   Finalize.\n \n **A good prompt is a spec:**\n - “Here is the method under test.”\n - “Here are the
   side effects I expect (save grade only on pass).”\n - “Here are the interactions that should *not*
   happen.”\n \n **Common AI failure modes in mocks:**\n - Overuse of `any()` leading to weak
@@ -1921,7 +1924,7 @@ rate-limit you.
 - Real GitHub takes 2 seconds and sometimes fails
 - Does your code handle that?
 
-**AI makes this easier to fall into (AI lecture):**
+**AI makes this easier to fall into (L13):**
 
 - AI can generate a very convincing mock setup in seconds
 - But AI is predicting what mocks _usually_ look like — not what your real dependency _actually_
@@ -2125,7 +2128,7 @@ instead.
 </ul>
 
 <p style={{ marginTop: '1em', fontSize: '0.85em', color: '#c60' }}>
-  Key rule (AI lecture): only ask AI to produce what you can evaluate.
+  Key rule (L13): only ask AI to produce what you can evaluate.
 </p>
 
 <aside class="notes">
@@ -2175,7 +2178,7 @@ tests.
 </div>
 
 <p style={{ marginTop: '1em', fontSize: '0.85em', color: '#666' }}>
-  If you can’t answer these, you’re in the “low familiarity” danger zone (AI lecture): you can’t evaluate
+  If you can’t answer these, you’re in the “low familiarity” danger zone (L13): you can’t evaluate
   the output.
 </p>
 
@@ -2236,7 +2239,7 @@ tests.
 - L5 Readability: Tests are documentation
 - L7-8 Design for change: DI enables testability
 - Mutation testing: Quality over coverage
-- AI lecture AI: evaluation is the step that never changes
+- L13 AI: evaluation is the step that never changes
 
 → **Transition:** What's next...
 

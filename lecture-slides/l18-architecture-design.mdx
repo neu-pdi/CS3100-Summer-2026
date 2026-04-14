@@ -23,8 +23,8 @@ import Img from '@site/src/components/Img';
 <aside className="notes">
 **Lecture overview:**
 - **Total time:** ~50 minutes
-- **Prerequisites:** (creation patterns, DI, service wiring), (testability), (information hiding, coupling)
-- **Connects to:** (Architectural Qualities), (Networks & Security), (Sustainability)
+- **Prerequisites:** L17 (creation patterns, DI, service wiring), L16 (testability), L6-L7 (information hiding, coupling)
+- **Connects to:** L19 (Architectural Qualities), L20 (Networks & Security), L36 (Sustainability)
 
 **Structure:**
 - Architecture vs. Design (~8 min)
@@ -56,7 +56,7 @@ import Img from '@site/src/components/Img';
 
 <aside className="notes">
 **Context:**
-- Previous ended with creation patterns and DI — how do we wire services together?
+- L17 ended with creation patterns and DI — how do we wire services together?
 - Today: how do we decide what those services should BE?
 - Running example: Pawtograder's autograder — the system they use every day
 
@@ -94,6 +94,9 @@ After this lecture, you will be able to:
 - Objective 3: Finding Boundaries (~20 min)
 - Objective 4-5: C4 + ADRs (~12 min)
 
+**Connection to L17:**
+- L17: How do we wire objects into services? (creation patterns, DI)
+- L18: How do we decide what those services should BE?
 
 → **Transition:** Let's start by defining what we mean by "architecture"...
 </aside>
@@ -156,7 +159,7 @@ A useful heuristic: architectural decisions are the ones that are <strong>expens
 - **Gray area:** How to structure the `pawtograder.yml` config format
 
 **Don't worry about unfamiliar terms!**
-- We'll cover networks, authentication, deployment
+- We'll cover networks, authentication, deployment in L20-L21
 - Today: the *thinking process* — how do we identify which decisions matter most?
 
 → **Transition:** Let's see what this means for a system you already know...
@@ -805,6 +808,43 @@ npx tsimp src/grading/main.ts -s /path/to/solution -u /path/to/submission
 </Slide>
 
 {/* ============================================ */}
+{/* POLL BREAK */}
+{/* ============================================ */}
+
+<Slide>
+
+## Quick Poll: Applying the Heuristics
+
+<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '2em'}}>
+📊 <strong>pollev.com/jbell</strong>
+</p>
+
+<p style={{fontSize: '0.9em', textAlign: 'center', marginTop: '1em', color: '#666'}}>
+Take a moment to reflect on what you've learned and predict what comes next.
+</p>
+
+<aside className="notes">
+**Open Poll Everywhere and run the survey (~3-4 min)**
+
+**Questions:**
+1. **Word Cloud:** "In one word: What makes code HARD to change?"
+2. **Reflection:** "Think about your most frustrating debugging experience. Which boundary problem was likely involved?"
+   - Couldn't test the broken part in isolation
+   - Couldn't tell which component was responsible
+   - A change in one place broke something far away
+   - Had to understand the whole system to fix one thing
+3. **Opinion:** "What's your instinct when requirements are unclear: build flexibility or keep it simple?"
+4. **Prediction:** "Based on the four heuristics, how many distinct components should Pawtograder have?"
+   - 2 / 3 / 4 / 5+
+
+**After the prediction question:** "Let's see if your intuition matches what the heuristics reveal..."
+
+→ **Transition:** Now let's see how these heuristics converge on a structure...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
 {/* ARC 3 CONTINUED: EMERGING ARCHITECTURE */}
 {/* ============================================ */}
 
@@ -903,7 +943,7 @@ graph TD
 - Pawtograder: action NEVER touches database — only two API endpoints
 - This is information hiding at the data layer
 
-**Pattern connection:**
+**Pattern connection (L17):**
 - Bottlenose's `Grader.find_by_type()` is Service Locator at architecture scale
 - Pawtograder's `Builder` interface is Dependency Injection — explicit, testable
 
@@ -961,10 +1001,11 @@ Coupling makes itself felt at test time: isolated testing isn't impossible in Bo
 - Pawtograder's narrow API boundary means: no DB dependency → easy local testing
 - Bottlenose's shared database means: you *can* test a Grader with canned output, but you're fighting ActiveRecord inheritance, job dispatch coupling, etc.
 
-**Connection to (Service Locator vs DI):**
+**Connection to L17 (Service Locator vs DI):**
 - Bottlenose's Service Locator approach means: grader code implicitly depends on the platform's registry
 - Testing a `JavaGrader` in isolation requires mocking the lookup mechanism, the ActiveRecord base class, etc.
 - Pawtograder's DI approach means: `GradleBuilder` depends only on what's in its constructor—easy to test by passing mocks
+- This is exactly L17's point: "DI makes dependencies explicit... Service Locator hides them"
 
 **Neither is wrong — different tradeoffs:**
 - Bottlenose's shared DB simplified the architecture (components just read/write the same tables)
@@ -1097,7 +1138,7 @@ The green path (normalize early) avoids this:
 ## Interface Design at the Service Level
 
 <p style={{fontSize: '0.85em'}}>
-Once we've identified components, we need to design their interfaces. The same principles from class design apply.
+Once we've identified components, we need to design their interfaces. The same principles from class design apply—and so do the same patterns from L17.
 </p>
 
 <div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
@@ -1141,8 +1182,8 @@ public interface Builder {
 </div>
 
 <aside className="notes">
-**Connection to creation patterns:**
-- We passed a `ConversionRegistry` to `Recipe.convert()`. At the service level, the same principle applies—but now we're injecting entire collaborating services.
+**Connection to L17:**
+- In L17, we passed a `ConversionRegistry` to `Recipe.convert()`. At the service level, the same principle applies—but now we're injecting entire collaborating services.
 - The `GradingAction` depends on `SubmissionAPI` and `FeedbackAPI` abstractions, not concrete implementations.
 - For testing, we can inject mock implementations that don't require a real API.
 
@@ -1715,5 +1756,37 @@ Decide what's **hard to reverse**; defer what's **easy to change**; design the s
 {/* LOOKING FORWARD */}
 {/* ============================================ */}
 
+<Slide>
+
+## Looking Forward: Where These Ideas Go Next
+
+<div style={{fontSize: '0.72em'}}>
+
+| Concept from Today | Where It Goes |
+|-------------------|---------------|
+| **Quality Attributes** (testability, changeability...) | **L19:** Deep dive into architectural qualities — hexagonal architecture applied to CookYourBooks, tradeoffs between -ilities |
+| **Component Boundaries & APIs** | **L20-21:** What happens when boundaries cross networks? Distributed architecture, fallacies of distributed computing, serverless |
+| **Data Coupling Decisions** | **L20-21:** Distributed data is even harder — consistency, latency, the CAP theorem |
+| **Architecture Communication** (C4, ADRs) | **L22:** Conway's Law — how team structure affects (and is affected by) architecture |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+The vocabulary you learned today — drivers, boundaries, coupling, expensive decisions — will be your lens for the rest of the course.
+</p>
+
+<aside className="notes">
+**The arc ahead:**
+- **L19 (Architectural Qualities):** We'll apply hexagonal architecture to CookYourBooks, seeing how ports and adapters create testable, changeable systems. Deep dive into how architectural choices affect the -ilities.
+- **L20 (Networks):** When your components communicate over a network, everything gets harder. The Fallacies of Distributed Computing. Client-server architecture.
+- **L21 (Serverless):** Infrastructure building blocks — databases, blob storage, queues. Serverless as an architectural style.
+- **L22 (Teams):** Conway's Law — "Organizations design systems that mirror their communication structure." Architecture isn't just technical; it's social.
+
+**The throughline:** Today's question was "what boundaries should we draw?" The next lectures ask "what happens at those boundaries?" — first within a process, then across networks, then across teams.
+
+**Final thought:** Next time Pawtograder grades your submission, think about the architecture making it happen. The narrow API boundary means the grading action can change independently. The data contracts (`AutograderFeedback`, `FeedbackComment`) cross that boundary cleanly. Every choice was made for a reason — and now you have vocabulary to discuss why.
+</aside>
+
+</Slide>
 
 </RevealJS>

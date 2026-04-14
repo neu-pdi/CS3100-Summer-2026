@@ -6,6 +6,7 @@ image: /img/lectures/web/l4.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -41,6 +42,7 @@ Retro pixel art with a cohesive color palette of teals, blues, and warm accents.
 **Lecture overview:**
 - **Total time:** ~50 minutes
 - **Prerequisites:** Students understand Java basics, inheritance, interfaces from L1-L3
+- **Connects to:** Assignment 1 (writing well-specified methods), Lab 3 (code readability)
 
 **Structure:**
 - Why specifications matter (psychology + modularity) (~10 min)
@@ -270,7 +272,7 @@ boolean contains(Object o);
 ## You Spend 10x More Time Reading Code Than Writing It
 
 <p style={{fontSize: '0.9em'}}>
-  Consider understanding this call:
+  Consider understanding this call from L3:
 </p>
 
 ```java
@@ -1629,6 +1631,7 @@ DimmableLight(color=2700K,
 ## Good toString Saves Hours of Debugging
 
 ```java
+// From the IoT device hierarchy in L3
 @Override
 public String toString() {
     return "DimmableLight(id=" + id + ", " +
@@ -1668,6 +1671,62 @@ public String toString() {
 
 → **Transition:** Now let's look at equals—it's more complex and more critical...
 </aside>
+
+</Slide>
+
+{/* Begin discussion of equals() */}
+<Slide>
+
+## What does this print (==)?
+
+<PollSlide
+  code={`
+    public class DimmableLight {
+        private String id;
+        private int brightness;
+
+        public DimmableLight(String id, int brightness) {
+            this.id = id;
+            this.brightness = brightness;
+        }
+
+        public static void main(String[] args) {
+            DimmableLight light1 = new DimmableLight("living-room", 100);
+            DimmableLight light2 = new DimmableLight("living-room", 100);
+            System.out.println(light1 == light2);
+        }
+    }
+  `}
+  choices={["true", "false", "I have no idea"]}
+/>
+
+</Slide>
+
+
+<Slide>
+
+## What does this print (equals()) ?
+
+<PollSlide
+  code={`
+    public class DimmableLight {
+        private String id;
+        private int brightness;
+
+        public DimmableLight(String id, int brightness) {
+            this.id = id;
+            this.brightness = brightness;
+        }
+
+        public static void main(String[] args) {
+            DimmableLight light1 = new DimmableLight("living-room", 100);
+            DimmableLight light2 = new DimmableLight("living-room", 100);
+            System.out.println(light1.equals(light2));
+        }
+    }
+  `}
+  choices={["true", "false", "I have no idea"]}
+/>
 
 </Slide>
 
@@ -2114,7 +2173,12 @@ public class DimmableLight implements Comparable<DimmableLight> {
 
 <Slide>
 
-## Further Reading
+## Next Steps
+
+<ul style={{fontSize: '0.95em'}}>
+  <li>Assignment 1 due Thursday, January 15 at 11:59 PM</li>
+  <li>Complete flashcard set 4 (Specifications & Contracts)</li>
+</ul>
 
 <p style={{marginTop: '1.5em', fontSize: '0.9em'}}><strong>Optional readings:</strong></p>
 
@@ -2124,11 +2188,20 @@ public class DimmableLight implements Comparable<DimmableLight> {
   <li><a href="https://jspecify.dev/docs/start-here/">JSpecify Documentation</a> (Nullness annotations standard)</li>
 </ul>
 
+<p style={{marginTop: '1.5em', fontSize: '0.9em'}}><strong>Next time:</strong> Functional Programming and Readability</p>
+
 <aside className="notes">
+Assignment 1 is due Thursday—make sure your methods have good Javadoc and that you override equals/hashCode correctly for your domain classes. The flashcards will help reinforce today's concepts.
+
 **Optional readings:**
 - Effective Java Items 10-14 go deeper on the Object method contracts—highly recommended if you want to understand the edge cases
 - Liskov & Guttag provides the theoretical foundation for specification design
 - JSpecify docs if you want to understand the nullness annotation ecosystem
+
+**Next lecture preview:**
+- We'll learn lambdas, records, and method references
+- Java was decades late to functional programming—Haskell had lambdas in 1990, Java got them in 2014
+- But better late than never! These tools let us write code where intent is visible, not buried in boilerplate
 
 Any questions before we wrap up?
 </aside>
@@ -2136,3 +2209,4 @@ Any questions before we wrap up?
 </Slide>
 
 </RevealJS>
+
