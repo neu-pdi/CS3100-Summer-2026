@@ -270,7 +270,7 @@ When a method has an argument, what gets passed is the contents of the memory lo
 
 When the argument is a primitive type (e.g. `int`) the contents of its memory location is the actual value of that argument. This is copied over to the corresponding local variable argument of the method. Due to this any changes made by the method to this local variable does not affect the value of the variable used as a parameter in the method call.
 
-When the argument is a reference type the contents of its memory location is the address of another memory location where the object is actually stored. This location is ciopied over to the corresponding local variable argument of the method. Due to this, if the method uses the local variable to change something about the object, the change is reflected in the variables used as a parameter in the method call (because both refer to the same object). But if the method re-assigns the local variable to another object, the variable used as a parameter in the method call remains unchanged (so the object it refers to is also unchanged). 
+When the argument is a reference type the contents of its memory location is the address of another memory location where the object is actually stored. This location is copied over to the corresponding local variable argument of the method. Due to this, if the method uses the local variable to change something about the object, the change is reflected in the variables used as a parameter in the method call (because both refer to the same object). But if the method re-assigns the local variable to another object, the variable used as a parameter in the method call remains unchanged (so the object it refers to is also unchanged). 
 
 Overall, much of the behavior of objects in Java can be understood by remembering the nature of a reference type. 
 
@@ -309,7 +309,7 @@ Integer r = 1;
 System.out.println(q == r); //This will print true
 ```
 
-This is a somewhat bizzare effect of the language design and evolution, and can be a source of confusion. [Prefer primitive types to wrapper types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch9.xhtml#lev61) - they are faster and more memory-efficient.
+This is a somewhat bizarre effect of the language design and evolution, and can be a source of confusion. [Prefer primitive types to wrapper types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch9.xhtml#lev61) - they are faster and more memory-efficient.
 
 
 # 4 I/O
