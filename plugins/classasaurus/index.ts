@@ -1,7 +1,7 @@
 import { LoadContext, Plugin } from "@docusaurus/types";
 import path from 'path';
 import fs from 'fs';
-import type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, CalendarEvent, CalendarType } from './types';
+import type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, CalendarEvent, CalendarType, LectureSummaryData } from './types';
 import { validateCourseConfig } from './config-validator';
 import { generateSchedule } from './schedule-generator';
 import { extractHeadings, formatDateDisplay } from './utils';
@@ -53,6 +53,59 @@ export default async function pluginClassasaurus(
         }
         
         return courseConfig;
+    }
+
+    function extractFrontmatterList(frontmatter: string, key: string): string[] {
+        const match = frontmatter.match(new RegExp(`^${key}:\s*\n((?:\s*-\s+.*\n?)*)`, 'm'));
+        if (!match) {
+            return [];
+        }
+
+        return match[1]
+            .split('\n')
+            .map((line) => line.replace(/^\s*-\s+/, '').trim())
+            .filter(Boolean);
+    }
+
+    function buildLectureSummaries(config: CourseConfig, siteDir: string): LectureSummaryData[] {
+        const lectureNotesDir = path.join(siteDir, 'lecture-notes');
+
+        if (!fs.existsSync(lectureNotesDir)) {
+            return [];
+        }
+
+        return config.lectures.flatMap((lecture) => {
+            const lectureId = lecture.lectureId;
+            const mdPath = path.join(lectureNotesDir, `${lectureId}.md`);
+            const mdxPath = path.join(lectureNotesDir, `${lectureId}.mdx`);
+            const filePath = fs.existsSync(mdPath) ? mdPath : (fs.existsSync(mdxPath) ? mdxPath : null);
+
+            if (!filePath) {
+                return [];
+            }
+
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const headings = extractHeadings(content);
+            const estimatedMinutes = headings.reduce((total, heading) => {
+                const match = heading.text.match(/\(([0-9]+) minutes\)/);
+                return total + (match ? parseInt(match[1], 10) : 0);
+            }, 0);
+
+            const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+            const frontmatter = frontmatterMatch ? frontmatterMatch[1] : '';
+            const titleMatch = frontmatter.match(/^title:\s*(.+)$/m);
+            const lectureNumberMatch = frontmatter.match(/^lecture_number:\s*([0-9]+)$/m);
+
+            return [{
+                id: lectureId,
+                title: titleMatch ? titleMatch[1].trim().replace(/^["']|["']$/g, '') : lectureId,
+                lectureNumber: lectureNumberMatch ? parseInt(lectureNumberMatch[1], 10) : undefined,
+                requiredPreparation: extractFrontmatterList(frontmatter, 'required_preparation'),
+                optionalPreparation: extractFrontmatterList(frontmatter, 'optional_preparation'),
+                headings,
+                estimatedMinutes,
+            }];
+        });
     }
     
     /**
@@ -460,6 +513,7 @@ sidebar: false
                 
                 // Generate schedule
                 const courseSchedule = generateSchedule(courseConfig);
+                courseSchedule.lectureSummaries = buildLectureSummaries(courseConfig, context.siteDir);
                 console.log(`📅 Generated schedule with ${courseSchedule.allEntries.length} total class meetings`);
                 
                 // Log section info
