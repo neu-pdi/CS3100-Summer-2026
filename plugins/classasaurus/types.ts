@@ -461,6 +461,16 @@ export interface CalendarEvent {
   calendar_type: CalendarType;
 }
 
+export interface LectureSummaryData {
+  id: string;
+  title: string;
+  lectureNumber?: number;
+  requiredPreparation: string[];
+  optionalPreparation: string[];
+  headings: Array<{ text: string; id: string }>;
+  estimatedMinutes: number;
+}
+
 /**
  * Complete schedule for a course
  */
@@ -492,5 +502,8 @@ export interface CourseSchedule {
   
   /** Calendar events fetched from ICS files at build time */
   calendarEvents?: CalendarEvent[];
+
+  /** Precomputed lecture summaries for configured lecture notes */
+  lectureSummaries?: LectureSummaryData[];
 }
 
