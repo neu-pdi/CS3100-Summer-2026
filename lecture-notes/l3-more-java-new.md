@@ -67,7 +67,7 @@ Note the syntax of `<ElementType>` in the interface declaration. This is called 
 ```java
 List<Light> lights = new ArrayList<Light>();
 lights.add(new TunableWhiteLight(2700));
-lights.add(new Fan()); // This will throw a compile-time error
+lights.add(new Fan()); // This will not compile
 ```
 
 Specifically the type of object at the time of declaring the variable (`List<Light>`) enforces that all the objects added to the list must be of `Light` type. This is why the second line now catches our mistake at compile-time. 
@@ -100,16 +100,7 @@ List<Light> list = new ArrayList<Light>();
 list.add(new TunableWhiteLight(2700));
 ```
 
-Because of how Java implements generics, the concept of generics does not exist when teh program is run. This means that the type information is not available at runtime, which can lead to some surprising behavior. For example, the following code will print `false`:
-
-```java
-List<Light> list = new ArrayList<Light>();
-System.out.println(list instanceof List<Light>);
-```
-
-This is because the type information is erased at runtime, when the `instanceof` operator actually executes. So the `list` variable is not of type `List<Light>`, but rather just `List`. This is frustrating.
-
-In the context fo this course, it is important to know that you should [favor generic types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch5.xhtml#lev29) and [favor generic methods](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch5.xhtml#lev30) when designing your own classes. 
+You should [favor generic types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch5.xhtml#lev29) and [favor generic methods](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch5.xhtml#lev30) when designing your own classes. 
 
 Please refer to [this tutorial](https://docs.oracle.com/javase/tutorial/java/generics/index.html) to learn more about use of generics.
 
@@ -237,10 +228,10 @@ The [`Map` interface](https://docs.oracle.com/en/java/javase/11/docs/api/java.ba
 
 Java supports 8 basic types, each of which represent a singular piece of data:
 
-    * Boolean values: `boolean`
-    * Whole numbers: `byte`, `short`, `int`, `long`
-    * Floating-point numbers: `float`, `double`
-    * Characters: `char`
+  * Boolean values: `boolean`
+  * Whole numbers: `byte`, `short`, `int`, `long`
+  * Floating-point numbers: `float`, `double`
+  * Characters: `char`
 
 These are called *primitive* types. All other types (classes, enums, even arrays) are called *reference* types. 
 
@@ -273,7 +264,7 @@ Although simple to understand, this representation has a profound effect on how 
 
    * Given two objects `a` and `b`, the statement `a==b` simply checks if they both refer to the same object. Using the `==` operator with reference types is not wrong, but often it does not do what we want (e.g. it *does not* work if `a` and `b` are referring to different objects that represent the same thing).
 
-   * When a method takes a primitive type as its argument, what gets "passed" (copied from the variable used in the method call to the local parameter variable inside the method) is the contents of the memory location of that variable (i.e. its value). If the method changes the value of the local parameter variable, this change is not reflected outside. Thus primitive-type variables are *passed by value*. However when the argument is a reference type, what gets passed is the memory location. If the method uses the local parameter variable to change something about the object, the change is reflected in the variables used as a parameter in the method call (because both refer to the same object). Thus reference-type arguments are *passed by reference*. Note that changing the reference itself (assigning a different object to the parameter variable) does not change the variable used when the method is called. (Why?)
+   * When a method takes a primitive type as its argument, what gets "passed" (copied from the variable used in the method call to the local parameter variable inside the method) is the contents of the memory location of that variable (i.e. its value). If the method changes the value of the local parameter variable, this change is not reflected outside. However when the argument is a reference type, what gets passed is the memory location. If the method uses the local parameter variable to change something about the object, the change is reflected in the variables used as a parameter in the method call (because both refer to the same object). Note that the mechanics of what is passed is exactly the same: what changes is the *role* of what is passed (an actual value, or a reference to another memory location). Note that changing the reference itself (assigning a different object to the parameter variable) does not change the variable used when the method is called. (Why?)
  
 Overall, much of the behavior of objects in Java can be understood by remembering the nature of a reference type. 
 
@@ -290,26 +281,26 @@ This is a somewhat bizzare effect of the language design and evolution, and can 
 Java will do some automated conversions between primitive and wrapper types. For example, the following code will work:
 
 ```java
-List<Integer> list = new ArrayList<>(); //Need to explicitly specify the type parameter as Integer
+List<Integer> list = new ArrayList<>(); //Diamond operator will infer Integer
 list.add(1); //This will 'autobox' the int 1 to an Integer
 int x = list.get(0); //This will 'autounbox' the Integer to a primitive int
 ```
 
-Unfortuantely, this will not work:
+Unfortunately, this will not work:
 ```java
-int x = 1;
-int y = 1;
+int x = 128;
+int y = 128;
 System.out.println(x == y); //This will print true
-Integer XWrapped = x;
-Integer YWrapped = y;
-System.out.println(XWrapped == YWrapped); //This will print false
+Integer xWrapped = x;
+Integer yWrapped = y;
+System.out.println(xWrapped == yWrapped); //This will print false because of caching behavior
 ```
 
 Even more confusing, this **will** work:
 ```java
-Integer Q = 1;
-Integer R = 1;
-System.out.println(Q == R); //This will print true
+Integer q = 1;
+Integer r = 1;
+System.out.println(q == r); //This will print true
 ```
 
 # 4 I/O
