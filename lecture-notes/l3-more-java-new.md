@@ -264,9 +264,17 @@ Although simple to understand, this representation has a profound effect on how 
 
    * Given two objects `a` and `b`, the statement `a==b` simply checks if they both refer to the same object. Using the `==` operator with reference types is not wrong, but often it does not do what we want (e.g. it *does not* work if `a` and `b` are referring to different objects that represent the same thing).
 
-   * When a method takes a primitive type as its argument, what gets "passed" (copied from the variable used in the method call to the local parameter variable inside the method) is the contents of the memory location of that variable (i.e. its value). If the method changes the value of the local parameter variable, this change is not reflected outside. However when the argument is a reference type, what gets passed is the memory location. If the method uses the local parameter variable to change something about the object, the change is reflected in the variables used as a parameter in the method call (because both refer to the same object). Note that the mechanics of what is passed is exactly the same: what changes is the *role* of what is passed (an actual value, or a reference to another memory location). Note that changing the reference itself (assigning a different object to the parameter variable) does not change the variable used when the method is called. (Why?)
- 
+## 3.1 Method Arguments
+
+When a method has an argument, what gets passed is the contents of the memory location of that variable (i.e. its value). In this way, Java *always passes by value*. 
+
+When the argument is a primitive type (e.g. `int`) the contents of its memory location is the actual value of that argument. This is copied over to the corresponding local variable argument of the method. Due to this any changes made by the method to this local variable does not affect the value of the variable used as a parameter in the method call.
+
+When the argument is a reference type the contents of its memory location is the address of another memory location where the object is actually stored. This location is ciopied over to the corresponding local variable argument of the method. Due to this, if the method uses the local variable to change something about the object, the change is reflected in the variables used as a parameter in the method call (because both refer to the same object). But if the method re-assigns the local variable to another object, the variable used as a parameter in the method call remains unchanged (so the object it refers to is also unchanged). 
+
 Overall, much of the behavior of objects in Java can be understood by remembering the nature of a reference type. 
+
+## 3.2 Type Parameters
 
 Type parameters (e.g the `T` in `List<T>`) can only be substituted by reference types. So how can one put integers in a `List`? Java provides *primitive wrapper types* that are the objects that correspond to the primitive types. These include:
 
@@ -275,8 +283,6 @@ Type parameters (e.g the `T` in `List<T>`) can only be substituted by reference 
 - `java.lang.Boolean` for `boolean`
 - `java.lang.Character` for `char`
 (and so on for all primitive types)
-
-This is a somewhat bizzare effect of the language design and evolution, and can be a source of confusion. [Prefer primitive types to wrapper types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch9.xhtml#lev61) - they are faster and more memory-efficient.
 
 Java will do some automated conversions between primitive and wrapper types. For example, the following code will work:
 
@@ -302,6 +308,9 @@ Integer q = 1;
 Integer r = 1;
 System.out.println(q == r); //This will print true
 ```
+
+This is a somewhat bizzare effect of the language design and evolution, and can be a source of confusion. [Prefer primitive types to wrapper types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch9.xhtml#lev61) - they are faster and more memory-efficient.
+
 
 # 4 I/O
 
@@ -399,11 +408,11 @@ class Scanner {
 }
 ```
 
-Here is an example of how to use a `Scanner` to read input from a file, printing each line to the console:
+Here is an example of how to use a `Scanner` to read input from a file line-by-line, printing each line to the console:
 
 ```java
 try (Scanner scanner = new Scanner(new File("input.txt"))) {
-    while (scanner.hasNext()) {
+    while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
         System.out.println(line);
     }
