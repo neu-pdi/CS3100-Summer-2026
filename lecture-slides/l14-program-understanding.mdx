@@ -6,6 +6,7 @@ image: /img/lectures/web/l14.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 import QuoteSlide from '@site/src/components/QuoteSlide';
 
 <RevealJS transition="slide">
@@ -54,12 +55,12 @@ Style: Retro pixel art with deep blues, oranges, and purple accents. The mood is
 **Lecture overview:**
 - **Total time:** ~55 minutes (tight)
 - **Theme:** Debugging as detective work—systematic investigation, not random guessing
-- **Prerequisites:** readability (naming, code clarity), AI lecture AI coding assistants (workflow)
+- **Prerequisites:** L5 readability (naming, code clarity), L13 AI coding assistants (workflow)
 - **Connects to:** All future assignments (debugging is constant), final project
 
 **Key connections to prior lectures:**
-- **Readability:** Good names and clear code make program understanding MUCH easier
-- **AI lecture AI Assistants:** The 6-step workflow applies directly to debugging with AI
+- **L5 Readability:** Good names and clear code make program understanding MUCH easier
+- **L13 AI Assistants:** The 6-step workflow applies directly to debugging with AI
 
 **The narrative:**
 - Understanding code requires tracing control flow and data flow
@@ -172,6 +173,37 @@ After this lecture, you will be able to:
 </aside>
 
 </Slide>
+
+<Slide>
+
+## Poll: When You Encounter a Bug, What's Your First Instinct?
+
+<PollSlide
+  choices={[
+    "Add print statements everywhere",
+    "Start changing code to see what happens",
+    "Read the code carefully to understand it",
+    "Ask AI to fix it",
+    "Panic and consider dropping the class"
+  ]}
+/>
+
+<aside className="notes">
+**Discussion points:**
+- No judgment—we've all done each of these
+- Print statements: Can help, but scattered prints are hard to follow
+- Changing code: "Vibe debugging"—dangerous without understanding
+- Reading carefully: Good start, but may need more systematic approach
+- Ask AI: Can help, but AI can't run your code or understand your context
+- Panic: Normal! But we'll give you better tools today
+
+**Key message:** The goal is to move from reactive (panic, random changes) to proactive (systematic investigation).
+
+→ **Transition:** This is a learnable skill...
+</aside>
+
+</Slide>
+
 <Slide>
 
 ## Building Mental Models
@@ -333,7 +365,7 @@ Style: Clean educational diagram. The code should be clearly readable. The overl
 - Data flow alone misses: "right value at wrong time"
 - Combining them reveals the full picture
 
-**Connection to Readability:**
+**Connection to L5 Readability:**
 - Good naming makes both lenses clearer
 - `containsRecipe` immediately tells you what the branch checks
 - `isBlank(author)` clearly documents the data transformation
@@ -348,7 +380,7 @@ Style: Clean educational diagram. The code should be clearly readable. The overl
 ## Control Flow: Tracing Execution Paths
 
 ```java
-
+// From A3: CookbookImpl.addRecipe()
 @Override
 public Cookbook addRecipe(Recipe recipe) {
     if (containsRecipe(recipe.getId())) {        // Branch point
@@ -366,13 +398,14 @@ public Cookbook addRecipe(Recipe recipe) {
 </p>
 
 <aside className="notes">
+**This is code from A3 you'll work with this week!**
 
 **Reading control flow:**
 - Identify branch points: `containsRecipe` check
 - Path 1: Recipe exists → exception thrown (error path)
 - Path 2: Recipe doesn't exist → add to list, return new cookbook (happy path)
 
-**Why this matters:**
+**Why this matters for A3:**
 - This demonstrates immutability: returns NEW cookbook, doesn't modify existing
 - The duplicate check prevents bugs from having two recipes with same ID
 - Understanding this helps you implement PersonalCollectionImpl and WebCollectionImpl
@@ -392,7 +425,7 @@ public Cookbook addRecipe(Recipe recipe) {
 ## Data Flow: Tracking How Values Change
 
 ```java
-// CookbookImpl constructor (used by Jackson for JSON deserialization)
+// From A3: CookbookImpl constructor (used by Jackson for JSON deserialization)
 @JsonCreator
 private CookbookImpl(
     @JsonProperty("id") @Nullable String id,
@@ -417,7 +450,7 @@ private CookbookImpl(
 </p>
 
 <aside className="notes">
-**This is code from an assignment!** Understanding this data flow helps debug serialization issues.
+**This is code from A3!** Understanding this data flow helps debug serialization issues.
 
 **Reading data flow:**
 - Track where variables are DEFINED: constructor parameters → fields
@@ -450,7 +483,7 @@ private CookbookImpl(
 ## Combining Control and Data Flow Analysis
 
 ```java
-// UserLibraryImpl.findRecipesByTitle() - YOU must implement this!
+// From A3: UserLibraryImpl.findRecipesByTitle() - YOU must implement this!
 public List<Recipe> findRecipesByTitle(String title) {
     // Control: iterate through all collections
     // Data: title parameter flows into comparison
@@ -491,7 +524,7 @@ Real bugs often involve <strong>both</strong> control and data flow issues inter
 - Not handling null title → should add null check at method entry
 - Accidentally mutating collections during iteration (prevented by immutability here!)
 
-**Connection to Readability:**
+**Connection to L5 Readability:**
 - Stream operations make control flow explicit and linear
 - Method name `findRecipesByTitle` clearly documents what data flows in/out
 
@@ -559,7 +592,7 @@ These tools become essential as codebases grow beyond what you can hold in your 
 ## Don't Forget: Dynamic Dispatch Affects Control Flow
 
 <p style={{fontSize: '0.9em'}}>
-When you see <code>collection.addRecipe(recipe)</code>, which <code>addRecipe</code> runs?
+From A3: When you see <code>collection.addRecipe(recipe)</code>, which <code>addRecipe</code> runs?
 </p>
 
 ```mermaid
@@ -684,7 +717,7 @@ graph LR
 ```
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-JSON serialization involves many method calls under the hood. Understanding this call graph helps debug serialization issues.
+From A3: JSON serialization involves many method calls under the hood. Understanding this call graph helps debug serialization issues.
 </p>
 
 <aside className="notes">
@@ -1031,7 +1064,7 @@ searches across collections."
 - Creating visual aids for team discussion
 - Saving time on Mermaid syntax
 
-**Real example:**
+**Real example from A3:**
 - ❌ "How do I add a recipe to a cookbook?" → Just read `CookbookImpl.addRecipe()` (10 lines)
 - ✅ "How does JSON deserialization work end-to-end?" → AI can diagram the full Jackson flow
 
@@ -1337,7 +1370,7 @@ The humor comes from the literal interpretation: your brain literally overheats 
 - Plus understanding what went wrong
 - If code is at your limit, debugging exceeds it
 
-**Connection to Readability:**
+**Connection to L5 Readability:**
 - This is WHY readability matters so much
 - Readable code is debuggable code
 - "Clever" code becomes debugging nightmare
@@ -1402,7 +1435,7 @@ flowchart LR
 - If you're not quickly converging, slow down and get systematic
 - Open a text file as a debugging log
 
-→ **Transition:** This should sound familiar from AI lecture...
+→ **Transition:** This should sound familiar from L13...
 </aside>
 
 </Slide>
@@ -2336,7 +2369,7 @@ Instead of adding print statements and re-running, the debugger lets you test hy
 ## AI + Scientific Debugging Workflow
 
 <p style={{fontSize: '0.85em'}}>
-From <strong>AI lecture</strong>, we learned a 6-step workflow for AI collaboration. That same framework applies to debugging—AI can assist at <strong>each step</strong> of the scientific method, but YOU lead:
+From <strong>L13</strong>, we learned a 6-step workflow for AI collaboration. That same framework applies to debugging—AI can assist at <strong>each step</strong> of the scientific method, but YOU lead:
 </p>
 
 <div style={{fontSize: '0.75em'}}>
@@ -2358,7 +2391,7 @@ Notice: YOU lead every step. AI accelerates, but doesn't replace your thinking.
 
 <aside className="notes">
 **The integration:**
-- This lecture's scientific method + AI lecture's AI workflow
+- This lecture's scientific method + L13's AI workflow
 - AI is a tool at each step, not the driver
 - YOU form hypotheses, AI helps generate them faster
 - YOU test predictions, AI helps create test cases
@@ -2377,7 +2410,7 @@ Notice: YOU lead every step. AI accelerates, but doesn't replace your thinking.
 - Analyze: "Does this variable change where I expect?"
 - Fix: "Given this root cause, suggest a minimal fix"
 
-→ **Transition:** But remember from AI lecture—some evaluations are harder than others...
+→ **Transition:** But remember from L13—some evaluations are harder than others...
 </aside>
 
 </Slide>
@@ -2387,7 +2420,7 @@ Notice: YOU lead every step. AI accelerates, but doesn't replace your thinking.
 ## Callback: How Hard Is It to Evaluate?
 
 <p style={{fontSize: '0.85em'}}>
-From <strong>AI lecture</strong>: AI can generate for any task, but evaluation difficulty varies:
+From <strong>L13</strong>: AI can generate for any task, but evaluation difficulty varies:
 </p>
 
 <div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
@@ -2409,7 +2442,7 @@ Your job: <strong>Understand the fix</strong>, not just accept it.
 </p>
 
 <aside className="notes">
-**From AI lecture - evaluation difficulty:**
+**From L13 - evaluation difficulty:**
 - AI can generate fixes for ANY bug
 - But some evaluations are trivial, others are hard
 - "Test passes" ≠ "Bug is correctly fixed"
@@ -2430,7 +2463,7 @@ Your job: <strong>Understand the fix</strong>, not just accept it.
 - But YOUR understanding determines if the fix is correct
 - Don't outsource the EVALUATION step
 
-→ **Transition:** And just like AI lecture warned about "vibe coding", we have "vibe debugging"...
+→ **Transition:** And just like L13 warned about "vibe coding", we have "vibe debugging"...
 </aside>
 
 </Slide>
@@ -2556,14 +2589,14 @@ Style notes: This should feel like a 'choose your own adventure' with an obvious
   <li><strong>Debugging is integral</strong> to implementation and validation — not a separate phase</li>
   <li><strong>Control flow + data flow</strong> — trace execution paths AND how values change</li>
   <li><strong>Diagrams</strong> (call graphs, sequence, class) — visualize what code can't show linearly</li>
-  <li><strong>Scientific method</strong> — observe, hypothesize, predict, test, analyze, iterate (same as AI lecture's 6-step workflow!)</li>
+  <li><strong>Scientific method</strong> — observe, hypothesize, predict, test, analyze, iterate (same as L13's 6-step workflow!)</li>
   <li><strong>Debuggers</strong> — accelerate hypothesis testing without modifying code</li>
   <li><strong>AI assistants</strong> — use the same 6-step workflow; YOU must evaluate the fix</li>
   <li><strong>Avoid "vibe debugging"</strong> — if you can't explain the fix, you haven't fixed it</li>
 </ol>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-<strong>From AI lecture:</strong> Task familiarity determines AI appropriateness. If you can't evaluate whether a bug fix is correct, you shouldn't accept AI's suggestion blindly.
+<strong>From L13:</strong> Task familiarity determines AI appropriateness. If you can't evaluate whether a bug fix is correct, you shouldn't accept AI's suggestion blindly.
 </p>
 
 <p style={{fontSize: '0.8em', marginTop: '0.3em'}}>
@@ -2633,7 +2666,7 @@ Style notes: This should feel like a 'choose your own adventure' with an obvious
 <div style={{fontSize: '0.9em'}}>
 
 **Today:** AI Coding Assistants Lab
-- Practice the prompting techniques from AI lecture and today
+- Practice the prompting techniques from L13 and today
 
 **Thursday:** HW3 Due
 - If you haven't started, **start NOW**
@@ -2652,7 +2685,7 @@ Style notes: This should feel like a 'choose your own adventure' with an obvious
 **Lab today:**
 - Hands-on practice with AI coding assistants
 - Try generating diagrams for your own code
-- Practice the 6-step workflow from AI lecture
+- Practice the 6-step workflow from L13
 
 → **End of lecture.**
 </aside>

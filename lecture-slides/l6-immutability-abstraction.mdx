@@ -8,6 +8,7 @@ import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
 import QuoteSlide from '@site/src/components/QuoteSlide';
 import ImageSlide from '@site/src/components/ImageSlide';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -25,6 +26,7 @@ import ImageSlide from '@site/src/components/ImageSlide';
 **Lecture overview:**
 - **Total time:** ~50 minutes
 - **Prerequisites:** Students understand specs, interfaces, and basic OO from L1-L5
+- **Connects to:** Assignment design decisions, future lectures on design patterns
 
 **Structure:**
 - Why changeability matters (~10 min)
@@ -64,6 +66,46 @@ import ImageSlide from '@site/src/components/ImageSlide';
 </aside>
 
 </Slide>
+
+{/* ============================================ */}
+{/* ACADEMIC INTEGRITY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Poll: What are your goals for CS 3100 (revised, anonymous)?
+<PollSlide choices={["Learning as much as possible", "Getting a high grade", "Getting a strong letter of recommendation",
+"Having time for other projects", "Being ready for co-op", "Behaving with integrity"]} />
+
+<p style={{fontSize: '0.7em', textAlign: 'left'}}>
+This slide is totally anonymous. Feel free to use incognito mode.
+</p>
+
+<aside className="notes">
+**Purpose:** Quick check-in on student motivations
+- Discuss results briefly
+- All of these are valid goals!
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What should you do if you are having trouble with an assignment?
+<PollSlide choices={["Give up", "Keep grinding away", "Go to office hours", "Ask a friend for help",
+"View Pawtograder posts", "Ask AI for help with your problem", "Ask AI how to download the autograder code"]} />
+
+<aside className="notes">
+**Discussion points:**
+- Office hours and Pawtograder are great resources
+- AI can help understand concepts, but not to bypass learning
+- The last option is an academic integrity violation
+
+→ **Transition:** Now let's look at today's learning objectives...
+</aside>
+
+</Slide>
+
 
 {/* ============================================ */}
 {/* LEARNING OBJECTIVES */}
@@ -1189,6 +1231,44 @@ public final class PhoneNumber {
 
 </Slide>
 
+<Slide>
+ ## Poll: Can a Client Break the Invariant?
+
+ <PollSlide
+  choices = {["yes, both fields are vulnerable", "yes, name is vulnerable", "yes, entranceYear is vulnerable",  "no, it's safe", "I don't know"]}
+  code={`
+  /**
+   * A Northeastern student whose entrance year is no earlier than
+   * NU's founding and no later than the current year.
+   */
+  public class NortheasternStudent {
+    private static final int FOUNDING_YEAR = 1898;
+    private String name;
+    private int entranceYear;
+
+    public NortheasternStudent(String name, int entranceYear) {
+      this.name = name;
+      if (entranceYear < FOUNDING_YEAR || entranceYear > Year.now().getValue()) {
+        throw new IllegalArgumentException("entranceYear " + entranceYear +
+            " is out of range " + FOUNDING_YEAR + "..." + Year.now().getValue());
+      }
+      this.entranceYear = entranceYear;
+    }
+  }
+  `}
+ />
+
+<aside className="notes">
+**Answer:** No, it's safe!
+- `String` is immutable — no defensive copy needed
+- `int` is a primitive — copied by value automatically
+- Fields are `private` — no external access
+- The only issue: fields aren't `final`, so the class itself could mutate them (but clients can't)
+
+→ **Transition:** Let's summarize the recipe for making classes safe...
+</aside>
+
+</Slide>
 
 <Slide>
 
@@ -1627,6 +1707,42 @@ module com.pawtograder.grading {
 
 </Slide>
 
+<Slide>
 
+## Looking Ahead
+
+<p style={{fontSize: '0.9em'}}>
+  The module system is our first glimpse of how design principles scale beyond individual classes.
+</p>
+
+<div style={{marginTop: '1em', fontSize: '0.85em'}}>
+<p>Later in the course:</p>
+<ul>
+  <li><strong>Software Architecture</strong> (Lecture 19) — System-level modularity</li>
+  <li><strong>Open Source Ecosystems</strong> (Lecture 23) — Library boundaries</li>
+  <li><strong>Sustainability</strong> (Lecture 36) — Long-term technical health</li>
+</ul>
+</div>
+
+<p style={{fontSize: '1em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
+  <strong>Information hiding is fractal.</strong><br/>
+  <span style={{fontSize: '0.85em'}}>The same principle that makes a well-designed class easier to change also makes a well-designed system easier to change.</span>
+</p>
+
+<aside className="notes">
+**Preview:**
+- Today: Class and package level
+- Later: Service and organization level
+- Same principles apply throughout
+
+**The big picture:**
+- Good design is about managing complexity
+- Information hiding is the core technique
+- It works at every scale
+
+**Questions?**
+</aside>
+
+</Slide>
 
 </RevealJS>

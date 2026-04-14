@@ -6,6 +6,7 @@ image: /img/lectures/web/l12.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 import QuoteSlide from '@site/src/components/QuoteSlide';
 
 <RevealJS transition="slide">
@@ -174,7 +175,7 @@ and why they prefer it.
 ## Requirements Are the Input—Domain Modeling Is the Output
 
 <p style={{fontSize: '0.9em'}}>
-Previously, we learned to gather and analyze requirements:
+In <strong>Lecture 9</strong>, we learned to gather and analyze requirements:
 </p>
 
 <ul style={{fontSize: '0.8em'}}>
@@ -1641,6 +1642,35 @@ public class RegradeController {
 </aside>
 
 </Slide>
+
+<Slide>
+
+## Poll: Where Should This Logic Live?
+
+<p style={{fontSize: '0.85em'}}>
+"Check if a student has exceeded their maximum regrade requests for the semester"
+</p>
+
+<PollSlide choices={["Student", "RegradeRequest", "RegradeService", "RegradeController", "A new RegradePolicy class"]} />
+
+<aside className="notes">
+**Discussion after poll:**
+- Student: might have a list of requests but shouldn't have to change if the policy changes
+- RegradeRequest: knows one request, not all requests
+- RegradeService: has access to repository, can count
+- RegradeController: should not have business logic
+- RegradePolicy: encapsulates the business rule
+
+**Best answer:** RegradeService or RegradePolicy
+- No single domain object has all the data needed
+- RegradeService is pragmatic; RegradePolicy is more testable
+- Either is better than putting it in the controller
+
+→ **Transition:** Now let's discuss the representational gap...
+</aside>
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 5: REPRESENTATIONAL GAP */}
 {/* ============================================ */}
@@ -2097,10 +2127,10 @@ Domain modeling isn't a new topic—it's where all the principles come together.
 ## Key Takeaways
 
 <ul style={{fontSize: '0.78em'}}>
-  <li><strong>Domain modeling</strong> transforms requirements into code structure</li>
+  <li><strong>Domain modeling</strong> transforms requirements (L9) into code structure</li>
   <li><strong>Four-step process:</strong> Extract → Filter (SRP) → Discover hidden concepts (Strategy) → Build</li>
   <li><strong>Validate early</strong> with stakeholders—cheaper than fixing later</li>
-  <li><strong>Responsibility heuristics</strong> apply Information Expert and cohesion</li>
+  <li><strong>Responsibility heuristics</strong> apply Information Expert (L6) and cohesion (L7)</li>
   <li><strong>Minimize the gap</strong> between domain understanding and implementation</li>
 </ul>
 
@@ -2121,6 +2151,33 @@ Good OO design creates code that reflects human understanding of the problem—n
 
 </Slide>
 
+<Slide>
+
+## Looking Ahead
+
+<p style={{fontSize: '0.9em'}}>
+Domain modeling connects to many upcoming topics:
+</p>
+
+<div style={{fontSize: '0.85em', marginTop: '1em'}}>
+
+| Lecture | Connection |
+|---------|------------|
+| **L19: Software Architecture** | Domain models inform system boundaries |
+| **L20: Design Patterns** | Patterns implement domain concepts |
+| **L35: Safety and Reliability** | Domain assumptions become safety requirements |
+
+</div>
+
+<p style={{fontSize: '1em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
+<strong>When we succeed, our code becomes a precise yet understandable expression of the solution to real-world problems.</strong>
+</p>
+
+<aside className="notes">
+**Preview:**
+- Architecture: How domain concepts map to services
+- Design patterns: Standard solutions to domain challenges
+- Safety: What happens when domain assumptions fail
 
 **The big picture:**
 - Domain modeling is foundational

@@ -6,6 +6,7 @@ image: /img/lectures/web/l8.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 import SolidPrinciple from "@site/src/components/SolidPrinciple"
 
 <RevealJS transition="slide">
@@ -25,6 +26,7 @@ import SolidPrinciple from "@site/src/components/SolidPrinciple"
 **Lecture overview:**
 - **Total time:** ~60 minutes
 - **Prerequisites:** Students understand coupling and cohesion from L7
+- **Connects to:** Assignment 2 (designing changeable systems)
 
 **Structure:**
 - SOLID principles overview (~20 min)
@@ -64,6 +66,16 @@ import SolidPrinciple from "@site/src/components/SolidPrinciple"
 
 → **Transition:** Here's what you'll be able to do after today...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Have you read any <em>Effective Java</em>?
+
+<PollSlide
+  choices={["Never heard of it", "Not yet", "I've found it online", "I've skimmed parts", "I've read 1 or 2 items", "I've read many items"]}
+/>
 
 </Slide>
 
@@ -221,6 +233,24 @@ public class SubmissionProcessor {
 
 </Slide>
 
+<Slide>
+
+## Can you create a subtype without modifying existing code?
+
+<PollSlide code={`
+public interface IoTDevice {
+    void identify();
+    boolean isAvailable();
+}
+
+public class Light implements IoTDevice {
+    // ... implementation ...
+}`}
+  choices={["Yes, for both types", "Only for IoTDevice", "Only for Light", "Not for either"]}
+/>
+<SolidPrinciple principle="O" />
+</Slide>
+
 
 <Slide>
 
@@ -301,6 +331,15 @@ public class SmartThermostat implements IoTDevice {
 → **Transition:** The next principle ensures extensions behave correctly...
 </aside>
 
+</Slide>
+
+<Slide>
+
+## Poll: Which can be subtypes of Mammal?
+
+<PollSlide choices={["Bird", "Fish", "Person", "Plant", "Cat"]}
+/>
+<SolidPrinciple principle="L" />
 </Slide>
 
 <Slide>
