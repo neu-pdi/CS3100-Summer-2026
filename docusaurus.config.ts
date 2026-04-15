@@ -168,7 +168,7 @@ const config: Config = {
           path: 'lecture-notes',
           routeBasePath: 'lecture-notes',
           include: lectureNotesIncludePatterns,
-          sidebarPath: './sidebars.ts',
+          sidebarPath: './lecture-notes-sidebars.ts',
           editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
