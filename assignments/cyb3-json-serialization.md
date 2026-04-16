@@ -433,7 +433,7 @@ You have four concrete implementation areas. Work through them in order—each b
 
 Before writing any repository code, make sure you understand what code you are inheriting. We have added new interfaces and classes. We also modified existing classes to support JSON serialization and deserialization. Make sure you read through everything provided. AI can assist here. The first two checkpoints in the [AI workflow guide](/assignments/Appendices/cyb3-ai-workflow#development-checkpoints) provide details on how you can use AI to assist with understanding.
 
-After that, write a small test that serializes a `Recipe` to JSON, prints it, deserializes it, and checks equality. We have attached such a test below. Seeing the JSON structure first makes debugging much easier later. For how AI can assist with this as well, see the JSON Serialization Setup section in the [AI workflow guide](/Appendices/cyb3-ai-workflow#json-serialization-setup)
+After that, write a small test that serializes a `Recipe` to JSON, prints it, deserializes it, and checks equality. We have attached such a test below. Seeing the JSON structure first makes debugging much easier later. For how AI can assist with this as well, see the JSON Serialization Setup section in the [AI workflow guide](/assignments/Appendices/cyb3-ai-workflow#json-serialization-setup)
 
 ```java
 ObjectMapper mapper = new ObjectMapper();
