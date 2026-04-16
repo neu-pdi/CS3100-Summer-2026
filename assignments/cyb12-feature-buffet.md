@@ -130,7 +130,7 @@ Each feature is scored out of 40 points. If your team implements 2–3 features,
 | Component | Points | Excellent | Satisfactory | Needs Improvement |
 |-----------|--------|-----------|--------------|-------------------|
 | **Design Rationale** | 5 | Clear user need, thoughtful alternatives considered | User need stated | Generic or missing rationale |
-| **Design Artifacts** | 11 | 3+ versions with clearly documented evolution | 2 versions shown | Single design, no iteration |
+| **Design Artifacts** | 11 | 2 versions with clearly documented evolution | 2 versions shown | Single design, no iteration |
 | **Implementation Journal** | 9 | Regular commits, quality PRs, decisions documented | Some commits, basic PRs | Large commits, no discussion |
 | **Testing & Quality** | 10 | Comprehensive tests; known limitations documented | Basic tests present | Minimal or no testing |
 | **Feature Summary** | 5 | Clear screenshots, integration well-explained, honest status assessment | Screenshots or status present | No summary provided |
