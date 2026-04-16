@@ -1,7 +1,6 @@
 ---
 title: 'Assignment 3: Domain Extensions and JSON Persistence'
 sidebar_position: 4
-image: /img/assignments/web/a3.png
 ---
 
 ## Update log
@@ -237,17 +236,12 @@ For example, the `Quantity` hierarchy produces JSON like:
 { "type": "range",       "min": 2, "max": 3, "unit": "CUP" }
 ```
 
-Your collection classes will need similar annotations—`CookbookImpl` shows the pattern.
+Your collection classes will need similar annotations. Use `CookbookImpl` as a guide for how to apply those annotations.
 
 **JSON in 30 seconds:** JSON is a lightweight, human-readable text format for storing and exchanging data. It represents objects as key-value pairs (`{"title": "Cookies", "servings": 24}`), and supports strings, numbers, booleans, nulls, arrays, and nested objects. If you haven't worked with JSON before, don't worry—[this JSON and Jackson Primer](/assignments/Appendices/cyb3-jackson-primer) has everything you need to get up to speed.
 
 **Jackson in 30 seconds:** Jackson's `ObjectMapper` converts Java objects to JSON strings and back. For immutable classes (no setters), you annotate the constructor with `@JsonCreator` and each parameter with `@JsonProperty("fieldName")` so Jackson knows how to build instances from JSON. For class hierarchies, `@JsonTypeInfo` adds a `"type"` discriminator field to the JSON, and `@JsonSubTypes` maps each type name to its concrete class—that's how Jackson knows to instantiate `ExactQuantity` vs. `FractionalQuantity` on the way back in. The [Jackson Primer](/assignments/Appendices/cyb3-jackson-primer) covers this in full with examples if you haven't worked with JSON serialization before.
 
-:::tip Experiment Before You Implement
-
-Before writing any repository code, write a small test that serializes a `Recipe` to JSON, prints it, deserializes it, and checks equality. Seeing the JSON structure first makes debugging much easier later.
-
-:::
 
 ### Repository Structure
 
@@ -353,17 +347,19 @@ public Recipe(
     List<ConversionRule> conversionRules)
 ```
 
-IDs are auto-generated as UUIDs when `null` is passed. Repository implementations assume IDs contain no characters that are invalid in filenames—auto-generated UUIDs satisfy this.
+IDs are auto-generated as UUIDs (universally unique identifiers) when `null` is passed. Repository implementations assume IDs contain no characters that are invalid in filenames. Auto-generated UUIDs satisfy this and guarantee a unique id for the entirety of the program's run.
 
 ### Collection Class Design
 
 Each collection type must have a named implementation class with a Builder:
 
-| Interface | Implementation Class | Builder |
+| Interface | Implementation Class | How to create a Builder |
 |---|---|---|
 | `Cookbook` | `CookbookImpl` | `CookbookImpl.builder()` |
 | `PersonalCollection` | `PersonalCollectionImpl` | `PersonalCollectionImpl.builder()` |
 | `WebCollection` | `WebCollectionImpl` | `WebCollectionImpl.builder()` |
+
+Furthermore, each class has different optional data it can hold onto:
 
 **Your primary design task** is deciding how to structure `PersonalCollectionImpl` and `WebCollectionImpl`. Study `CookbookImpl` carefully—it is a complete reference that shows the immutability pattern, Builder construction, and Jackson annotations you must follow. Then decide:
 
@@ -375,6 +371,8 @@ Document your approach and rationale in `REFLECTION.md`.
 
 **Builder Contract (all three collection types):**
 
+All the collection types have the following methods in their builder.
+
 | Builder method | Behavior |
 |---|---|
 | `id(String)` | Optional; auto-generates UUID if not called |
@@ -383,7 +381,15 @@ Document your approach and rationale in `REFLECTION.md`.
 | `build()` | Throws `IllegalStateException` if `title` was not set |
 | `sourceUrl(URI)` — WebCollection only | Required; `build()` throws `IllegalStateException` if not set |
 
-Example:
+Each class's builder also has methods for optional fields that only belong in that class (e.g. authors for `CookbookImpl`). The optional fields are listed below and unless specified next to the name, is considered a `String`.
+
+| Class | Optional Fields |
+|---|---|
+| `CookbookImpl` | author, ISBN, publisher, publication year |
+| `PersonalCollectionImpl`  description, notes |
+| `WebCollectionImpl` | date accessed(`LocalDate`), site name |
+
+Below is an example for how we would use the builder to create a `Cookbook` object.
 
 ```java
 Cookbook cookbook = CookbookImpl.builder()
@@ -407,7 +413,7 @@ Regardless of the structural decisions you make, all implementations must satisf
 
 ## Implementation Task
 
-You have four concrete implementation areas. Work through them in order—each builds on the previous.
+You have four concrete implementation areas. Work through them in order—each builds on the previous. During these tasks, you may (and should) refer to the [AI workflow](/assignments/Appendices/cyb3-ai-workflow) for assistance on how to use AI to assist with your design and implementation.
 
 ### What You Implement
 
@@ -423,29 +429,45 @@ You have four concrete implementation areas. Work through them in order—each b
 
 ---
 
+### Part 0: Grasping the JSON
+
+Before writing any repository code, make sure you understand what code you are inheriting. We have added new interfaces and classes. We also modified existing classes to support JSON serialization and deserialization. Make sure you read through everything provided. AI can assist here. The first two checkpoints in the [AI workflow guide](/assignments/Appendices/cyb3-ai-workflow#development-checkpoints) provide details on how you can use AI to assist with understanding.
+
+After that, write a small test that serializes a `Recipe` to JSON, prints it, deserializes it, and checks equality. We have attached such a test below. Seeing the JSON structure first makes debugging much easier later. For how AI can assist with this as well, see the JSON Serialization Setup section in the [AI workflow guide](/Appendices/cyb3-ai-workflow#json-serialization-setup)
+
+```java
+ObjectMapper mapper = new ObjectMapper();
+mapper.registerModule(new Jdk8Module());
+
+Recipe recipe = new Recipe(...);  // Create a test recipe
+String json = mapper.writeValueAsString(recipe);
+System.out.println(json);  // See the JSON structure
+
+Recipe restored = mapper.readValue(json, Recipe.class);
+assertEquals(recipe, restored);  // Verify round-trip
+```
+
+
 ### Part 1: Collection Classes
 
-Implement `PersonalCollectionImpl` and `WebCollectionImpl` following the `CookbookImpl` pattern.
+Implement `PersonalCollectionImpl` and `WebCollectionImpl` following the design in `CookbookImpl`.
 
-#### Interface Specifications
+See the [Collection Class Design](#collection-class-design) for information on the design.
 
-| Interface | Extends | Optional Fields |
-|---|---|---|
-| `Cookbook` | `RecipeCollection` | author, ISBN, publisher, publication year |
-| `PersonalCollection` | `RecipeCollection` | description, notes |
-| `WebCollection` | `RecipeCollection` | date accessed, site name |
+#### Behavioral specifications for all collection types
 
-`WebCollection` additionally requires `sourceUrl` (a `URI`—this is not optional).
-
-**Behavioral specifications for all collection types:**
-
-Refer to the Javadoc on `RecipeCollection` for the full method-level specifications. In addition:
+Refer to the Javadoc on `RecipeCollection` for the full method-level specifications. In addition, the following behaviors must also be satisfied:
 
 - Recipe order is preserved and significant for equality comparisons
 - Two collections are equal if they have the same ID, title, source type, type-specific metadata, and recipes in the same order
 - Blank optional String fields (empty or whitespace-only) are treated as absent and must return `Optional.empty()`
 
-**Jackson requirement:** Your implementations must include `@JsonCreator` / `@JsonProperty` on a constructor for deserialization to work. Study how `CookbookImpl` does this—the stub files provide method signatures, but you must add the constructor and annotations. See [Jackson in 30 seconds](#polymorphic-serialization) if you need a refresher.
+**Jackson requirement:** Your implementations must include `@JsonCreator` / `@JsonProperty` on a constructor for deserialization to work. Study how `CookbookImpl` does this—the stub files provide method signatures, but you must add the constructor and annotations. See [Jackson in 30 seconds](#polymorphic-serialization) for more information on Jackson itself as well as a link to the primer.
+
+
+#### Builder specifications
+
+All collection classes must have builders to create instances. Use the provided `CookbookImpl` to help implement the behaviors for these builders. We have provided stubs for them in the starter code, but their behaviors are specified in the builder subsection of the [Collection Class Design](#collection-class-design) section. Do not forget to provide appropriate documentation!
 
 **What we test:**
 - `save()` followed by `findById()` returns an equal collection
@@ -459,7 +481,7 @@ Refer to the Javadoc on `RecipeCollection` for the full method-level specificati
 
 `UserLibraryImpl` is a user's in-memory collection of recipe collections. A partial implementation is provided—you must implement the four search methods.
 
-Before diving into implementation, read the Javadoc on `UserLibraryImpl`—each method you need to complete is documented with its full behavioral specification.
+Before diving into implementation, read the Javadoc on `UserLibraryImpl`. Each method you need to complete is documented with its full behavioral specification.
 
 **Persistence note:** `UserLibrary` is an in-memory convenience wrapper. There is no `UserLibraryRepository`—persist by saving each collection individually via `RecipeCollectionRepository`. To restore, call `findAll()` and pass the result to the constructor.
 
