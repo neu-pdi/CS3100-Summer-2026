@@ -68,7 +68,7 @@ In [L24 (Usability)](/lecture-notes/l24-usability), we introduced three types of
 ### The Swiss Cheese Model of Failure
 
 :::note Recall
-You've been building Swiss cheese layers all semester without naming them. Preconditions ([L4](/lecture-notes/l4-specs-contracts)) reject bad inputs. Tests ([L15](/lecture-notes/l15-testing)) catch bugs before deployment. Hexagonal architecture ([L16](/lecture-notes/l16-testing2)) isolates domain logic from infrastructure failures. Resilience patterns ([L20](/lecture-notes/l20-networks)) handle network failures. Idempotent consumers ([L33](/lecture-notes/l33-event-architecture)) handle duplicate messages. Today we name this pattern and analyze what happens when layers are removed.
+You've been building Swiss cheese layers all semester without naming them. Preconditions ([L4](/lecture-notes/l4-specs-contracts-new)) reject bad inputs. Tests ([L15](/lecture-notes/l15-testing)) catch bugs before deployment. Hexagonal architecture ([L16](/lecture-notes/l16-testing2)) isolates domain logic from infrastructure failures. Resilience patterns ([L20](/lecture-notes/l20-networks)) handle network failures. Idempotent consumers ([L33](/lecture-notes/l33-event-architecture)) handle duplicate messages. Today we name this pattern and analyze what happens when layers are removed.
 :::
 
 The Swiss cheese model (James Reason) is the most useful framework for thinking about safety in systems. The idea: every safety mechanism is a layer of defense — a slice of Swiss cheese. Each layer has holes (failure modes). **Harm occurs only when holes in multiple layers align** — when every defense fails simultaneously.
@@ -171,7 +171,7 @@ Why did he act? Not because he was uniquely virtuous — but because the **blast
 
 The [ACM Code of Ethics](https://www.acm.org/code-of-ethics) formalizes this: Principle 1.2 states 'Avoid harm,' and Principle 2.5 requires 'comprehensive and thorough evaluations of computer systems and their impacts, including analysis of possible risks.' Blast radius analysis IS that evaluation.
 
-In his [ICSE 2025 keynote](https://www.youtube.com/watch?v=YyFouLdwxY0), David Parnas — who invented the information hiding concepts you learned in [L6](/lecture-notes/l6-immutability-abstraction) — put it simply: "It's not the AI that's liable. It's either the people who made it or the people who use it or both. The people who made it have a duty to have a specification for it and to make sure it meets that specification. People who use it have to make sure that they have read the specification and they're not using it outside of the specification." This is the same contracts framework from [L4](/lecture-notes/l4-specs-contracts) — preconditions and postconditions — applied to professional accountability. It doesn't matter whether your system uses AI, event-driven architecture, or a single `for` loop. If its blast radius includes human safety, you are responsible for specifying what it does and verifying that it does it.
+In his [ICSE 2025 keynote](https://www.youtube.com/watch?v=YyFouLdwxY0), David Parnas — who invented the information hiding concepts you learned in [L6](/lecture-notes/l6-immutability-abstraction) — put it simply: "It's not the AI that's liable. It's either the people who made it or the people who use it or both. The people who made it have a duty to have a specification for it and to make sure it meets that specification. People who use it have to make sure that they have read the specification and they're not using it outside of the specification." This is the same contracts framework from [L4](/lecture-notes/l4-specs-contracts-new) — preconditions and postconditions — applied to professional accountability. It doesn't matter whether your system uses AI, event-driven architecture, or a single `for` loop. If its blast radius includes human safety, you are responsible for specifying what it does and verifying that it does it.
 
 **Blast radius determines how many Swiss cheese layers you need:**
 
@@ -287,7 +287,7 @@ You've learned these tools as performance, reliability, and concurrency mechanis
 
 | What you learned | Where | Its reliability function | Its **safety** function |
 |------------------|-------|------------------------|------------------------|
-| Preconditions/contracts | [L4](/lecture-notes/l4-specs-contracts) | Rejects invalid inputs at boundaries | Prevents unsafe states from being reachable — a restrictive precondition is a Swiss cheese layer |
+| Preconditions/contracts | [L4](/lecture-notes/l4-specs-contracts-new) | Rejects invalid inputs at boundaries | Prevents unsafe states from being reachable — a restrictive precondition is a Swiss cheese layer |
 | Testing (unit, integration, E2E) | [L15](/lecture-notes/l15-testing) | Catches bugs before deployment | Prevents safety-critical defects from reaching production — tests are a Swiss cheese layer with their own holes (incomplete coverage, flaky tests) |
 | `synchronized` | [L31](/lecture-notes/l31-concurrency1) | Prevents race conditions | Prevents safety-critical state corruption (door lock mixed state) |
 | `.exceptionally()` / `.orTimeout()` | [L32](/lecture-notes/l32-concurrency2) | Handles async errors | Ensures failures are visible, not silent (shade left open) |

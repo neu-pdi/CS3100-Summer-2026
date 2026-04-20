@@ -35,7 +35,7 @@ You didn't learn "sustainability tools" separately. You learned tools that *prod
 The recurring theme: **decisions that seem like "good engineering practice" in the short term are sustainability investments in the long term.** The converse is also true: shortcuts that seem harmless today become sustainability debts that compound.
 
 :::note Recall
-In [L4 (Specifications)](/lecture-notes/l4-specs-contracts), we saw that ambiguous specifications create a "hidden decision factory" — implementers make choices the spec didn't address, and those choices compound into maintenance burden. In [L9 (Requirements)](/lecture-notes/l9-requirements), we saw that the cost of fixing a requirements error grows from 1x during requirements gathering to 100x after deployment. Both are sustainability stories: the cost of a decision grows with time.
+In [L4 (Specifications)](/lecture-notes/l4-specs-contracts-new), we saw that ambiguous specifications create a "hidden decision factory" — implementers make choices the spec didn't address, and those choices compound into maintenance burden. In [L9 (Requirements)](/lecture-notes/l9-requirements), we saw that the cost of fixing a requirements error grows from 1x during requirements gathering to 100x after deployment. Both are sustainability stories: the cost of a decision grows with time.
 :::
 
 ## Apply the four dimensions of sustainability to evaluate design trade-offs in familiar systems (12 minutes)
