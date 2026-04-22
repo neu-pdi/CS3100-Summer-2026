@@ -674,6 +674,7 @@ Testing follows the same model as Assignments 1 and 2.
 :::warning Avoid Order-Dependent Tests
 
 Several methods have unspecified ordering: `findAll()`, `findAllByTitle()`, `UserLibrary.getCollections()`, and `UserLibrary.findRecipesByTitle()` do not guarantee any particular order.
+Below is an example of a test that assumes an order and another that does not assume order (or is order-independent).
 
 ```java
 // BAD: assumes specific order
@@ -689,6 +690,56 @@ assertTrue(results.stream().anyMatch(r -> r.getTitle().equals("Chocolate Cake"))
 Tests that fail on correct implementations due to ordering assumptions will not receive credit.
 
 :::
+
+
+:::warning Testing with different JSON configurations
+
+The reference implementation may use different JSON fields that your own. As a result, your JSON serialization and deserialization tests may pass on your implementation, but **fail** on the reference.
+For example,
+
+- Your implementation may ignore a field by annotating a getter with @JsonIgnore, whereas the reference implementation includes that field
+
+To fix this, configure your ObjectMapper to ignore unknown properties with the following line
+
+```java
+mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+```
+
+Rather than adding this configuration to every single test method, use JUnit 5's @BeforeEach to set up a properly configured ObjectMapper once as shown below:
+
+```java
+public class WebCollectionSerializationTest {
+
+    private ObjectMapper mapper;
+
+    @BeforeEach
+    void setUp() {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new Jdk8Module());
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    @Test
+    void myFirstTest() {
+        // Just use 'mapper' directly — it's already configured!
+        String json = mapper.writeValueAsString(myCollection);
+        // ...
+    }
+
+    @Test
+    void mySecondTest() {
+        // Same mapper, same configuration, no duplication
+        // ...
+    }
+}
+```
+
+This approach:
+
+- Eliminates code duplication across your test methods
+- Ensures consistent configuration for all tests
+- Makes your tests robust to any valid implementation, not just your own
 
 :::tip MarkdownExporter Tests Are Ideal for AI Assistance
 
