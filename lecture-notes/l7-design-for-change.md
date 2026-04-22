@@ -486,7 +486,7 @@ In this high-level view, we see how the business responsibilities of the overall
 
 ## Use the vocabulary of coupling and cohesion to review the Strategy pattern (10 minutes)
 
-Recall that the Strategy pattern is a design pattern that allows for different algorithms to be used interchangeably. In [Lecture 5](./l5-fp-readability-reusability.md), we discussed the Strategy pattern with an example of a `Comparator` that allows for different sorting algorithms to be used interchangeably.
+Recall that the Strategy pattern is a design pattern that allows for different algorithms to be used interchangeably. In [Lecture 5](./l5-fp-readability.md), we discussed the Strategy pattern with an example of a `Comparator` that allows for different sorting algorithms to be used interchangeably.
 
 ```mermaid
 classDiagram
