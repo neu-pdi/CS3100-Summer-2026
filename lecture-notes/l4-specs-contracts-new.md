@@ -5,6 +5,7 @@ title: Specifications and Common Contracts
 image: /img/lectures/web/l4.png
 ---
 
+
 [Redesigned IoTDevice code for Section 4](/code/lectures/l4-specs-contracts-new/code.zip)
 
 # 1 Introduction

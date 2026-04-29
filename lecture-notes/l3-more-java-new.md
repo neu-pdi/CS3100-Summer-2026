@@ -5,6 +5,7 @@ title: Java Generics, Data Structures and I/O
 image: /img/lectures/web/l3.png
 ---
 
+
 # 1 Java Generics
 
 Generics allow us to write code that is reusable *and* type-safe, without knowing in advance what type of data we will be working with. For example, consider the following interface for a list in Java:

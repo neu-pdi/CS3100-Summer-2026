@@ -22,7 +22,7 @@ When you begin implementation in GA1, you will receive a codebase handout that i
 :::
 
 :::tip What's a ViewModel?
-Think back to [Hexagonal Architecture](/lecture-notes/l16-testing2) — your HW5 services are the **application core**, and the GUI you're about to build is an external system that needs an **adapter** to talk to them. A **ViewModel** is exactly that adapter: it holds the state that the View displays and translates user actions into calls to your services. The View (what the user sees and clicks) depends on the ViewModel, and the ViewModel depends on your services — just like adapters depend on ports. You don't need to know the implementation details yet — we'll cover this in [L29: GUIs Part 1](/lecture-notes/l29-gui1). For this design sprint, it's enough to think about: *"What data does each screen need, and what actions can the user take?"*
+Think back to [Hexagonal Architecture](/lecture-notes/l16-testability) — your HW5 services are the **application core**, and the GUI you're about to build is an external system that needs an **adapter** to talk to them. A **ViewModel** is exactly that adapter: it holds the state that the View displays and translates user actions into calls to your services. The View (what the user sees and clicks) depends on the ViewModel, and the ViewModel depends on your services — just like adapters depend on ports. You don't need to know the implementation details yet — we'll cover this in [L29: GUIs Part 1](/lecture-notes/l29-gui1). For this design sprint, it's enough to think about: *"What data does each screen need, and what actions can the user take?"*
 :::
 
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time

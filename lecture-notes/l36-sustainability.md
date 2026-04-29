@@ -12,7 +12,7 @@ In [L1](/lecture-notes/l1-intro-new), we defined software engineering as "the in
 
 ### Sustainability Is Not a Quality Attribute — It Is the Quality Attribute About Quality Attributes
 
-Throughout the semester, you've learned quality attributes: performance ([L34](/lecture-notes/l34-performance)), safety ([L35](/lecture-notes/l35-safety-reliability)), scalability ([L19](/lecture-notes/l19-monoliths)), changeability ([L6](/lecture-notes/l6-immutability-abstraction)), usability ([L24](/lecture-notes/l24-usability)), accessibility ([L28](/lecture-notes/l28-accessibility)). Sustainability asks a different question: **will those quality attributes hold up over time, and for whom?**
+Throughout the semester, you've learned quality attributes: performance ([L34](/lecture-notes/l34-performance)), safety ([L35](/lecture-notes/l35-safety-reliability)), scalability ([L19](/lecture-notes/l19-architectural-qualities)), changeability ([L6](/lecture-notes/l6-immutability-abstraction)), usability ([L24](/lecture-notes/l24-usability)), accessibility ([L28](/lecture-notes/l28-accessibility)). Sustainability asks a different question: **will those quality attributes hold up over time, and for whom?**
 
 A system can be performant today and unsustainable tomorrow — if the optimization technique creates technical debt that makes future changes impossible. A system can be accessible today and exclusionary next year — if the team that understood WCAG compliance leaves and no one maintains it. A system can be safe today and dangerous at scale — if the blast radius grows while the Swiss cheese layers stay the same ([L35](/lecture-notes/l35-safety-reliability)).
 
@@ -27,7 +27,7 @@ You didn't learn "sustainability tools" separately. You learned tools that *prod
 | Information hiding | [L6](/lecture-notes/l6-immutability-abstraction) | **Changeability** — hidden internals can evolve without breaking clients |
 | Low coupling | [L7](/lecture-notes/l7-design-for-change) | **Independence** — modules can be maintained, replaced, or scaled independently |
 | SOLID principles | [L8](/lecture-notes/l8-design-for-change-2) | **Evolvability** — code resists "software rot" as requirements change |
-| Hexagonal architecture | [L16](/lecture-notes/l16-testing2) | **Vendor independence** — swap infrastructure without rewriting domain logic |
+| Hexagonal architecture | [L16](/lecture-notes/l16-testability) | **Vendor independence** — swap infrastructure without rewriting domain logic |
 | Open source evaluation | [L23](/lecture-notes/l23-oss) | **Supply chain health** — dependencies that won't be abandoned or relicensed |
 | Accessibility | [L28](/lecture-notes/l28-accessibility) | **Inclusivity** — system serves diverse and growing user populations |
 | Staged rollout | [L35](/lecture-notes/l35-safety-reliability) | **Blast radius control** — failures don't cascade to every user simultaneously |
@@ -44,7 +44,7 @@ In [L4 (Specifications)](/lecture-notes/l4-specs-contracts-new), we saw that amb
 
 Sustainability is not one thing. It has four dimensions that interact and sometimes conflict:
 
-**Technical sustainability:** Can the system be maintained and evolved? This is the dimension you've spent the most time on this semester. Low coupling, high cohesion, testability, readable code, clear contracts — all serve technical sustainability. SceneItAll's hexagonal architecture ([L16](/lecture-notes/l16-testing2)) lets the team swap the Zigbee adapter for a Matter adapter without rewriting the scene activation logic. That's technical sustainability.
+**Technical sustainability:** Can the system be maintained and evolved? This is the dimension you've spent the most time on this semester. Low coupling, high cohesion, testability, readable code, clear contracts — all serve technical sustainability. SceneItAll's hexagonal architecture ([L16](/lecture-notes/l16-testability)) lets the team swap the Zigbee adapter for a Matter adapter without rewriting the scene activation logic. That's technical sustainability.
 
 **Economic sustainability:** Is the total cost of ownership viable? This goes beyond hosting costs. It includes developer time to maintain, cost of dependencies (both monetary and lock-in risk), support burden, and the opportunity cost of not building something else. Pawtograder's choice to use GitHub Actions for autograding is economically sustainable while the free tier covers the volume — but if usage grows past the free tier, we're locked into GitHub's pricing. And if GitHub changes their API, every autograder integration breaks.
 
@@ -66,7 +66,7 @@ The dimensions are not independent. Improving one can worsen another:
 
 | Decision | Technical | Economic | Environmental | Social |
 |----------|-----------|----------|---------------|--------|
-| Migrate SceneItAll from monolith to microservices | Better: independent deployment, team autonomy | Worse: operational complexity, more infrastructure | Worse: network overhead, container sprawl ([L20](/lecture-notes/l20-networks)) | Neutral |
+| Migrate SceneItAll from monolith to microservices | Better: independent deployment, team autonomy | Worse: operational complexity, more infrastructure | Worse: network overhead, container sprawl ([L20](/lecture-notes/l20-distributed-architecture)) | Neutral |
 | Add WCAG accessibility to SceneItAll app | Moderate effort | Higher dev cost | Neutral | Better: inclusive design ([L28](/lecture-notes/l28-accessibility)) |
 | Switch to serverless for SceneItAll cloud | Moderate: vendor-specific APIs | Better: pay-per-use, scale-to-zero ([L21](/lecture-notes/l21-serverless)) | Mixed: no idle waste, but cold start overhead | Worse: vendor lock-in limits who can self-host |
 | Keep all device telemetry forever | Simpler: no retention policy | Worse: storage costs grow linearly | Worse: storing data consumes energy | Worse: privacy risk grows with data volume |
@@ -173,7 +173,7 @@ The veil of ignorance doesn't tell you what to build. It tells you which trade-o
 Let's apply all four sustainability dimensions to a system you know well.
 
 **Technical sustainability:**
-- Open-source, modular design ([L16](/lecture-notes/l16-testing2) hexagonal architecture) — any institution can inspect, modify, and contribute back
+- Open-source, modular design ([L16](/lecture-notes/l16-testability) hexagonal architecture) — any institution can inspect, modify, and contribute back
 - GitHub Actions as CI — standard tooling reduces custom infrastructure, but creates platform dependency
 - Question: If GitHub changes their Actions pricing or API, how much of Pawtograder breaks?
 

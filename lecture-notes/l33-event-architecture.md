@@ -78,7 +78,7 @@ sequenceDiagram
     Cloud-->>App: 200 OK
 ```
 
-This works when everything is healthy. But when the hub is rebooting during a firmware update, the cloud service blocks waiting for it. If many users send commands simultaneously, threads pile up. The cloud service itself becomes slow, and *all* functionality degrades — not just commands to the offline hub. One slow or failed component makes everything slow or failed. This is exactly the scenario the [Fallacies of Distributed Computing](/lecture-notes/l20-networks#the-fallacies-of-distributed-computing) from L20 warn about.
+This works when everything is healthy. But when the hub is rebooting during a firmware update, the cloud service blocks waiting for it. If many users send commands simultaneously, threads pile up. The cloud service itself becomes slow, and *all* functionality degrades — not just commands to the offline hub. One slow or failed component makes everything slow or failed. This is exactly the scenario the [Fallacies of Distributed Computing](/lecture-notes/l20-distributed-architecture#the-fallacies-of-distributed-computing) from L20 warn about.
 
 ### Events: Publish Facts, Don't Send Commands
 
@@ -187,7 +187,7 @@ In [Lecture 21 (Serverless)](/lecture-notes/l21-serverless), we encountered cach
 
 ## Describe common patterns in event-driven architecture (8 minutes)
 
-The resilience patterns from [Lecture 20 (Networks)](/lecture-notes/l20-networks#designing-for-an-unreliable-world) — **retry with exponential backoff**, **circuit breakers**, and **rate limiting** — apply directly in event-driven systems and compose with idempotent consumers and broker delivery guarantees.
+The resilience patterns from [Lecture 20 (Networks)](/lecture-notes/l20-distributed-architecture#designing-for-an-unreliable-world) — **retry with exponential backoff**, **circuit breakers**, and **rate limiting** — apply directly in event-driven systems and compose with idempotent consumers and broker delivery guarantees.
 
 Beyond resilience, event brokers support several architectural patterns that solve different coordination problems:
 

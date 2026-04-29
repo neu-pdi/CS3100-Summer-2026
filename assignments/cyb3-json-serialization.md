@@ -74,7 +74,7 @@ you in the right direction—and your question helps future students with the sa
 By completing this assignment, you will demonstrate proficiency in:
 
 - **Separating concerns** by defining interfaces for persistence and implementing them independently
-  ([L16: Design for Testability](/lecture-notes/l16-testing2))
+  ([L16: Design for Testability](/lecture-notes/l16-testability))
 - **Designing repository interfaces** that abstract persistence concerns from domain logic
 - **Implementing JSON serialization** with Jackson, including polymorphic type handling
 - **Using AI coding assistants effectively** for boilerplate generation and design exploration

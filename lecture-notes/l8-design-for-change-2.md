@@ -25,7 +25,7 @@ The SOLID acronym represents five principles:
 Take these principles as guidelines that you should consider in your design decisions, recognizing that there are always trade-offs to be made. We'll look at them here in the context of individual data types.
 
 :::note Looking Ahead
-These same principles scale up to entire systems. When we discuss **software architecture** in [Lecture 18](/lecture-notes/l18-architecture-design) and [Lecture 19](/lecture-notes/l19-monoliths), you'll see how Single Responsibility becomes service boundaries, how Open/Closed becomes plugin architectures, and how Dependency Inversion becomes the foundation of testable, modular systems.
+These same principles scale up to entire systems. When we discuss **software architecture** in [Lecture 18](/lecture-notes/l18-architecture-design) and [Lecture 19](/lecture-notes/l19-architectural-qualities), you'll see how Single Responsibility becomes service boundaries, how Open/Closed becomes plugin architectures, and how Dependency Inversion becomes the foundation of testable, modular systems.
 :::
 
 ### Single Responsibility Principle (SRP)
