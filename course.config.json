@@ -479,7 +479,7 @@
       ]
     },
     {
-      "lectureId": "l5-fp-readability-reusability",
+      "lectureId": "l5-fp-readability",
       "dates": [
         "2026-01-15"
       ],
@@ -578,7 +578,7 @@
       ]
     },
     {
-      "lectureId": "l16-testing2",
+      "lectureId": "l16-testability",
       "dates": [
         "2026-02-12"
       ],
@@ -605,7 +605,7 @@
       ]
     },
     {
-      "lectureId": "l19-monoliths",
+      "lectureId": "l19-architectural-qualities",
       "dates": [
         "2026-02-23"
       ],
@@ -614,7 +614,7 @@
       ]
     },
     {
-      "lectureId": "l20-networks",
+      "lectureId": "l20-distributed-architecture",
       "dates": [
         "2026-02-25"
       ],
@@ -1280,16 +1280,6 @@
     }
   ],
   "assignments": [
-    {
-      "id": "cyb1",
-      "title": "Assignment 1: Recipe Domain Model",
-      "type": "homework",
-      "assignedDate": "2026-01-08",
-      "dueDate": "2026-01-15",
-      "dueTime": "23:59",
-      "points": 40,
-      "url": "/assignments/cyb1-recipes"
-    },
     {
       "id": "cyb2",
       "title": "Assignment 2: Unit Conversion, Recipe and Instruction Classes",
