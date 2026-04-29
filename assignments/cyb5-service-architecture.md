@@ -50,11 +50,12 @@ Good design requires iteration. You'll make better architectural decisions if yo
 
 By completing this assignment, you will demonstrate proficiency in:
 
+
 - **Applying service boundary heuristics** — using the four heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design) (rate of change, actor, interface segregation, testability) to decompose your service layer
 - **Writing Architecture Decision Records (ADRs)** — documenting the *why* behind your service boundaries and design choices ([L18 ADR section](/lecture-notes/l18-architecture-design#architecture-decision-records-adrs); ADRs can be just as short as the sample)
 - **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testability), [L19: Architectural Qualities](/lecture-notes/l19-architectural-qualities))
 - **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter (it *drives* the application on behalf of the user) that consumes your services without leaking domain logic into the presentation layer; preparing for a second driving adapter (GUI) in the group project
-- **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
+ **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
 - **End-to-end testing with JLine** — understanding how integration tests use dumb terminal mode to verify CLI behavior
 - **Interactive UX for terminals** — building rich interactions including step-by-step cooking mode, tab completion, and contextual help
 
