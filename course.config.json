@@ -774,6 +774,25 @@
       ],
       "topics": [
         "Safety and Reliability"
+      ],
+      "sections": [
+        "03"
+      ]
+    },
+    {
+      "lectureId": "l35-java-puzzlers",
+      "dates": [
+        "2026-04-08"
+      ],
+      "topics": [
+        "Java Puzzlers"
+      ],
+      "sections": [
+        "01",
+        "02",
+        "04",
+        "05",
+        "06"
       ]
     },
     {
@@ -783,6 +802,25 @@
       ],
       "topics": [
         "Sustainability"
+      ],
+      "sections": [
+        "03",
+        "04",
+        "05",
+        "06"
+      ]
+    },
+    {
+      "lectureId": "l36-kotlin",
+      "dates": [
+        "2026-04-09"
+      ],
+      "topics": [
+        "Kotlin: A Better Java"
+      ],
+      "sections": [
+        "01",
+        "02"
       ]
     },
     {
@@ -1447,6 +1485,19 @@
       }
     ]
   },
+  "showcaseGroups": [
+    { "id": "302", "label": "Group 302" },
+    { "id": "309", "label": "Group 309" },
+    { "id": "310", "label": "Group 310" },
+    { "id": "326", "label": "Group 326" },
+    { "id": "328", "label": "Group 328" },
+    { "id": "502", "label": "Group 502" },
+    { "id": "503", "label": "Group 503" },
+    { "id": "513", "label": "Group 513" },
+    { "id": "4601", "label": "Group 4601" },
+    { "id": "4621", "label": "Group 4621" },
+    { "id": "4630", "label": "Group 4630" }
+  ],
   "metadata": {
     "department": "Khoury College of Computer Sciences",
     "credits": 4,
