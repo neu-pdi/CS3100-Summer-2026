@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Stage 1 exporter for lecture notes.
+Stage 1 exporter for Canvas course content.
 
-Reads lecture IDs from course.config.json, converts lecture markdown files to HTML,
-exports lecture slide decks to PDF,
-and copies linked assets into:
-  canvasport/build/files/<lecture-note-name>/img
-  canvasport/build/files/<lecture-note-name>/code
+Reads configured lecture, assignment, and lab content from course.config.json,
+converts markdown files to HTML, exports lecture slide decks to PDF, exports
+top-level pages from src/pages, and copies linked assets into:
+    canvasport/build/files/<content-slug>/img
+    canvasport/build/files/<content-slug>/code
 
 Only writes under canvasport/build.
 """
@@ -44,7 +44,7 @@ IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp", ".
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Export lecture markdown to HTML for Canvas staging.")
+    parser = argparse.ArgumentParser(description="Export Canvas course markdown content to HTML for staging.")
     script_path = Path(__file__).resolve()
     repo_root_default = script_path.parents[2]
 
@@ -302,6 +302,17 @@ def inline_mermaid_svgs(
     return pattern.sub(replace_match, markdown_text)
 
 
+def resize_images(soup: BeautifulSoup, max_width: str = "90%") -> None:
+    """Add max-width style to all img tags to prevent oversized images."""
+    for img in soup.find_all("img"):
+        existing_style = img.get("style", "")
+        if "max-width" not in existing_style:
+            if existing_style:
+                img["style"] = f"{existing_style}; max-width: {max_width}; height: auto;"
+            else:
+                img["style"] = f"max-width: {max_width}; height: auto;"
+
+
 def markdown_to_html(markdown_text: str) -> str:
     def convert_math(text: str) -> str:
         odd = True
@@ -341,6 +352,7 @@ def markdown_to_html(markdown_text: str) -> str:
 
     html_body = convert_math(html_body)
     body_object = BeautifulSoup(html_body, 'html.parser')
+    resize_images(body_object)
     return (
         body_object.encode(formatter='html').decode()
         .replace('│', '&#x2502;')
@@ -349,6 +361,36 @@ def markdown_to_html(markdown_text: str) -> str:
         .replace('┴', '&boxhu;')
         .replace('┘', '&boxul;')
     )
+
+
+def export_markdown_document(
+    repo_root: Path,
+    output_dir: Path,
+    document_id: str,
+    source_path: Path,
+    warnings: List[str],
+    mermaid_cache: Dict[str, Optional[str]],
+) -> Path:
+    markdown_text = source_path.read_text(encoding="utf-8")
+    markdown_text, fm_title = strip_front_matter(markdown_text)
+    if fm_title:
+        markdown_text = f"# {fm_title}\n\n" + markdown_text
+    markdown_text = strip_mdx_only_lines(markdown_text)
+
+    markdown_text = inline_mermaid_svgs(
+        markdown_text=markdown_text,
+        lecture_id=document_id,
+        warnings=warnings,
+        mermaid_cache=mermaid_cache,
+    )
+
+    markdown_text, asset_warnings = copy_and_rewrite_assets(repo_root, output_dir, document_id, markdown_text)
+    warnings.extend(asset_warnings)
+
+    html = markdown_to_html(markdown_text)
+    output_html_path = output_dir / f"{document_id}.html"
+    output_html_path.write_text(html, encoding="utf-8")
+    return output_html_path
 
 
 def load_lecture_ids(config_path: Path) -> List[str]:
@@ -362,6 +404,41 @@ def load_lecture_ids(config_path: Path) -> List[str]:
         if lecture_id:
             ids.append(lecture_id)
     return ids
+
+
+def load_material_urls(config_path: Path, section_name: str) -> List[str]:
+    with config_path.open("r", encoding="utf-8") as f:
+        config = json.load(f)
+
+    entries = config.get(section_name, [])
+    urls: List[str] = []
+    for entry in entries:
+        url = entry.get("url")
+        if isinstance(url, str) and url.strip():
+            urls.append(url.strip())
+    return urls
+
+
+def resolve_markdown_from_url(repo_root: Path, url: str) -> Optional[Path]:
+    slug = slug_from_url(url).strip("/")
+    if not slug:
+        return None
+
+    md_path = repo_root / f"{slug}.md"
+    mdx_path = repo_root / f"{slug}.mdx"
+
+    if md_path.exists():
+        return md_path
+    if mdx_path.exists():
+        return mdx_path
+    return None
+
+
+def output_stem_from_url(url: str) -> Optional[str]:
+    slug = slug_from_url(url).strip("/")
+    if not slug:
+        return None
+    return Path(slug).name
 
 
 def read_markdown_file(lectures_dir: Path, lecture_id: str) -> Path:
@@ -505,7 +582,7 @@ def export_lectures(
     clean: bool,
     skip_slide_pdfs: bool,
     verbose: bool,
-) -> int:
+) -> Dict[str, Any]:
     if clean and output_dir.exists():
         shutil.rmtree(output_dir)
 
@@ -529,24 +606,14 @@ def export_lectures(
         if verbose:
             print(f"[{index}/{len(lecture_ids)}] Creating {output_html_path} from {lecture_path}")
 
-        markdown_text = lecture_path.read_text(encoding="utf-8")
-        markdown_text, fm_title = strip_front_matter(markdown_text)
-        if fm_title:
-            markdown_text = f"# {fm_title}\n\n" + markdown_text
-        markdown_text = strip_mdx_only_lines(markdown_text)
-
-        markdown_text = inline_mermaid_svgs(
-            markdown_text=markdown_text,
-            lecture_id=lecture_id,
+        export_markdown_document(
+            repo_root=repo_root,
+            output_dir=output_dir,
+            document_id=lecture_id,
+            source_path=lecture_path,
             warnings=warnings,
             mermaid_cache=mermaid_cache,
         )
-
-        markdown_text, asset_warnings = copy_and_rewrite_assets(repo_root, output_dir, lecture_id, markdown_text)
-        warnings.extend(asset_warnings)
-
-        html = markdown_to_html(markdown_text)
-        output_html_path.write_text(html, encoding="utf-8")
         if verbose:
             print(f"[{index}/{len(lecture_ids)}] Done creating {output_html_path}; moving to next lecture")
         exported_html += 1
@@ -562,25 +629,19 @@ def export_lectures(
             warnings=warnings,
         )
 
-    manifest = {
-        "exportedLectureCount": exported_html,
-        "requestedLectureCount": len(lecture_ids),
-        "lectures": lecture_ids,
-        "slidePdfExportedCount": exported_slide_pdfs,
-        "slidePdfRequestedCount": len(lecture_ids),
-        "warnings": warnings,
-    }
-    (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-
     print(f"Exported {exported_html}/{len(lecture_ids)} lecture notes to HTML in {output_dir}")
     if skip_slide_pdfs:
         print("Skipped slide PDF export (--skip-slide-pdfs)")
     else:
         print(f"Exported {exported_slide_pdfs}/{len(lecture_ids)} slide decks to PDF in {output_dir}")
-    if warnings:
-        print(f"Warnings: {len(warnings)} (see {output_dir / 'manifest.json'})")
-
-    return 0
+    return {
+        "exportedHtmlCount": exported_html,
+        "requestedCount": len(lecture_ids),
+        "lectureIds": lecture_ids,
+        "slidePdfExportedCount": exported_slide_pdfs,
+        "slidePdfRequestedCount": len(lecture_ids),
+        "warnings": warnings,
+    }
 
 
 def export_pages(
@@ -588,12 +649,12 @@ def export_pages(
     pages_dir: Path,
     output_dir: Path,
     verbose: bool,
-) -> int:
+) -> Dict[str, Any]:
     """Convert all .md files in pages_dir to HTML and write them to output_dir."""
     md_files = sorted(pages_dir.glob("*.md"))
     if not md_files:
         print("No markdown pages found to export")
-        return 0
+        return {"exportedCount": 0, "requestedCount": 0, "pageIds": [], "warnings": []}
 
     output_dir.mkdir(parents=True, exist_ok=True)
     warnings: List[str] = []
@@ -607,24 +668,14 @@ def export_pages(
         if verbose:
             print(f"[{index}/{len(md_files)}] Creating {output_html_path} from {md_path}")
 
-        markdown_text = md_path.read_text(encoding="utf-8")
-        markdown_text, fm_title = strip_front_matter(markdown_text)
-        if fm_title:
-            markdown_text = f"# {fm_title}\n\n" + markdown_text
-        markdown_text = strip_mdx_only_lines(markdown_text)
-
-        markdown_text = inline_mermaid_svgs(
-            markdown_text=markdown_text,
-            lecture_id=page_id,
+        export_markdown_document(
+            repo_root=repo_root,
+            output_dir=output_dir,
+            document_id=page_id,
+            source_path=md_path,
             warnings=warnings,
             mermaid_cache=mermaid_cache,
         )
-
-        markdown_text, asset_warnings = copy_and_rewrite_assets(repo_root, output_dir, page_id, markdown_text)
-        warnings.extend(asset_warnings)
-
-        html = markdown_to_html(markdown_text)
-        output_html_path.write_text(html, encoding="utf-8")
         exported += 1
 
         if verbose:
@@ -635,7 +686,80 @@ def export_pages(
         print(f"Page export warnings: {len(warnings)}")
         for w in warnings:
             print(f"  {w}")
-    return 0
+    return {
+        "exportedCount": exported,
+        "requestedCount": len(md_files),
+        "pageIds": [md_path.stem for md_path in md_files],
+        "warnings": warnings,
+    }
+
+
+def export_config_materials(
+    repo_root: Path,
+    config_path: Path,
+    output_dir: Path,
+    verbose: bool,
+) -> Dict[str, Any]:
+    material_items: List[Tuple[str, str]] = []
+    seen_urls: Set[str] = set()
+
+    for section_name in ["assignments", "labs"]:
+        for url in load_material_urls(config_path, section_name):
+            if url in seen_urls:
+                continue
+            seen_urls.add(url)
+            material_items.append((section_name, url))
+
+    if not material_items:
+        print("No assignments or labs found in course config to export")
+        return {"exportedCount": 0, "requestedCount": 0, "items": [], "warnings": []}
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    warnings: List[str] = []
+    mermaid_cache: Dict[str, Optional[str]] = {}
+    exported = 0
+
+    for index, (section_name, url) in enumerate(material_items, start=1):
+        source_path = resolve_markdown_from_url(repo_root, url)
+        stem = output_stem_from_url(url)
+
+        if not source_path or not stem:
+            warnings.append(f"[{section_name}] source markdown not found for {url}")
+            if verbose:
+                print(f"[{index}/{len(material_items)}] Skipping {url}: source markdown not found")
+            continue
+
+        output_html_path = output_dir / f"{stem}.html"
+        if verbose:
+            print(f"[{index}/{len(material_items)}] Creating {output_html_path} from {source_path}")
+
+        export_markdown_document(
+            repo_root=repo_root,
+            output_dir=output_dir,
+            document_id=stem,
+            source_path=source_path,
+            warnings=warnings,
+            mermaid_cache=mermaid_cache,
+        )
+        exported += 1
+
+        if verbose:
+            print(f"[{index}/{len(material_items)}] Done creating {output_html_path}; moving to next material")
+
+    print(f"Exported {exported}/{len(material_items)} assignments/labs to HTML in {output_dir}")
+    if warnings:
+        print(f"Material export warnings: {len(warnings)}")
+        for warning in warnings:
+            print(f"  {warning}")
+    return {
+        "exportedCount": exported,
+        "requestedCount": len(material_items),
+        "items": [
+            {"section": section_name, "url": url, "stem": output_stem_from_url(url)}
+            for section_name, url in material_items
+        ],
+        "warnings": warnings,
+    }
 
 
 def main() -> int:
@@ -648,7 +772,7 @@ def main() -> int:
     output_dir = (repo_root / args.output_dir).resolve()
     pages_dir = (repo_root / args.pages_dir).resolve()
 
-    rc = export_lectures(
+    lecture_summary = export_lectures(
         repo_root=repo_root,
         config_path=config_path,
         lectures_dir=lectures_dir,
@@ -659,15 +783,37 @@ def main() -> int:
         skip_slide_pdfs=args.skip_slide_pdfs,
         verbose=args.verbose,
     )
-    if rc != 0:
-        return rc
-
-    return export_pages(
+    page_summary = export_pages(
         repo_root=repo_root,
         pages_dir=pages_dir,
         output_dir=output_dir,
         verbose=args.verbose,
     )
+    material_summary = export_config_materials(
+        repo_root=repo_root,
+        config_path=config_path,
+        output_dir=output_dir,
+        verbose=args.verbose,
+    )
+
+    manifest = {
+        "exportedLectureCount": lecture_summary["exportedHtmlCount"],
+        "requestedLectureCount": lecture_summary["requestedCount"],
+        "lectures": lecture_summary["lectureIds"],
+        "slidePdfExportedCount": lecture_summary["slidePdfExportedCount"],
+        "slidePdfRequestedCount": lecture_summary["slidePdfRequestedCount"],
+        "pages": page_summary,
+        "materials": material_summary,
+        "warnings": lecture_summary["warnings"] + page_summary["warnings"] + material_summary["warnings"],
+    }
+    manifest_path = output_dir / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+
+    total_warnings = len(manifest["warnings"])
+    if total_warnings:
+        print(f"Warnings: {total_warnings} (see {manifest_path})")
+
+    return 0
 
 
 if __name__ == "__main__":

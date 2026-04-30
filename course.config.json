@@ -599,7 +599,8 @@
       "type": "homework",
       "assignedDate": "2026-01-08",
       "dueDate": "2026-01-15",
-      "dueTime": "23:59",
+      "dueTime": "20:59",
+      "status": "draft",
       "points": 40,
       "url": "/assignments/cyb1-recipes"
     },
@@ -610,6 +611,7 @@
       "assignedDate": "2026-05-15",
       "dueDate": "2026-05-22",
       "dueTime": "20:59",
+      "status": "published",
       "points": 60,
       "url": "/assignments/cyb2-unit-conversion"
     },

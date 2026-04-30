@@ -9,7 +9,7 @@ import fs from 'fs';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 // LUCIA: The other baseURL needs to be the repo name as that is how it will be deployed on neu-pdi.
 // For Netlify or other deployments, make sure their environment var BASE_URL is defined to avoid having to change this.
-const baseUrl = process.env.BASE_URL || '/CS3100-Spring-2026/';
+const baseUrl = process.env.BASE_URL || '/CS3100-Summer-2026/';
 const courseConfigPath = path.resolve(__dirname, 'course.config.json');
 type CourseConfigLite = { lectures?: { lectureId: string }[]; assignments?: { url?: string }[] };
 
@@ -70,7 +70,7 @@ const config: Config = {
   // GitHub pages deployment config.
   // LUCIA: The organization and project name need to match where this is deployed!
   organizationName: 'neu-pdi', // Usually your GitHub org/user name.
-  projectName: 'CS3100-Spring-2026', // Usually your repo name.
+  projectName: 'CS3100-Summer-2026', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',

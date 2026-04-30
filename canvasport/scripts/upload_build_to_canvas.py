@@ -13,6 +13,7 @@ It preserves relative folder structure on Canvas using parent_folder_path.
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 import json
 import mimetypes
 import re
@@ -20,13 +21,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import markdown
+import pytz
 import requests
 
 # ============================================================================
 # REQUIRED CONFIGURATION (PASTE VALUES HERE BEFORE RUNNING)
 # ============================================================================
 CANVAS_BASE_URL = "https://northeastern.instructure.com"
-COURSE_ID = "256958"
+COURSE_ID = "257019"
 API_ACCESS_TOKEN = "14523~JMvnhAPLWu7LFUPFTEAPuFy8AZJ9FWMKHx3TMZxyhmkW9cEMGfPeLrmtKX9aVXLN"
 # ============================================================================
 
@@ -643,6 +645,209 @@ def publish_syllabus(
     return "updated"
 
 
+def parse_datetime_for_canvas(date_str: str, time_str: Optional[str], tz_name: str) -> str:
+    """Convert date and optional time to ISO 8601 datetime string in UTC."""
+    if time_str:
+        dt_str = f"{date_str}T{time_str}:00"
+    else:
+        dt_str = f"{date_str}T00:00:00"
+    
+    tz = pytz.timezone(tz_name)
+    local_dt = datetime.fromisoformat(dt_str)
+    local_dt = tz.localize(local_dt)
+    utc_dt = local_dt.astimezone(pytz.UTC)
+    return utc_dt.isoformat()
+
+
+def load_assignments_and_labs(
+    config_path: Path,
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], str]:
+    """Load assignments and labs from config, return both lists and course timezone."""
+    if not config_path.exists():
+        return [], [], "America/New_York"
+    
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    assignments = config.get("assignments", [])
+    labs = config.get("labs", [])
+    timezone = config.get("timezone", "America/New_York")
+    
+    return assignments, labs, timezone
+
+
+def list_canvas_assignments(
+    api_base: str,
+    token: str,
+    course_id: str,
+    timeout: int,
+) -> Dict[str, Dict[str, Any]]:
+    """List all assignments on Canvas course."""
+    url = f"{api_base}/courses/{course_id}/assignments"
+    response = canvas_request("GET", url, token, timeout, params={"per_page": 100})
+    if response.status_code >= 400:
+        raise CanvasUploadError(
+            f"Failed to list assignments: {response.status_code} {response.text}"
+        )
+    
+    assignments = response.json()
+    result: Dict[str, Dict[str, Any]] = {}
+    for assignment in assignments:
+        result[str(assignment.get("id", ""))] = assignment
+    return result
+
+
+def create_or_update_assignment(
+    api_base: str,
+    token: str,
+    course_id: str,
+    assignment_id: str,
+    title: str,
+    points: int,
+    release_at: str,
+    due_at: str,
+    published: bool,
+    description: str = "",
+    timeout: int = 60,
+) -> Dict[str, Any]:
+    """Create or update assignment on Canvas."""
+    url = f"{api_base}/courses/{course_id}/assignments"
+    
+    payload = {
+        "assignment[name]": title,
+        "assignment[points_possible]": points,
+        "assignment[unlock_at]": release_at,
+        "assignment[due_at]": due_at,
+        "assignment[description]": description,
+        "assignment[published]": "true" if published else "false",
+    }
+    
+    response = canvas_request("POST", url, token, timeout, data=payload)
+    if response.status_code >= 400:
+        raise CanvasUploadError(
+            f"Failed to create assignment '{title}': {response.status_code} {response.text}"
+        )
+    return response.json()
+
+
+def load_description_html(build_dir: Path, url: str) -> str:
+    """Load exported HTML body for an assignment/lab from build_dir, given its config url."""
+    stem = url.rstrip("/").split("/")[-1]
+    html_path = build_dir / f"{stem}.html"
+    if not html_path.exists():
+        return ""
+    return html_path.read_text(encoding="utf-8")
+
+
+def publish_assignments_and_labs(
+    api_base: str,
+    token: str,
+    course_id: str,
+    config_path: Path,
+    build_dir: Path,
+    timeout: int,
+    dry_run: bool,
+) -> Dict[str, Any]:
+    """Publish assignments and labs to Canvas."""
+    assignments_list, labs_list, timezone = load_assignments_and_labs(config_path)
+    
+    if not assignments_list and not labs_list:
+        return {"created": 0, "updated": 0, "dryRunSkipped": 0, "failed": []}
+    
+    created = 0
+    skipped = 0
+    failed = []
+    
+    # Process assignments
+    for assignment in assignments_list:
+        assignment_id = assignment.get("id")
+        title = assignment.get("title", "")
+        points = assignment.get("points", 0)
+        assigned_date = assignment.get("assignedDate")
+        due_date = assignment.get("dueDate")
+        due_time = assignment.get("dueTime", "23:59")
+        status = assignment.get("status", "draft")
+        is_published = status == "published"
+        url = assignment.get("url", "")
+        description = load_description_html(build_dir, url) if url else ""
+        
+        if not assignment_id or not title or not assigned_date or not due_date:
+            failed.append({"id": assignment_id, "title": title, "error": "missing required fields"})
+            continue
+        
+        try:
+            release_at = parse_datetime_for_canvas(assigned_date, "00:00", timezone)
+            due_at = parse_datetime_for_canvas(due_date, due_time, timezone)
+            
+            if dry_run:
+                has_desc = "with description" if description else "no description"
+                print(f"[DRY RUN] Assignment: {title} (points: {points}, due: {due_date}, published: {is_published}, {has_desc})")
+                skipped += 1
+            else:
+                result = create_or_update_assignment(
+                    api_base=api_base,
+                    token=token,
+                    course_id=course_id,
+                    assignment_id=assignment_id,
+                    title=title,
+                    points=points,
+                    release_at=release_at,
+                    due_at=due_at,
+                    published=is_published,
+                    description=description,
+                    timeout=timeout,
+                )
+                print(f"Assignment published: {title}")
+                created += 1
+        except Exception as exc:
+            failed.append({"id": assignment_id, "title": title, "error": str(exc)})
+            print(f"FAILED: Assignment {title}: {exc}")
+    
+    # Process labs
+    for lab in labs_list:
+        lab_id = lab.get("id")
+        title = lab.get("title", "")
+        dates = lab.get("dates", [])
+        status = lab.get("status", "draft")
+        is_published = status == "published"
+        points = 0
+        url = lab.get("url", "")
+        description = load_description_html(build_dir, url) if url else ""
+        
+        if not lab_id or not title or not dates:
+            failed.append({"id": lab_id, "title": title, "error": "missing required fields"})
+            continue
+        
+        try:
+            lab_date = dates[0]
+            release_at = parse_datetime_for_canvas(lab_date, "00:00", timezone)
+            due_at = parse_datetime_for_canvas(lab_date, "23:59", timezone)
+            
+            if dry_run:
+                has_desc = "with description" if description else "no description"
+                print(f"[DRY RUN] Lab: {title} (date: {lab_date}, published: {is_published}, {has_desc})")
+                skipped += 1
+            else:
+                result = create_or_update_assignment(
+                    api_base=api_base,
+                    token=token,
+                    course_id=course_id,
+                    assignment_id=lab_id,
+                    title=title,
+                    points=points,
+                    release_at=release_at,
+                    due_at=due_at,
+                    published=is_published,
+                    description=description,
+                    timeout=timeout,
+                )
+                print(f"Lab published: {title}")
+                created += 1
+        except Exception as exc:
+            failed.append({"id": lab_id, "title": title, "error": str(exc)})
+            print(f"FAILED: Lab {title}: {exc}")
+    
+    return {"created": created, "updated": 0, "dryRunSkipped": skipped, "failed": failed}
+
+
 def main() -> int:
     args = parse_args()
 
@@ -677,6 +882,7 @@ def main() -> int:
         "pages": {"created": 0, "updated": 0, "dryRunSkipped": 0},
         "modules": {"modulesCreated": 0, "modulesReused": 0, "itemsCreated": 0, "dryRunSkipped": 0},
         "syllabus": "not-run",
+        "assignmentsAndLabs": {"created": 0, "updated": 0, "dryRunSkipped": 0, "failed": []},
     }
 
     print(f"Preparing to process {len(files_to_upload)} file(s) from {build_dir}")
@@ -795,6 +1001,27 @@ def main() -> int:
         )
         print(f"FAILED: syllabus publishing: {exc}")
 
+    try:
+        assignments_labs_results = publish_assignments_and_labs(
+            api_base=api_base,
+            token=token,
+            course_id=course_id,
+            config_path=config_path,
+            build_dir=build_dir,
+            timeout=args.timeout,
+            dry_run=args.dry_run,
+        )
+        summary["assignmentsAndLabs"] = assignments_labs_results
+    except Exception as exc:
+        summary["failed"].append(
+            {
+                "relativePath": "[assignmentsAndLabs]",
+                "canvasFolder": "n/a",
+                "error": str(exc),
+            }
+        )
+        print(f"FAILED: assignments/labs publishing: {exc}")
+
     manifest_path = build_dir / "canvas_upload_manifest.json"
     manifest_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
@@ -812,6 +1039,10 @@ def main() -> int:
         f"{summary['modules']['dryRunSkipped']} dry-run skipped"
     )
     print(f"Syllabus: {summary['syllabus']}")
+    print(
+        f"Assignments/Labs: {summary['assignmentsAndLabs']['created']} created, "
+        f"{summary['assignmentsAndLabs']['dryRunSkipped']} dry-run skipped"
+    )
 
     return 1 if summary["failed"] else 0
 
