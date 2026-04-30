@@ -7,7 +7,6 @@ sidebar_position: 5
 
 ## Update log
 - 2/19/2026: Note error in handout: the documentation on the `RecipeService` interface is incomplete compared to the handout, in particular, this page explains exactly the effects of `importFromJson` and `importFromText`, please rely on this over the documentation on the handout.
-- 2/19/2026: Clarified that `findByIngredient` searches only `RecipeRepository`, not recipes embedded in collections via `RecipeCollectionRepository`. See [Shopping List Requirements](#shopping-list-requirements).
 
 ---
 
@@ -322,11 +321,11 @@ Then sketch out your internal structure before coding. You don't need to submit 
 
 You have six facade methods to implement, plus `ShoppingListImpl` and `ShoppingItemImpl`. Work through them in the order below.
 
-### Part 1: Import Methods
+### Part 1: Searching and Importing from JSON
 
-Start here — these are the most straightforward facade methods and will build confidence before tackling parsing and aggregation. Write mock-based tests as you go.
+Start here — these are the most straightforward facade methods and will build confidence before tackling parsing and aggregation. Write mock-based tests as you go. See [Unit Test With Mockito](#unit-tests-with-mockito) and [Testing `importFromJson` with Temporary Files](#testing-importfromjson-with-temporary-files) for more information on mock-based tests.
 
-For each method, add the required [INFO completion log message and ERROR failure log messages](#logging-requirements).  `importFromText` additionally requires DEBUG messages for parsing progress.
+For each method, add the required [INFO completion log message and ERROR failure log messages](#logging-requirements).
 
 **Checkpoint:** Tests pass for both methods. **Submit by Friday 2/20 11:59 PM for the +10 early bird bonus.**
 
@@ -340,6 +339,21 @@ Read a JSON file, deserialize it into a `Recipe`, save it to the recipe reposito
 - The JSON file contains a recipe serialized in Jackson's polymorphic JSON format — the same format used by the repository adapters. Use Jackson's `ObjectMapper` to deserialize it directly, since `Recipe` and its nested types already have `@JsonCreator` and `@JsonTypeInfo` annotations.
 - The imported recipe **retains its original ID** from the JSON file (unlike `scaleRecipe`/`convertRecipe`, which generate new IDs).
 
+#### Implement `findByIngredient`
+
+Search all recipes in `RecipeRepository` (via `findAll()`) by ingredient name using case-insensitive substring matching. For example, searching for `"chicken"` would match recipes containing `"chicken breast"`, `"ground chicken"`, or `"Chicken Thighs"`.
+
+This method searches `RecipeRepository` only — it does not search recipes embedded within collections in `RecipeCollectionRepository`. Any recipe imported through the service will be findable; recipes that exist only inside a collection and were never individually saved to `RecipeRepository` will not appear in results.
+
+
+---
+
+### Part 2: Importing from Text
+
+The remaining methods require the ability to import from text, so we suggest tackling this next. Make sure to read through the parsing requirements linked below, including the small primer on regular expressions. Also review the [Internal Structure](#internal-structure) as design decisions you make here will make this easier to implement and test.
+
+For this method, add the required [INFO completion log message and ERROR failure log messages](#logging-requirements).  `importFromText` additionally requires DEBUG messages for parsing progress.
+
 #### Implement `importFromText`
 
 Parse plain text into a `Recipe`, save it to the recipe repository, and add it to the specified collection.
@@ -350,9 +364,10 @@ Parse plain text into a `Recipe`, save it to the recipe repository, and add it t
 
 See [Recipe Text Parsing Requirements](#recipe-text-parsing-requirements) and [Ingredient Parsing Requirements](#ingredient-parsing-requirements) for the full parsing specification.
 
+
 ---
 
-### Part 2: Transformation Methods
+### Part 3: Transformation Methods
 
 With the import methods working, tackle the transformation methods next. Try edge cases as you go — missing recipes, invalid servings.
 
@@ -395,9 +410,9 @@ Delegate to `Recipe.convert(targetUnit, conversionRegistry)`, which converts eac
 
 ---
 
-### Part 3: Aggregation and Search
+### Part 4: Aggregation
 
-Implement these last. Once all tests pass, run `./gradlew build` and submit to the autograder — if mutants are surviving, add more targeted tests.
+Implement this last. Once all tests pass, run `./gradlew build` and submit to the autograder — if mutants are surviving, add more targeted tests.
 
 For each method, add the required [INFO completion log message](#logging-requirements). `generateShoppingList` additionally requires a DEBUG message for each recipe it aggregates.
 
@@ -408,12 +423,6 @@ For each method, add the required [INFO completion log message](#logging-require
 Look up recipes by ID and aggregate their ingredients into a `ShoppingList`. You must also complete the `ShoppingListImpl` and `ShoppingItemImpl` stubs.
 
 See [Shopping List Requirements](#shopping-list-requirements) for the full specification.
-
-#### Implement `findByIngredient`
-
-Search all recipes in `RecipeRepository` (via `findAll()`) by ingredient name using case-insensitive substring matching. For example, searching for `"chicken"` would match recipes containing `"chicken breast"`, `"ground chicken"`, or `"Chicken Thighs"`.
-
-This method searches `RecipeRepository` only — it does not search recipes embedded within collections in `RecipeCollectionRepository`. Any recipe imported through the service will be findable; recipes that exist only inside a collection and were never individually saved to `RecipeRepository` will not appear in results.
 
 ---
 
@@ -496,6 +505,14 @@ Regular expressions (regex) are patterns for matching text:
 | `\w+` | One or more word characters (letters, digits, underscore) | `"flour"` in `"2 cups flour"` |
 | `\s+` | One or more whitespace | Spaces, tabs |
 | `(\d+)\s+(\w+)` | Groups to capture | Captures `"2"` and `"cups"` separately |
+| `\w+[:]?` | One or more word chracters followed by an optional colon | `"Makes"` in `"Makes 24 servings"` or `"Makes:"` in `"Makes: 24 servings"`
+
+There are also special symbols to either ignore certain groups or designate that the match must start at the start of a line (see [`Pattern`](https://docs.oracle.com/en/java/docs/api/java.base/java/util/regex/Pattern.html) for more information). Here are a couple of examples:
+
+| Pattern | Matches | Example |
+|---------|---------|---------|
+| `(:?\d+)\s+(\w+)` | Group to ignore and another to capture | Captures `"cups"`, but **not** `"123"` |
+| `^\d+` | One or digits from the start of the line | `"123"` in the line `"123 cups"`, but not in `" 123 cups"` |
 
 In Java, regex patterns are written as strings, so backslashes must be escaped — `\d` in regex becomes `\\d` in a Java string. Use the [`Pattern`](https://docs.oracle.com/en/java/docs/api/java.base/java/util/regex/Pattern.html) class to compile a regular expression into a reusable pattern object. Call `pattern.matcher(input)` with the string you want to search to get a [`Matcher`](https://docs.oracle.com/en/java/docs/api/java.base/java/util/regex/Matcher.html) object, then use the `Matcher` to find and extract matches. Below is an example of using those classes to get the quantity and unit from `"2 cups of flour"`.
 ```java
