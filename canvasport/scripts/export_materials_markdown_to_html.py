@@ -59,7 +59,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--output-dir", default="canvasport/build", help="Output directory, relative to repo root")
     parser.add_argument("--pages-dir", default="src/pages", help="Pages directory containing extra markdown files (e.g. syllabus.md), relative to repo root")
-    parser.add_argument("--clean", action="store_true", help="Delete output directory before generation")
+    parser.add_argument("--clean", action="store_true", help="Delete output directory and exit (no rebuild)")
     parser.add_argument("--skip-slide-pdfs", action="store_true", help="Skip slide PDF export")
     parser.add_argument("--verbose", action="store_true", help="Print per-file progress while exporting")
     return parser.parse_args()
@@ -579,13 +579,9 @@ def export_lectures(
     slides_dir: Path,
     slides_build_dir: Path,
     output_dir: Path,
-    clean: bool,
     skip_slide_pdfs: bool,
     verbose: bool,
 ) -> Dict[str, Any]:
-    if clean and output_dir.exists():
-        shutil.rmtree(output_dir)
-
     output_dir.mkdir(parents=True, exist_ok=True)
     lecture_ids = load_lecture_ids(config_path)
 
@@ -772,6 +768,14 @@ def main() -> int:
     output_dir = (repo_root / args.output_dir).resolve()
     pages_dir = (repo_root / args.pages_dir).resolve()
 
+    if args.clean:
+        if output_dir.exists():
+            shutil.rmtree(output_dir)
+            print(f"Cleaned build output directory: {output_dir}")
+        else:
+            print(f"Nothing to clean at: {output_dir}")
+        return 0
+
     lecture_summary = export_lectures(
         repo_root=repo_root,
         config_path=config_path,
@@ -779,7 +783,6 @@ def main() -> int:
         slides_dir=slides_dir,
         slides_build_dir=slides_build_dir,
         output_dir=output_dir,
-        clean=args.clean,
         skip_slide_pdfs=args.skip_slide_pdfs,
         verbose=args.verbose,
     )
