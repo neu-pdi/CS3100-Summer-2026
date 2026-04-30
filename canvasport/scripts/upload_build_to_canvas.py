@@ -28,7 +28,7 @@ import requests
 # REQUIRED CONFIGURATION (PASTE VALUES HERE BEFORE RUNNING)
 # ============================================================================
 CANVAS_BASE_URL = "https://northeastern.instructure.com"
-COURSE_ID = "257019"
+COURSE_ID = "252474"
 API_ACCESS_TOKEN = "14523~JMvnhAPLWu7LFUPFTEAPuFy8AZJ9FWMKHx3TMZxyhmkW9cEMGfPeLrmtKX9aVXLN"
 # ============================================================================
 

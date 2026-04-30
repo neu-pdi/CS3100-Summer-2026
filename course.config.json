@@ -317,7 +317,7 @@
       ]
     },
     {
-      "lectureId": "l14-domain-modeling",
+      "lectureId": "l12-domain-modeling",
       "dates": [
         "2026-05-20"
       ],
@@ -353,7 +353,7 @@
       ]
     },
     {
-      "lectureId": "l19-monoliths",
+      "lectureId": "l22-teams",
       "dates": [
         "2026-05-28"
       ],
@@ -362,7 +362,7 @@
       ]
     },
     {
-      "lectureId": "l20-networks",
+      "lectureId": "l14-program-understanding",
       "dates": [
         "2026-06-01"
       ],
@@ -425,7 +425,7 @@
       ]
     },
     {
-      "lectureId": "l26",
+      "lectureId": "l26-exam2",
       "dates": [
         "2026-06-11"
       ],
