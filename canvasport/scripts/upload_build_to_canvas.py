@@ -19,6 +19,7 @@ import mimetypes
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import urlsplit
 
 import markdown
 import pytz
@@ -260,6 +261,102 @@ def rewrite_file_links_for_canvas(html_text: str, file_url_map: Dict[str, str]) 
     return rewritten
 
 
+def is_external_or_special_href(href: str) -> bool:
+    lowered = href.lower().strip()
+    return (
+        lowered.startswith("http://")
+        or lowered.startswith("https://")
+        or lowered.startswith("mailto:")
+        or lowered.startswith("tel:")
+        or lowered.startswith("#")
+        or lowered.startswith("javascript:")
+    )
+
+
+def _normalize_internal_path(path: str) -> str:
+    normalized = path.strip()
+    if not normalized:
+        return normalized
+    normalized = normalized.replace("\\", "/")
+    if not normalized.startswith("/"):
+        normalized = "/" + normalized
+    if normalized.endswith("/") and normalized != "/":
+        normalized = normalized.rstrip("/")
+    return normalized
+
+
+def _strip_known_doc_extensions(path: str) -> str:
+    lowered = path.lower()
+    if lowered.endswith(".md") or lowered.endswith(".mdx") or lowered.endswith(".html"):
+        return path.rsplit(".", 1)[0]
+    return path
+
+
+def _slug_from_path(path: str) -> str:
+    return path.rstrip("/").split("/")[-1]
+
+
+def rewrite_internal_links_for_canvas(
+    html_text: str,
+    route_url_map: Dict[str, str],
+    slug_url_map: Dict[str, str],
+    unresolved_links: Optional[List[Dict[str, str]]],
+    source_slug: str,
+) -> str:
+    pattern = re.compile(r'href="([^"]+)"')
+
+    def replace_attr(match: re.Match) -> str:
+        href = match.group(1)
+        if is_external_or_special_href(href):
+            return match.group(0)
+
+        split = urlsplit(href)
+        raw_path = split.path or ""
+        if not raw_path:
+            return match.group(0)
+
+        # Uploaded file assets are handled in rewrite_file_links_for_canvas.
+        if raw_path.startswith("files/"):
+            return match.group(0)
+
+        candidates: List[str] = []
+
+        normalized = _normalize_internal_path(raw_path)
+        if normalized:
+            candidates.append(normalized)
+            stripped = _strip_known_doc_extensions(normalized)
+            if stripped != normalized:
+                candidates.append(stripped)
+
+        for candidate in candidates:
+            replacement_base = route_url_map.get(candidate)
+            if replacement_base:
+                rewritten = replacement_base
+                if split.query:
+                    rewritten += f"?{split.query}"
+                if split.fragment:
+                    rewritten += f"#{split.fragment}"
+                return f'href="{rewritten}"'
+
+        # Fallback: map by slug for relative links like ./l17-creation-patterns.md.
+        slug_candidates = [_slug_from_path(c) for c in candidates if c and c != "/"]
+        for slug in slug_candidates:
+            replacement_base = slug_url_map.get(slug)
+            if replacement_base:
+                rewritten = replacement_base
+                if split.query:
+                    rewritten += f"?{split.query}"
+                if split.fragment:
+                    rewritten += f"#{split.fragment}"
+                return f'href="{rewritten}"'
+
+        if unresolved_links is not None:
+            unresolved_links.append({"source": source_slug, "href": href})
+        return match.group(0)
+
+    return pattern.sub(replace_attr, html_text)
+
+
 def lecture_title_from_html(html_text: str, fallback: str) -> str:
     match = re.search(r"<h[1-6][^>]*>(.*?)</h[1-6]>", html_text, flags=re.IGNORECASE | re.DOTALL)
     if not match:
@@ -367,6 +464,9 @@ def publish_lecture_pages(
     course_id: str,
     build_dir: Path,
     file_url_map: Dict[str, str],
+    route_url_map: Dict[str, str],
+    slug_url_map: Dict[str, str],
+    unresolved_links: Optional[List[Dict[str, str]]],
     timeout: int,
     dry_run: bool,
 ) -> Dict[str, Any]:
@@ -383,6 +483,13 @@ def publish_lecture_pages(
         slug = html_file.stem
         html_text = html_file.read_text(encoding="utf-8")
         html_text = rewrite_file_links_for_canvas(html_text, file_url_map)
+        html_text = rewrite_internal_links_for_canvas(
+            html_text=html_text,
+            route_url_map=route_url_map,
+            slug_url_map=slug_url_map,
+            unresolved_links=unresolved_links,
+            source_slug=slug,
+        )
         title = lecture_title_from_html(html_text, fallback=slug)
         lecture_pages[slug] = {"title": title, "pageUrl": slug}
 
@@ -414,6 +521,58 @@ def publish_lecture_pages(
         "dryRunSkipped": skipped,
         "lecturePages": lecture_pages,
     }
+
+
+def rewrite_lecture_pages_after_mapping(
+    api_base: str,
+    token: str,
+    course_id: str,
+    build_dir: Path,
+    file_url_map: Dict[str, str],
+    route_url_map: Dict[str, str],
+    slug_url_map: Dict[str, str],
+    unresolved_links: Optional[List[Dict[str, str]]],
+    timeout: int,
+    dry_run: bool,
+) -> Dict[str, int]:
+    updated = 0
+    skipped = 0
+
+    lecture_html_files = sorted(
+        p for p in build_dir.glob("*.html") if p.name not in {"syllabus.html"}
+    )
+
+    for html_file in lecture_html_files:
+        slug = html_file.stem
+        html_text = html_file.read_text(encoding="utf-8")
+        html_text = rewrite_file_links_for_canvas(html_text, file_url_map)
+        html_text = rewrite_internal_links_for_canvas(
+            html_text=html_text,
+            route_url_map=route_url_map,
+            slug_url_map=slug_url_map,
+            unresolved_links=unresolved_links,
+            source_slug=slug,
+        )
+        title = lecture_title_from_html(html_text, fallback=slug)
+
+        if dry_run:
+            print(f"[DRY RUN] Rewrite links in page {slug}")
+            skipped += 1
+            continue
+
+        result = upsert_canvas_page(
+            api_base=api_base,
+            token=token,
+            course_id=course_id,
+            page_slug=slug,
+            page_title=title,
+            page_body=html_text,
+            timeout=timeout,
+        )
+        if result["status"] in {"updated", "created"}:
+            updated += 1
+
+    return {"updated": updated, "dryRunSkipped": skipped}
 
 
 def list_canvas_modules(
@@ -617,6 +776,9 @@ def publish_syllabus(
     course_id: str,
     build_dir: Path,
     file_url_map: Dict[str, str],
+    route_url_map: Dict[str, str],
+    slug_url_map: Dict[str, str],
+    unresolved_links: Optional[List[Dict[str, str]]],
     timeout: int,
     dry_run: bool,
 ) -> str:
@@ -626,6 +788,13 @@ def publish_syllabus(
 
     html_text = syllabus_html.read_text(encoding="utf-8")
     html_text = rewrite_file_links_for_canvas(html_text, file_url_map)
+    html_text = rewrite_internal_links_for_canvas(
+        html_text=html_text,
+        route_url_map=route_url_map,
+        slug_url_map=slug_url_map,
+        unresolved_links=unresolved_links,
+        source_slug="syllabus",
+    )
 
     if dry_run:
         print("[DRY RUN] Syllabus update")
@@ -737,12 +906,72 @@ def load_description_html(build_dir: Path, url: str) -> str:
     return html_path.read_text(encoding="utf-8")
 
 
+def canvas_course_page_url(course_base_url: str, course_id: str, page_url: str) -> str:
+    return f"{course_base_url}/courses/{course_id}/pages/{page_url}".replace("//courses", "/courses")
+
+
+def canvas_assignment_url(course_base_url: str, course_id: str, assignment_id: str) -> str:
+    return f"{course_base_url}/courses/{course_id}/assignments/{assignment_id}".replace("//courses", "/courses")
+
+
+def build_internal_link_maps(
+    course_base_url: str,
+    course_id: str,
+    lecture_pages: Dict[str, Dict[str, str]],
+    assignments_list: List[Dict[str, Any]],
+    labs_list: List[Dict[str, Any]],
+    file_url_map: Dict[str, str],
+) -> Tuple[Dict[str, str], Dict[str, str]]:
+    route_url_map: Dict[str, str] = {}
+    slug_url_map: Dict[str, str] = {}
+
+    for slug, info in lecture_pages.items():
+        page_url = str(info.get("pageUrl") or slug).strip()
+        if not page_url:
+            continue
+        target = canvas_course_page_url(course_base_url, course_id, page_url)
+        route_url_map[f"/lecture-notes/{slug}"] = target
+        route_url_map[f"/{slug}"] = target
+        slug_url_map[slug] = target
+
+    for assignment in assignments_list:
+        assignment_id = str(assignment.get("id", "")).strip()
+        route = str(assignment.get("url", "")).strip().rstrip("/")
+        if not assignment_id or not route:
+            continue
+        target = canvas_assignment_url(course_base_url, course_id, assignment_id)
+        route_url_map[route] = target
+        slug_url_map[_slug_from_path(route)] = target
+
+    for lab in labs_list:
+        lab_id = str(lab.get("id", "")).strip()
+        route = str(lab.get("url", "")).strip().rstrip("/")
+        if not lab_id or not route:
+            continue
+        target = canvas_assignment_url(course_base_url, course_id, lab_id)
+        route_url_map[route] = target
+        slug_url_map[_slug_from_path(route)] = target
+
+    for rel, file_url in file_url_map.items():
+        if not rel.lower().endswith(".pdf"):
+            continue
+        slide_slug = Path(rel).stem
+        route_url_map[f"/lecture-slides/{slide_slug}"] = file_url
+        route_url_map[f"/lecture-slides/{slide_slug}.pdf"] = file_url
+
+    return route_url_map, slug_url_map
+
+
 def publish_assignments_and_labs(
     api_base: str,
     token: str,
     course_id: str,
     config_path: Path,
     build_dir: Path,
+    file_url_map: Dict[str, str],
+    route_url_map: Dict[str, str],
+    slug_url_map: Dict[str, str],
+    unresolved_links: Optional[List[Dict[str, str]]],
     timeout: int,
     dry_run: bool,
 ) -> Dict[str, Any]:
@@ -768,6 +997,15 @@ def publish_assignments_and_labs(
         is_published = status == "published"
         url = assignment.get("url", "")
         description = load_description_html(build_dir, url) if url else ""
+        if description:
+            description = rewrite_internal_links_for_canvas(
+                html_text=description,
+                route_url_map=route_url_map,
+                slug_url_map=slug_url_map,
+                unresolved_links=unresolved_links,
+                source_slug=f"assignment:{assignment_id or 'unknown'}",
+            )
+            description = rewrite_file_links_for_canvas(description, file_url_map)
         
         if not assignment_id or not title or not assigned_date or not due_date:
             failed.append({"id": assignment_id, "title": title, "error": "missing required fields"})
@@ -811,6 +1049,15 @@ def publish_assignments_and_labs(
         points = 0
         url = lab.get("url", "")
         description = load_description_html(build_dir, url) if url else ""
+        if description:
+            description = rewrite_internal_links_for_canvas(
+                html_text=description,
+                route_url_map=route_url_map,
+                slug_url_map=slug_url_map,
+                unresolved_links=unresolved_links,
+                source_slug=f"lab:{lab_id or 'unknown'}",
+            )
+            description = rewrite_file_links_for_canvas(description, file_url_map)
         
         if not lab_id or not title or not dates:
             failed.append({"id": lab_id, "title": title, "error": "missing required fields"})
@@ -936,6 +1183,11 @@ def main() -> int:
 
     file_url_map = build_uploaded_file_url_map(summary["uploaded"])
     lecture_pages: Dict[str, Dict[str, str]] = {}
+    unresolved_internal_links: List[Dict[str, str]] = []
+
+    assignments_list, labs_list, _timezone = load_assignments_and_labs(config_path)
+    route_url_map: Dict[str, str] = {}
+    slug_url_map: Dict[str, str] = {}
 
     try:
         page_results = publish_lecture_pages(
@@ -944,6 +1196,9 @@ def main() -> int:
             course_id=course_id,
             build_dir=build_dir,
             file_url_map=file_url_map,
+            route_url_map=route_url_map,
+            slug_url_map=slug_url_map,
+            unresolved_links=unresolved_internal_links,
             timeout=args.timeout,
             dry_run=args.dry_run,
         )
@@ -958,6 +1213,39 @@ def main() -> int:
             }
         )
         print(f"FAILED: page publishing: {exc}")
+
+    route_url_map, slug_url_map = build_internal_link_maps(
+        course_base_url=base_url,
+        course_id=course_id,
+        lecture_pages=lecture_pages,
+        assignments_list=assignments_list,
+        labs_list=labs_list,
+        file_url_map=file_url_map,
+    )
+
+    try:
+        link_rewrite_result = rewrite_lecture_pages_after_mapping(
+            api_base=api_base,
+            token=token,
+            course_id=course_id,
+            build_dir=build_dir,
+            file_url_map=file_url_map,
+            route_url_map=route_url_map,
+            slug_url_map=slug_url_map,
+            unresolved_links=unresolved_internal_links,
+            timeout=args.timeout,
+            dry_run=args.dry_run,
+        )
+        summary["internalLinkRewrite"] = link_rewrite_result
+    except Exception as exc:
+        summary["failed"].append(
+            {
+                "relativePath": "[internalLinkRewrite]",
+                "canvasFolder": "n/a",
+                "error": str(exc),
+            }
+        )
+        print(f"FAILED: internal link rewrite pass: {exc}")
 
     try:
         module_results = publish_lecture_modules(
@@ -988,6 +1276,9 @@ def main() -> int:
             course_id=course_id,
             build_dir=build_dir,
             file_url_map=file_url_map,
+            route_url_map=route_url_map,
+            slug_url_map=slug_url_map,
+            unresolved_links=unresolved_internal_links,
             timeout=args.timeout,
             dry_run=args.dry_run,
         )
@@ -1008,6 +1299,10 @@ def main() -> int:
             course_id=course_id,
             config_path=config_path,
             build_dir=build_dir,
+            file_url_map=file_url_map,
+            route_url_map=route_url_map,
+            slug_url_map=slug_url_map,
+            unresolved_links=unresolved_internal_links,
             timeout=args.timeout,
             dry_run=args.dry_run,
         )
@@ -1023,6 +1318,7 @@ def main() -> int:
         print(f"FAILED: assignments/labs publishing: {exc}")
 
     manifest_path = build_dir / "canvas_upload_manifest.json"
+    summary["unresolvedInternalLinks"] = unresolved_internal_links
     manifest_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
     print("Upload process complete.")
@@ -1043,6 +1339,12 @@ def main() -> int:
         f"Assignments/Labs: {summary['assignmentsAndLabs']['created']} created, "
         f"{summary['assignmentsAndLabs']['dryRunSkipped']} dry-run skipped"
     )
+    internal = summary.get("internalLinkRewrite", {"updated": 0, "dryRunSkipped": 0})
+    print(
+        f"Internal link rewrite: {internal.get('updated', 0)} pages updated, "
+        f"{internal.get('dryRunSkipped', 0)} dry-run skipped"
+    )
+    print(f"Unresolved internal links: {len(unresolved_internal_links)}")
 
     return 1 if summary["failed"] else 0
 
