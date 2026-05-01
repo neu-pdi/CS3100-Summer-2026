@@ -40,21 +40,60 @@ const PNG_COMPRESSION = 9; // Max compression (0-9)
  * Handles both single and double quoted values, including multiline content
  */
 function extractAttribute(tagContent: string, attrName: string): string | null {
+  // Require attribute-name boundary so e.g. "src" does not match inside "data-src".
+  const attrPrefix = '(?:^|\\s)';
   // Match attr="value" or attr='value' - the value can contain the OTHER quote type
   // First try double quotes
-  const doubleQuotePattern = new RegExp(`${attrName}\\s*=\\s*"([^"]*)"`, 's');
+  const doubleQuotePattern = new RegExp(
+    `${attrPrefix}${attrName}\\s*=\\s*"([^"]*)"`,
+    's'
+  );
   const doubleMatch = tagContent.match(doubleQuotePattern);
   if (doubleMatch) {
     return doubleMatch[1];
   }
-  
+
   // Then try single quotes
-  const singleQuotePattern = new RegExp(`${attrName}\\s*=\\s*'([^']*)'`, 's');
+  const singleQuotePattern = new RegExp(
+    `${attrPrefix}${attrName}\\s*=\\s*'([^']*)'`,
+    's'
+  );
   const singleMatch = tagContent.match(singleQuotePattern);
   if (singleMatch) {
     return singleMatch[1];
   }
-  
+
+  // Try JSX expression syntax: attr={"value"} or attr={'value'}
+  // This handles cases where the string contains quotes that would break
+  // standard HTML attribute syntax (e.g., FXML code with escaped quotes)
+  // We match attr={ then find the closing "} or '} accounting for escaped quotes
+  const jsxExprPattern = new RegExp(
+    `${attrPrefix}${attrName}\\s*=\\s*\\{`,
+    's'
+  );
+  const jsxExprMatch = jsxExprPattern.exec(tagContent);
+  if (jsxExprMatch) {
+    const afterBrace = tagContent.substring(jsxExprMatch.index + jsxExprMatch[0].length);
+    const quoteChar = afterBrace.trimStart().charAt(0);
+    if (quoteChar === '"' || quoteChar === "'") {
+      const contentStart = afterBrace.indexOf(quoteChar) + 1;
+      const content = afterBrace.substring(contentStart);
+      // Walk through finding the unescaped closing quote
+      let i = 0;
+      while (i < content.length) {
+        if (content[i] === '\\' && i + 1 < content.length) {
+          i += 2; // skip escaped character
+        } else if (content[i] === quoteChar) {
+          // Found the closing quote — extract and unescape
+          const extracted = content.substring(0, i);
+          return extracted.replace(/\\\\/g, '\\').replace(/\\"/g, '"').replace(/\\'/g, "'");
+        } else {
+          i++;
+        }
+      }
+    }
+  }
+
   return null;
 }
 

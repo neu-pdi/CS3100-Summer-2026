@@ -31,7 +31,7 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Designing for changeability** by creating modular, loosely-coupled components ([L7: Coupling and Cohesion](/lecture-notes/l7-design-for-change))
 - **Applying information hiding** to encapsulate design decisions that are likely to change ([L6: Modularity and Information Hiding](/lecture-notes/l6-immutability-abstraction))
 - **Implementing immutable transformations** that return new objects rather than mutating existing ones
-- **Designing method specifications** with clear preconditions and postconditions ([L4: Specifications and Contracts](/lecture-notes/l4-specs-contracts))
+- **Designing method specifications** with clear preconditions and postconditions ([L4: Specifications and Contracts](/lecture-notes/l4-specs-contracts-new))
 - **Implementing `equals()` and `hashCode()`** correctly for value objects
 
 ## AI Policy for This Assignment

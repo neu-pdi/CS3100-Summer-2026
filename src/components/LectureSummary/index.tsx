@@ -1,60 +1,81 @@
 import { usePluginData } from '@docusaurus/useGlobalData';
-import { GlobalDoc, GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
+import { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import Link from '@docusaurus/Link';
 import Markdown from 'react-markdown';
-import { Box, Card, HStack, List, Text, Heading, Alert } from '@chakra-ui/react';
+import { Box, Card, HStack, List, Text, Heading } from '@chakra-ui/react';
 import {decode} from 'html-entities';
 
+type LectureHeading = {
+    text: string;
+    id: string;
+};
+
+type LectureSummaryData = {
+    id: string;
+    title: string;
+    lectureNumber?: number;
+    requiredPreparation: string[];
+    optionalPreparation: string[];
+    headings: LectureHeading[];
+    estimatedMinutes: number;
+};
+
+type ClassasaurusData = {
+    lectureSummaries?: LectureSummaryData[];
+};
+
 export default function LectureSummary({ version }: { version: string }) {
-    const pluginData = usePluginData('docusaurus-plugin-content-docs') as GlobalPluginData;
-    const sidebar = pluginData.versions[0]
-    const docs = sidebar.docs.filter(doc => !doc.id.startsWith('l0')).map(doc => {
-        const docContent = require(`@site/lecture-notes/${doc.id}.md`)
-        return {
-            doc,
-            docContent
-        }
-    });
-    docs.sort((a, b) => a.doc.id.localeCompare(b.doc.id, undefined, { numeric: true, sensitivity: 'accent' }))
+    const docsPluginData = usePluginData('docusaurus-plugin-content-docs') as GlobalPluginData;
+    const classasaurusData = usePluginData('docusaurus-plugin-classasaurus') as ClassasaurusData;
+    const docsById = new Map(
+        docsPluginData.versions[0].docs
+            .filter((doc) => !doc.id.startsWith('l0'))
+            .map((doc) => [doc.id, doc])
+    );
+    const docs = (classasaurusData.lectureSummaries || [])
+        .map((summary) => ({
+            doc: docsById.get(summary.id),
+            summary,
+        }))
+        .filter((entry) => entry.doc);
+
+    docs.sort((a, b) => a.summary.id.localeCompare(b.summary.id, undefined, { numeric: true, sensitivity: 'accent' }));
+
     return (
         <Box>
-            {docs.map(({ doc, docContent }) => {
-                const { required_preparation, optional_preparation } = docContent.frontMatter
-                const headings = docContent.toc || [];
-                const headngMinutes = headings.map(heading => {
-                    const regeex = /\(([0-9]+) minutes\)/
-                    const match = heading.value.match(regeex)
-                    return match ? parseInt(match[1]) : 0
-                })
-                const totalMinutes = headngMinutes.reduce((acc, curr) => acc + curr, 0)
+            {docs.map(({ doc, summary }) => {
+                if (!doc) {
+                    return null;
+                }
+
                 return (
                     <Card.Root key={doc.id} m={4} size='sm'>
                         <Card.Header>
                             <HStack justifyContent='space-between'>
-                                <Link to={doc.path}><Heading as="h3" m={0}>{docContent.frontMatter?.lecture_number}. {docContent.metadata?.title}</Heading></Link>
-                                <Text fontSize='sm' color='text.muted'>Est {totalMinutes} minutes</Text>
+                                <Link to={doc.path}><Heading as="h3" m={0}>{summary.lectureNumber ? `${summary.lectureNumber}. ${summary.title}` : summary.title}</Heading></Link>
+                                <Text fontSize='sm' color='text.muted'>Est {summary.estimatedMinutes} minutes</Text>
                             </HStack>
                         </Card.Header>
                         <Card.Body spaceY={0}>
                             <HStack alignItems="flex-start">
-                                {required_preparation && <Box>
+                                {summary.requiredPreparation.length > 0 && <Box>
                                     <Text fontWeight='bold' p={0} m={0}>Required preparation</Text>
                                     <List.Root m={0}>
-                                        {required_preparation.map((prep, idx) => <List.Item key={idx}><a href={prep}>{prep}</a></List.Item>)}
+                                        {summary.requiredPreparation.map((prep, idx) => <List.Item key={idx}><a href={prep}>{prep}</a></List.Item>)}
                                     </List.Root>
                                 </Box>}
-                                {optional_preparation && <Box>
+                                {summary.optionalPreparation.length > 0 && <Box>
                                     <Text fontWeight='bold' p={0} m={0}>Optional preparation</Text>
                                     <List.Root m={0}>
-                                        {optional_preparation.map((prep, idx) => <List.Item key={idx}><Markdown>{prep}</Markdown></List.Item>)}
+                                        {summary.optionalPreparation.map((prep, idx) => <List.Item key={idx}><Markdown>{prep}</Markdown></List.Item>)}
                                     </List.Root>
                                 </Box>}
                             </HStack>
                             <b>Topics</b>
                             <List.Root>
-                                {headings.filter(heading => heading.level === 2).map((heading, idx) => (
-                                    <List.Item key={idx} style={{ marginLeft: `${heading.level * 12}px` }}>
-                                        <Link to={`${doc.path}#${heading.id}`}>{decode(heading.value)}</Link>
+                                {summary.headings.map((heading, idx) => (
+                                    <List.Item key={idx}>
+                                        <Link to={`${doc.path}#${heading.id}`}>{decode(heading.text)}</Link>
                                     </List.Item>
                                 ))}
                             </List.Root>

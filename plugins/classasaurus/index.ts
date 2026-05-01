@@ -1,7 +1,7 @@
 import { LoadContext, Plugin } from "@docusaurus/types";
 import path from 'path';
 import fs from 'fs';
-import type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, CalendarEvent, CalendarType } from './types';
+import type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, CalendarEvent, CalendarType, LectureSummaryData } from './types';
 import { validateCourseConfig } from './config-validator';
 import { generateSchedule } from './schedule-generator';
 import { extractHeadings, formatDateDisplay } from './utils';
@@ -54,6 +54,59 @@ export default async function pluginClassasaurus(
         
         return courseConfig;
     }
+
+    function extractFrontmatterList(frontmatter: string, key: string): string[] {
+        const match = frontmatter.match(new RegExp(`^${key}:\s*\n((?:\s*-\s+.*\n?)*)`, 'm'));
+        if (!match) {
+            return [];
+        }
+
+        return match[1]
+            .split('\n')
+            .map((line) => line.replace(/^\s*-\s+/, '').trim())
+            .filter(Boolean);
+    }
+
+    function buildLectureSummaries(config: CourseConfig, siteDir: string): LectureSummaryData[] {
+        const lectureNotesDir = path.join(siteDir, 'lecture-notes');
+
+        if (!fs.existsSync(lectureNotesDir)) {
+            return [];
+        }
+
+        return config.lectures.flatMap((lecture) => {
+            const lectureId = lecture.lectureId;
+            const mdPath = path.join(lectureNotesDir, `${lectureId}.md`);
+            const mdxPath = path.join(lectureNotesDir, `${lectureId}.mdx`);
+            const filePath = fs.existsSync(mdPath) ? mdPath : (fs.existsSync(mdxPath) ? mdxPath : null);
+
+            if (!filePath) {
+                return [];
+            }
+
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const headings = extractHeadings(content);
+            const estimatedMinutes = headings.reduce((total, heading) => {
+                const match = heading.text.match(/\(([0-9]+) minutes\)/);
+                return total + (match ? parseInt(match[1], 10) : 0);
+            }, 0);
+
+            const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+            const frontmatter = frontmatterMatch ? frontmatterMatch[1] : '';
+            const titleMatch = frontmatter.match(/^title:\s*(.+)$/m);
+            const lectureNumberMatch = frontmatter.match(/^lecture_number:\s*([0-9]+)$/m);
+
+            return [{
+                id: lectureId,
+                title: titleMatch ? titleMatch[1].trim().replace(/^["']|["']$/g, '') : lectureId,
+                lectureNumber: lectureNumberMatch ? parseInt(lectureNumberMatch[1], 10) : undefined,
+                requiredPreparation: extractFrontmatterList(frontmatter, 'required_preparation'),
+                optionalPreparation: extractFrontmatterList(frontmatter, 'optional_preparation'),
+                headings,
+                estimatedMinutes,
+            }];
+        });
+    }
     
     /**
      * Generate COURSE.md content with course summary, lecture TOC, labs, lecture slides, and assignments
@@ -94,50 +147,31 @@ sidebar: false
         // Generate lecture table of contents
         courseMarkdown += `# Lectures and associated learning objectives\n\n`;
         
-        // Get all lecture files and sort them
-        const lectureFiles: Array<{ id: string; path: string; content: string }> = [];
-        
+        // Only include lecture files that are explicitly listed in the course config.
+        const lectureFiles: Array<{ id: string; content: string }> = [];
+
         if (fs.existsSync(lectureNotesDir)) {
-            const files = fs.readdirSync(lectureNotesDir);
-            for (const file of files) {
-                if (file.endsWith('.md') || file.endsWith('.mdx')) {
-                    const lectureId = file.replace(/\.(md|mdx)$/, '');
-                    // Skip l0-summary and index.md
-                    if (lectureId.startsWith('l0') || lectureId === 'index') continue;
-                    
-                    const filePath = path.join(lectureNotesDir, file);
-                    const content = fs.readFileSync(filePath, 'utf-8');
-                    
-                    // Extract title from frontmatter or first heading
-                    let title = lectureId;
-                    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-                    if (frontmatterMatch) {
-                        const frontmatter = frontmatterMatch[1];
-                        const titleMatch = frontmatter.match(/^title:\s*(.+)$/m);
-                        if (titleMatch) {
-                            title = titleMatch[1].trim().replace(/^["']|["']$/g, '');
-                        }
-                    } else {
-                        // Try to get from first heading
-                        const headingMatch = content.match(/^#\s+(.+)$/m);
-                        if (headingMatch) {
-                            title = headingMatch[1].trim();
-                        }
-                    }
-                    
-                    lectureFiles.push({
-                        id: lectureId,
-                        path: filePath,
-                        content,
-                    });
+            for (const lecture of config.lectures) {
+                const lectureId = lecture.lectureId;
+                const mdPath = path.join(lectureNotesDir, `${lectureId}.md`);
+                const mdxPath = path.join(lectureNotesDir, `${lectureId}.mdx`);
+
+                let filePath: string | null = null;
+                if (fs.existsSync(mdPath)) {
+                    filePath = mdPath;
+                } else if (fs.existsSync(mdxPath)) {
+                    filePath = mdxPath;
                 }
+
+                if (!filePath) {
+                    console.warn(`⚠️ Lecture file not found for configured lectureId: ${lectureId}`);
+                    continue;
+                }
+
+                const content = fs.readFileSync(filePath, 'utf-8');
+                lectureFiles.push({ id: lectureId, content });
             }
         }
-        
-        // Sort lectures by ID (handling numeric sorting)
-        lectureFiles.sort((a, b) => {
-            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-        });
         
         // Create a map of lecture IDs to dates
         const lectureDateMap = new Map<string, string[]>();
@@ -479,6 +513,7 @@ sidebar: false
                 
                 // Generate schedule
                 const courseSchedule = generateSchedule(courseConfig);
+                courseSchedule.lectureSummaries = buildLectureSummaries(courseConfig, context.siteDir);
                 console.log(`📅 Generated schedule with ${courseSchedule.allEntries.length} total class meetings`);
                 
                 // Log section info
@@ -617,7 +652,7 @@ sidebar: false
                 // Try multiple possible paths
                 const possiblePaths = [
                     path.join(outDir, 'overview', 'index.html'), // Standard path
-                    path.join(outDir, 'cs3100-public-resources', 'overview', 'index.html'), // With baseUrl
+                    path.join(outDir, 'CS3100-Spring-2026', 'overview', 'index.html'), // With baseUrl
                     path.join(outDir, 'overview.html'), // Alternative format
                 ];
                 
@@ -668,6 +703,6 @@ sidebar: false
 }
 
 // Export types for use in other files
-export type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule } from './types';
+export type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, ShowcaseGroupEntry } from './types';
 // Export utilities
 export * from './utils';

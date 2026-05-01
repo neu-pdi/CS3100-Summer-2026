@@ -4,11 +4,6 @@ sidebar_position: 9
 image: /img/assignments/web/ga0.png
 ---
 
-:::warning Preliminary Content
-
-This assignment is preliminary content and is subject to change until the release date of the assignment.
-
-:::
 
 ## Overview
 
@@ -17,6 +12,18 @@ With your Team Charter established, it's time to design your group project. In t
 ![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting transformed into a design studio with warm wooden cabinets and countertops in browns and tans. Scene composition: A team of four pixel art characters gathered around a large whiteboard that dominates the center of the scene. The whiteboard is covered with design artifacts: low-fidelity wireframe sketches of a recipe app GUI showing four distinct screens (library view, recipe editor, import interface, search panel), connected by navigation flow arrows in cyan. LEFT SIDE - One character pins a user persona card to the board ("Home Cook Hannah" with goals and frustrations listed), while another sketches wireframes with a thick marker, showing iteration (Version 1 crossed out, Version 2 highlighted). RIGHT SIDE - A third character reviews an architecture diagram showing ViewModel boxes connected via cyan arrows to a box labeled 'A5 Service Architecture'. The fourth character evaluates accessibility icons pinned to the board: a keyboard icon and a contrast ratio checker. FOREGROUND - A table with scattered materials: colored sticky notes with feature names ("Recipe Scaling", "Dark Mode", "Shopping List"), a "Feature Buffet Menu" card listing Standard and Advanced options, and a special golden card labeled "Our Feature" with a lightbulb icon and question mark. POST-IT NOTES: "Design before you code!" and "Who is your user?" TOP BANNER: Metallic blue banner with white pixel text "GA0: Design Sprint". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". Color palette: Warm browns/tans for kitchen, cyan/teal for wireframe arrows and architecture flows, cream for persona cards, yellow for sticky notes, gold accent for "Our Feature" card. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic with subtle CRT screen texture, 16:9 aspect ratio.](/img/assignments/web/ga0.png)
 
 Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll include (but not implement) in your final report.
+
+:::info Getting Started with Git
+This is your first team assignment. Your team repository is on GitHub — clone it and start working. Each team member must author at least **one pull request** for this assignment. You don't need a strict branching workflow yet (that comes in GA1), but practice creating branches and opening PRs now. Read the **[Git Workflow for Team Projects](/assignments/git-workflow)** guide before your first TA mentor meeting.
+:::
+
+:::info Codebase Handout
+When you begin implementation in GA1, you will receive a codebase handout that includes the **solution to HW5** (the service layer) as well as a **basic integration with the Gemini API for recipe OCR parsing** (extracting recipe text from images). You do not need to build these from scratch—your job in GA1 and GA2 is to design and build the GUI and additional features on top of this foundation.
+:::
+
+:::tip What's a ViewModel?
+Think back to [Hexagonal Architecture](/lecture-notes/l16-testability) — your HW5 services are the **application core**, and the GUI you're about to build is an external system that needs an **adapter** to talk to them. A **ViewModel** is exactly that adapter: it holds the state that the View displays and translates user actions into calls to your services. The View (what the user sees and clicks) depends on the ViewModel, and the ViewModel depends on your services — just like adapters depend on ports. You don't need to know the implementation details yet — we'll cover this in [L29: GUIs Part 1](/lecture-notes/l29-gui1). For this design sprint, it's enough to think about: *"What data does each screen need, and what actions can the user take?"*
+:::
 
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time
 
@@ -27,7 +34,7 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Applying User-Centered Design** through personas, wireframes, and prototyping ([L27: User-Centered Design](/lecture-notes/l27-ucd))
 - **Considering accessibility** in interface design from the start ([L28: Accessibility and Inclusivity](/lecture-notes/l28-accessibility))
 - **Evaluating usability** using Nielsen's heuristics ([L24: Usability](/lecture-notes/l24-usability))
-- **Connecting design to architecture** by mapping ViewModels to existing services ([L18: Thinking Architecturally](/lecture-notes/l18-architecture-design))
+- **Connecting design to architecture** by mapping UI screens to existing services ([L18: Thinking Architecturally](/lecture-notes/l18-architecture-design))
 
 ## AI Policy for This Assignment
 
@@ -44,7 +51,7 @@ Before starting individual work, your team must assign ownership of the four cor
 
 - **Library View** (Owner: _____): Browse and manage recipe collections
 - **Recipe Editor** (Owner: _____): View and edit recipe content
-- **Import Interface** (Owner: _____): Import recipes from images using the Gemini API or copy/paste from text
+- **Import Interface** (Owner: _____): Import recipes from images using the Gemini API 
 - **Search & Filter** (Owner: _____): Find recipes across collections
 
 Each team member owns **one** feature and is responsible for the individual deliverables for that feature.
@@ -56,7 +63,7 @@ Each team member creates the following for **their assigned core feature**:
 
 ### 1. User Persona
 
-A **persona** is a fictional but realistic representation of a target user. Rather than designing for "everyone," personas help you focus on specific user needs, behaviors, and goals. See [L27: User-Centered Design](/lecture-notes/l27-ucd) for examples and templates.
+A **persona** is a fictional but realistic representation of a target user. Rather than designing for "everyone," personas help you focus on specific user needs, behaviors, and goals. See [L24: Usability (Slides 14-16)](/lecture-slides/l24-usability) for examples and templates.
 
 Create a realistic persona (1 page) for a user who primarily uses your feature. Include:
 - Name, background, technical comfort level
@@ -88,8 +95,8 @@ Write a brief document (1/2 page) addressing:
 ### 1. Architecture Diagram
 
 Create a diagram showing:
-- How your ViewModels connect to the existing services from A5
-- The relationship between Views, ViewModels, and Services
+- How your UI screens connect to the existing services from HW5 (think: *what data does each screen need from the service layer?*)
+- The relationship between Views (screens), ViewModels (the glue), and Services (your HW5 code)
 - Any new components your team plans to add
 
 ### 2. Integrated Wireframe Document
@@ -98,6 +105,8 @@ Combine individual wireframes into a single document (`design/integrated-wirefra
 - How navigation flows between the features your team is implementing (four features, or three if you are a 3-person team that dropped Search & Filter)
 - Shared UI elements (header, navigation, common buttons)
 - Any design decisions that affect multiple features
+
+Add your graphics to the repository, and embed them in this document. Confirm that they are visible in the GitHub preview or Pawtograder submission view.
 
 **3-person teams:** You may exclude the omitted feature (Search & Filter) from the combined wireframe, but the document must explicitly state which feature was omitted (e.g., "Our team is implementing Library View, Recipe Editor, and Import Interface; Search & Filter is not in scope.").
 
@@ -173,6 +182,8 @@ This is your chance to exercise full UCD creativity without implementation const
    - Scope? Complexity? Time? Dependencies?
    - This honest assessment demonstrates mature engineering judgment
 
+**Scope guidance:** Think big — aim for something at least as substantial as a Feature Buffet item, and don't be afraid to go bigger. We want to see product vision here: what would genuinely make CookYourBooks better if you had more time?
+
 **Examples of good "Our Feature" ideas** (must be something *not* on the Feature Buffet):
 - Recipe version history with diff view
 - Collaborative cookbook sharing with permissions
@@ -188,7 +199,8 @@ This is your chance to exercise full UCD creativity without implementation const
 |-----------|--------|----------|
 | **User Persona** | 5 | Realistic, specific to feature, includes goals/pain points/context |
 | **Wireframes** | 6 | Shows key screens, interactions, and connections to other features |
-| **Accessibility Plan** | 4 | Addresses keyboard, screen reader, color; references WCAG |
+| **Accessibility Plan** | 3 | Addresses keyboard, screen reader, color; references WCAG |
+| **Pull Request** | 1 | Authored at least one PR |
 
 ### Team Components (15 points)
 
@@ -202,26 +214,15 @@ This is your chance to exercise full UCD creativity without implementation const
 
 **Total: 30 points**
 
+### Individual Accountability Adjustment
+
+In **Meeting 2** (week of Mar 30–31), your TA will ask your team to walk through your GA0 submission — the architecture diagram, wireframes, and design decisions. Each student should be prepared to explain not only their own individual deliverables but also the team deliverables. **Any team member may be asked about any team deliverable**, so make sure you understand the full design, not just the part you personally created.
+
+Students who cannot explain the design artifacts may receive a deduction of **up to 5 points** on their GA0 grade. Students who demonstrate comprehension receive no deduction. This is a calibration for the more detailed code walks in GA1 — treat it as practice for explaining your design thinking.
+
 ## Submission
 
-1. **Feature assignments:** Update your Team Charter with feature ownership
-2. **Individual deliverables:** Each member adds their persona, wireframes, and accessibility plan to `design/{username}/` folder
-3. **Architecture diagram:** Add to `design/architecture.png` (or PDF)
-4. **Integrated wireframes:** Add to `design/integrated-wireframes.md`
-5. **User-facing terminology:** Add to `design/ui-terminology.md`
-6. **Feature Buffet selection:** Add to `design/buffet-selection.md`
-7. **"Our Feature" concept:** Add to `design/our-feature.md`
+All deliverables go in the **`README.md`** provided in your team's handout repository. The template includes section headers for each deliverable — fill them in. Embed or link wireframes, diagrams, and other images directly in the document, and commit image files to the `design/` folder.
 
-### Submission Checklist
+Your `main` branch is automatically submitted to Pawtograder. Each team member must author at least **one pull request** as part of this assignment. You don't need to follow a strict branching workflow yet — that comes in GA1 — but get comfortable with PRs now.
 
-- [ ] Feature assignments added to Team Charter
-- [ ] Each member has persona, wireframes, accessibility plan in their folder
-- [ ] Architecture diagram present
-- [ ] Integrated wireframes showing navigation and shared elements
-- [ ] User-facing terminology table complete
-- [ ] Feature Buffet: 2-3 selections with rationale
-- [ ] "Our Feature": complete design concept with all 5 sections
-
----
-
-Good luck! This design phase sets the foundation for everything that follows. Teams that invest in thoughtful design upfront consistently have smoother implementation phases.

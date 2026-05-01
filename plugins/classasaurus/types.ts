@@ -317,6 +317,16 @@ export interface CanvasConfig {
 }
 
 /**
+ * Entry for the public project showcase (infographic gallery)
+ */
+export interface ShowcaseGroupEntry {
+  /** Group id; image path is `/img/showcase/group-{id}.png` */
+  id: string;
+  /** Card label; defaults to `Group {id}` when omitted */
+  label?: string;
+}
+
+/**
  * Course configuration
  */
 export interface CourseConfig {
@@ -368,6 +378,9 @@ export interface CourseConfig {
   /** Timezone for the course (e.g., "America/New_York") */
   timezone?: string;
   
+  /** Groups shown on the `/showcase` infographic gallery (optional) */
+  showcaseGroups?: ShowcaseGroupEntry[];
+
   /** Optional course metadata */
   metadata?: {
     department?: string;
@@ -461,6 +474,16 @@ export interface CalendarEvent {
   calendar_type: CalendarType;
 }
 
+export interface LectureSummaryData {
+  id: string;
+  title: string;
+  lectureNumber?: number;
+  requiredPreparation: string[];
+  optionalPreparation: string[];
+  headings: Array<{ text: string; id: string }>;
+  estimatedMinutes: number;
+}
+
 /**
  * Complete schedule for a course
  */
@@ -492,5 +515,8 @@ export interface CourseSchedule {
   
   /** Calendar events fetched from ICS files at build time */
   calendarEvents?: CalendarEvent[];
+
+  /** Precomputed lecture summaries for configured lecture notes */
+  lectureSummaries?: LectureSummaryData[];
 }
 

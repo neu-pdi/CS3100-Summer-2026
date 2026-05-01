@@ -23,7 +23,7 @@ You are **not** expected to become a master architect by the end of this lecture
 Junior engineers read existing architectures far more than they design new ones. Understanding *why* a system is structured a certain way is 90% of the skill. Design skills come later with experience—comprehension comes first.
 :::
 
-In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L18](./l18-architecture-design.md), we identified component boundaries for Pawtograder's autograder—the Solution Repo, Grading Action, and Pawtograder API—by applying heuristics about rate of change, actors, interface segregation, and testability.
+In [L16 (Design for Testability)](./l16-testability.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L18](./l18-architecture-design.md), we identified component boundaries for Pawtograder's autograder—the Solution Repo, Grading Action, and Pawtograder API—by applying heuristics about rate of change, actors, interface segregation, and testability.
 
 Now we zoom out to look at architectural styles more broadly—recurring structures that help organize entire applications. We'll continue with our **Pawtograder** and **Bottlenose** running examples to see how these styles apply in practice.
 

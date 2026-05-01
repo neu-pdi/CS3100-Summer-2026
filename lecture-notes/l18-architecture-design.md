@@ -32,7 +32,7 @@ The boundary between them is fuzzy.
 [Ralph Johnson put it this way: "Architecture is about the important stuff. Whatever that is."](https://martinfowler.com/ieeeSoftware/whoNeedsArchitect.pdf) The "important stuff" varies by project, but it's usually the decisions that constrain many other decisions downstream.
 A useful heuristic: **architectural decisions are the ones that are expensive to change**. Choosing to run grading on GitHub Actions vs. a dedicated server is architectural—reversing that decision later costs lots of work. Choosing between a `HashMap` and a `TreeMap` for test result storage is design—you can change it in one coding session. Most cases, however, are not as clear-cut, and in fact, the goal of a good architect may be to reduce the total number of decisions that will be expensive to change.
 
-Some of these architectural concepts—like networks, distributed systems, authentication protocols (OIDC), and deployment models—may be unfamiliar right now. Don't worry: we'll explore these topics in depth over the coming weeks—[networks and distributed communication](./l20-networks.md) in L20, [serverless architecture](./l21-serverless.md) in L21, and [how team structure shapes architecture](./l22-teams.md) in L22. For today, focus on the *thinking process*: how do we identify which decisions matter most and where to draw boundaries?
+Some of these architectural concepts—like networks, distributed systems, authentication protocols (OIDC), and deployment models—may be unfamiliar right now. Don't worry: we'll explore these topics in depth over the coming weeks—[networks and distributed communication](./l20-distributed-architecture.md) in L20, [serverless architecture](./l21-serverless.md) in L21, and [how team structure shapes architecture](./l22-teams.md) in L22. For today, focus on the *thinking process*: how do we identify which decisions matter most and where to draw boundaries?
 
 
 :::tip History of Programming
@@ -78,13 +78,13 @@ How well must the system perform? Quality attributes (also called non-functional
 
 | Quality Attribute | Pawtograder Implication | Where We Go Deeper |
 |-------------------|----------------------|-------------------|
-| **Security** | Students must NEVER see instructor test cases. Submissions must be authenticated. | [L20: Networks](./l20-networks.md) covers authentication, OIDC, and network security |
+| **Security** | Students must NEVER see instructor test cases. Submissions must be authenticated. | [L20: Networks](./l20-distributed-architecture.md) covers authentication, OIDC, and network security |
 | **Scalability** | Hundreds of students may submit simultaneously near a deadline. | [L21: Serverless](./l21-serverless.md) explores how managed platforms handle scaling |
 | **Changeability** | New assignment = new `pawtograder.yml`. New language = new build preset. | [L6](./l6-immutability-abstraction.md) and [L7](./l7-design-for-change.md) cover the foundations: modularity, coupling, cohesion |
-| **Testability** | Grading logic should be testable without deploying to GitHub or Pawtograder. | [L16: Design for Testability](./l16-testing2.md) covers observability and controllability|
+| **Testability** | Grading logic should be testable without deploying to GitHub or Pawtograder. | [L16: Design for Testability](./l16-testability.md) covers observability and controllability|
 | **Maintainability** | A small team maintains the action; many instructors use it across courses. | [L36: Sustainability](./l36-sustainability.md) examines long-term maintainability and technical debt |
 
-Quality attributes often conflict. Optimizing for security (downloading the grader at runtime) creates a network dependency that hurts reliability. Maximizing changeability (rich config format) adds complexity to the action. Architecture is about making these tradeoffs consciously. We'll explore these tradeoffs systematically in [L19: Architectural Styles](./l19-monoliths.md). Today is all about understanding how these drivers *can* shape the structure of our system.
+Quality attributes often conflict. Optimizing for security (downloading the grader at runtime) creates a network dependency that hurts reliability. Maximizing changeability (rich config format) adds complexity to the action. Architecture is about making these tradeoffs consciously. We'll explore these tradeoffs systematically in [L19: Architectural Styles](./l19-architectural-qualities.md). Today is all about understanding how these drivers *can* shape the structure of our system.
 
 ### Constraints
 
@@ -232,7 +232,7 @@ Notice how much information flows through `AutograderFeedback`. This is the "thi
 
 Notice that the instructor's "interface" is actually a YAML file—`pawtograder.yml` IS the contract between instructor and action. This is ISP applied at the configuration level. Each interface has **one reason to change**.
 
-**Heuristic 4: Consider testability** (see also [L16: Design for Testability](./l16-testing2.md))
+**Heuristic 4: Consider testability** (see also [L16: Design for Testability](./l16-testability.md))
 
 Can you test a component *without* deploying the whole system?
 
@@ -281,7 +281,7 @@ The fundamental difference is where **intelligence** lives:
 
 Notice the **data coupling** difference (recall our discussion of coupling in [L7](./l7-design-for-change.md)). In Bottlenose, the application, the Backburner job queue, and Orca all share the same PostgreSQL database. A schema change to the grading tables ripples through the application, the job workers, and the execution service. In Pawtograder, the Grading Action never touches the database—it communicates exclusively through two narrow API endpoints (`createSubmission` and `submitFeedback`). The database schema can change freely as long as those two endpoints keep their contract. This is information hiding applied at the data layer: Pawtograder's API **hides** the database behind a stable interface, while Bottlenose's shared database **couples** its components at the data level.
 
-Data coupling has a direct impact on **testability** (recall [L16](./l16-testing2.md)). Because Pawtograder's action has no database dependency, you can test the entire grading pipeline on your laptop: point it at a solution repo and a submission folder, and it runs the full build-test-score cycle without a network connection, a database, or a GitHub runner. In Bottlenose, you *could* test a `Grader` subclass by instantiating it and feeding it canned TAP output—but you'd be working against the grain. The `Grader` base class inherits from `ActiveRecord`, so you'd need to stub database interactions, mock the Backburner job dispatch, and simulate Orca's Docker execution responses. It's possible, but messy—the architecture doesn't make isolated testing the path of least resistance. The shared database and monolithic structure mean that testing any single grading concern in isolation requires significant scaffolding to decouple it from the rest of the system. This is coupling making itself felt at test time: the more dependencies a component has, the more mocking and stubbing you need to verify it works.
+Data coupling has a direct impact on **testability** (recall [L16](./l16-testability.md)). Because Pawtograder's action has no database dependency, you can test the entire grading pipeline on your laptop: point it at a solution repo and a submission folder, and it runs the full build-test-score cycle without a network connection, a database, or a GitHub runner. In Bottlenose, you *could* test a `Grader` subclass by instantiating it and feeding it canned TAP output—but you'd be working against the grain. The `Grader` base class inherits from `ActiveRecord`, so you'd need to stub database interactions, mock the Backburner job dispatch, and simulate Orca's Docker execution responses. It's possible, but messy—the architecture doesn't make isolated testing the path of least resistance. The shared database and monolithic structure mean that testing any single grading concern in isolation requires significant scaffolding to decouple it from the rest of the system. This is coupling making itself felt at test time: the more dependencies a component has, the more mocking and stubbing you need to verify it works.
 
 This difference *may not be* arbitrary—it *might* reflect **different requirements**. We speculate that Bottlenose's computing context didn't demand the same level of instructor flexibility—perhaps there was less need for structured feedback on individual lines of code, rubric-integrated point deductions, or mutation testing. If so, Bottlenose's platform-driven model—where each `Grader` subclass encapsulates a language's grading logic—*would have been* a natural fit. Centralizing intelligence in the platform *could have* simplified individual graders and given the team a consistent pattern to follow. But again, we're reasoning backwards from the code—the actual motivations might have been entirely different (team expertise, available technologies, time constraints, or requirements we don't know about).
 
@@ -527,7 +527,7 @@ The key insight: **use the right level of detail for your audience**.
 | Action maintainers | Levels 2–3 | Need to understand component responsibilities and dependencies |
 | Contributors adding a new Builder | Levels 3–4 | Need to see the extension point and its interface |
 
-For comparison, Bottlenose's C4 Level 2 looks quite different—it has four containers (the Bottlenose application, the Backburner job queue, Orca's Docker execution service, and PostgreSQL) compared to Pawtograder's three. This *appears to reflect* the additional infrastructure required for Bottlenose's dedicated-server approach vs. Pawtograder leveraging GitHub's infrastructure—though again, we're reasoning from the code, not from design documents. (In [L20](./l20-networks.md) and [L21](./l21-serverless.md), we'll see how network boundaries and serverless platforms influence this kind of container topology.)
+For comparison, Bottlenose's C4 Level 2 looks quite different—it has four containers (the Bottlenose application, the Backburner job queue, Orca's Docker execution service, and PostgreSQL) compared to Pawtograder's three. This *appears to reflect* the additional infrastructure required for Bottlenose's dedicated-server approach vs. Pawtograder leveraging GitHub's infrastructure—though again, we're reasoning from the code, not from design documents. (In [L20](./l20-distributed-architecture.md) and [L21](./l21-serverless.md), we'll see how network boundaries and serverless platforms influence this kind of container topology.)
 
 ### Architecture Decision Records (ADRs)
 
@@ -613,7 +613,7 @@ The "decided up front" items are all about **separation**—how components talk 
 
 Architecture is the shape that emerges when you apply your constraints and quality attributes to your functional requirements.
 
-- Testability + changeability requirements → Narrow API boundary, no shared database—action and platform evolve independently (recall [L7](./l7-design-for-change.md) on coupling, [L16](./l16-testing2.md) on testability)
+- Testability + changeability requirements → Narrow API boundary, no shared database—action and platform evolve independently (recall [L7](./l7-design-for-change.md) on coupling, [L16](./l16-testability.md) on testability)
 - Rich feedback requirements → Thick grading action that normalizes results, rather than pushing interpretation to the platform
 - Extensibility requirement → Strategy pattern for builders and parsers, config-driven grading (recall [L8](./l8-design-for-change-2.md) on designing for extensibility)
 - Team size constraint → Simpler component boundaries, fewer moving parts (see [L22](./l22-teams.md) on how team structure and architecture influence each other)
@@ -629,4 +629,4 @@ Even though our Bottlenose analysis is speculative, this kind of reverse-enginee
 
 ---
 
-In the next lecture ([L19: Architectural Styles](./l19-monoliths.md)), we'll examine **architectural styles**—Hexagonal, Layered, Pipelined, and Monolithic architectures—and how these patterns affect quality attributes like maintainability, scalability, and security. From there, we'll build on today's foundations through the rest of the course: [networks and distributed communication](./l20-networks.md) (L20), [serverless architecture](./l21-serverless.md) (L21), [teams and Conway's Law](./l22-teams.md) (L22), [safety and reliability](./l35-safety-reliability.md) (L35), and [sustainability](./l36-sustainability.md) (L36).
+In the next lecture ([L19: Architectural Styles](./l19-architectural-qualities.md)), we'll examine **architectural styles**—Hexagonal, Layered, Pipelined, and Monolithic architectures—and how these patterns affect quality attributes like maintainability, scalability, and security. From there, we'll build on today's foundations through the rest of the course: [networks and distributed communication](./l20-distributed-architecture.md) (L20), [serverless architecture](./l21-serverless.md) (L21), [teams and Conway's Law](./l22-teams.md) (L22), [safety and reliability](./l35-safety-reliability.md) (L35), and [sustainability](./l36-sustainability.md) (L36).

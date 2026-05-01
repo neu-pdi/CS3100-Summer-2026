@@ -17,7 +17,7 @@ Building on foundations introduced in CS 2100, examines program design at increa
 
 Upon successful completion of this course, students will be able to:
 - Analyze software requirements and synthesize an object-oriented design utilizing open-source libraries
-- Identify the stakeholders of a software module, along with their values and interests 
+- Identify the stakeholders of a software module, along with their values and interests
 - Utilize the vocabulary of design patterns to compare the impact of design decisions on non-functional requirements such as accessibility, changeability, performance, reusability and privacy
 - Given a software module, identify its potential failure modes, the impact of those potential failures for all stakeholders, and propose modifications to the software design to mitigate those risks
 - Design and implement an effective test suite for a piece of software
@@ -33,8 +33,6 @@ The course consists of lectures, labs, assignments, and a semester-long project.
 - Module 2 (weeks 6 - 11): Development practices and user-centered design
 - Module 3 (weeks 12 - 15): Design in the large: architecture and distributed systems
 
-Module 1 and 2 are followed by exams, and Module 3 is followed by a cumulative final exam. 
-
 Students complete individual programming assignments that build into a larger project, [Cook Your Books](/assignments). Students will practice design skills by both writing new code and reviewing existing code. Assignments are structured such that, each week, students implement the week's requirements using the solution from the previous week as a starting point. Students complete a self-reflection on each assignment, examining the design decisions they made and the tradeoffs they considered. Early assignments will have students work individually to implement a small feature in the codebase. Later, students will form teams to work on a signficiantly larger feature in the same codebase.
 
 
@@ -44,12 +42,11 @@ Students can earn up to 1000 points. Your final grade is based on both the total
 
 | Category | Points | % of Grade |
 |----------|--------|------------|
-| Individual Assignments (A1-A5) | 300 | 30% |
-| Group Assignments (GA1-GA3) | 200 | 20% |
+| Individual Assignments (A1-A4) | 400 | 40% |
+| Group Assignments (GA1-GA2) | 200 | 20% |
 | Labs | 50 | 5% |
-| Class Participation | 50 | 5% |
-| Midterm Exams (2 × 100) | 200 | 20% |
-| Final Exam | 200 | 20% |
+| Exam 1 (1 × 100) | 150 | 15% |
+| Exam 2 | 200 | 20% |
 | **Total** | **1000** | **100%** |
 
 ### Assignment Point Distribution
@@ -59,21 +56,18 @@ Detailed rubrics will be published with each assignment.
 
 | Assignment | Points |
 |------------|--------|
-| A1: Recipe Domain Model | 40 |
-| A2: Unit Conversion | 60 |
-| A3: JSON Serialization | 60 |
-| A4: Testing & Services | 70 |
-| A5: CLI Interface | 70 |
+| A1 | 60 |
+| A2 | 100 |
+| A3 | 120 |
+| A4 | 120 |
 
 **Group Assignments:**
 
 | Assignment | Points |
 |------------|--------|
-| Team Charter | 20 |
-| GA0: Design Sprint | 30 |
-| GA1: Core Features | 50 |
-| GA2: Feature Buffet | 50 |
-| GA3: Final Submission | 50 |
+| Team Charter | 40 |
+| GA1: Design Sprint | 80 |
+| GA2: Core Features | 80 |
 
 **Group Assignment Grading:** Group assignments are graded as a team, but each team member must demonstrate minimum weekly contributions to receive the team's full score. Each week during a group assignment, you are expected to:
 
@@ -99,21 +93,21 @@ This policy ensures that every team member actively participates and that no stu
 
 Your letter grade is determined by both your total points AND meeting minimum thresholds in key categories. You must satisfy **all** requirements for a grade level to earn that grade.
 
-| Grade | Total Points | Individual Assignments | Group Assignments | Exams | Labs | Participation |
-|-------|--------------|------------------------|-------------------|-------|------|---------------|
-| A | &ge;900 | &ge;240 (80%) | &ge;160 (80%) | &ge;280 (70%) | &ge;11 completed | &ge;40 (80%) |
-| B | &ge;800 | &ge;210 (70%) | &ge;140 (70%) | &ge;220 (55%) | &ge;9 completed | &ge;25 (50%) |
-| C | &ge;700 | &ge;180 (60%) | &ge;120 (60%) | &ge;200 (50%) | &ge;7 completed | — |
-| D | &ge;600 | — | — | — | — | — |
-| F | &lt;600 or fails to meet above minimums | | | | |
+| Grade | Total Points | Individual Assignments | Group Assignments | Exams |
+|-------|--------------|------------------------|-------------------|-------|
+| A | &ge;900 | &ge;320 (80%) | &ge;160 (80%) | &ge;270 (70%) |
+| B | &ge;800 | &ge;280 (70%) | &ge;140 (70%) | &ge;210 (60%) |
+| C | &ge;700 | &ge;240 (60%) | &ge;120 (60%) | &ge;175 (50%) |
+| D | &ge;600 | — | — | — |
+| F | &lt;600 or fails to meet<br>above minimums | — | — | — |
 
 **Plus/Minus Grades:** Once you meet the thresholds for a letter grade, your +/- modifier is determined by where your total points fall within that range:
 
-| Points | Grade | | Points | Grade | | Points | Grade | | Points | Grade |
-|--------|-------|-|--------|-------|-|--------|-------|-|--------|-------|
-|        |       | | 870+ | B+ | | 770+ | C+ | | 670+ | D+ |
-| 930–1000 | A | | 830–869 | B | | 730–769 | C |  | 630–669 | D |
-| 900–929 | A- | | 800–829 | B- | | 700–729 | C- | | 600–629 | D- |
+| A Points | A Grade | B Points | B Grade | C Points | C Grade | D Points | D Grade |
+|----------|---------|----------|---------|----------|---------|----------|---------|
+| — | — | 870+ | B+ | 770+ | C+ | 670+ | D+ |
+| 930–1000 | A | 830–869 | B | 730–769 | C | 630–669 | D |
+| 900–929 | A- | 800–829 | B- | 700–729 | C- | 600–629 | D- |
 
 *There is no A+ grade. If you fail to meet the thresholds for a letter grade, your grade is capped at the highest level whose thresholds you satisfy.*
 
@@ -122,32 +116,11 @@ Your letter grade is determined by both your total points AND meeting minimum th
 ### Grade Recovery Policies
 **Grading grievances:** If you have concerns regarding the grading of your work, please let us know right away by opening a regrade request in Pawtograder. **All regrade requests must be submitted within 7 days from your receipt of the graded work**. If your regrade request is closed and you feel that the response was not satisfactory, you may appeal to the instructor via Pawtograder within 3 days of the resolution of your regrade request by the grader.
 
-**Final Exam Replacement:** If your final exam score is greater than the average of your two midterm exam scores, your final exam score will replace that average. This allows you to recover from poor early exam performance by demonstrating mastery on the comprehensive final.
+**Late Work:** You start the semester with three "Late Tokens" that grant a 24-hour extension on any assignment. You can apply one late token per assignment, but you must apply it before the original due date. No assignments will be accepted after the due date (or after the extended due date if a late token was applied). For exceptional circumstances, contact your instructor. See [Pawtograder Documentation](https://docs.pawtograder.com/students/assignments/late-tokens) for details.
 
-**Late Work:** You start the semester with four "Late Tokens" that grant a 24-hour extension on any assignment. You can apply one late token per assignment, but you must apply it before the original due date. No assignments will be accepted after the due date (or after the extended due date if a late token was applied). For exceptional circumstances, contact your instructor. See [Pawtograder Documentation](https://docs.pawtograder.com/students/assignments/late-tokens) for details.
+### Labs
 
-### Labs and Participation
-
-**Labs (50 points):** Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it. There are 14 labs; each is worth 5 points, with the total capped at 50 points (allowing you to miss a few without penalty). Labs cannot be completed outside of lab section (unless they are due during weeks that lab sections do not meet). 
-
-**Class Participation (50 points):** Engagement with course material is essential to learning, and participation is assessed primarily through in-class live-response activities using Poll Everywhere during most lectures (approximately 34 content lectures throughout the semester). You must be physically present in lecture to complete these activities.
-
-**Attendance Verification:** Instructors take headcounts during participation activities. If the number of poll responses exceeds the number of students present, a roll call will be conducted to identify discrepancies. **Completing participation activities while not physically present in the classroom constitutes an academic integrity violation and will result in forfeiting all 50 participation points for the entire semester. By the letter grade policy above, this means that the maximum letter grade you can earn is a C. Do not make us waste time calling roll.**
-
-**Participation Grading:** You may miss up to 6 classes (or participating in 6 days' activities) with no penalty. Beyond 6 absences, your participation score decreases on a non-linear scale—missing a few extra classes has minimal impact, but missing many has a larger effect:
-
-| Missed Polls | Participation Points |
-|----------------|---------------------|
-| 0–6 | 50 (full credit) |
-| 7–11 | 42 |
-| 12–17 | 32 |
-| 18–23 | 20 |
-| 24–29 | 10 |
-| 30+ | 0 |
-
-This scale is designed so that missing up to half the semester's lectures (17 classes) still qualifies you for a B in participation. However, students who attend regularly perform significantly better on exams, and missing all 50 participation points means you must score higher elsewhere to reach your target grade.
-
-**Participation Make-Up Policy:** There is no mechanism to make up individual missed participation activities. Do not request one-off accommodations for missed classes (but do request any disability accommodations to which you are entitled). The policy intentionally allows you to miss up to 6 classes with no penalty, and the marginal penalty is quite small. If circumstances arise that will affect your ability to attend class regularly (illness, family emergency, work conflict, etc.), contact both your academic advisor and your instructor as soon as possible to discuss a plan that best supports your success in the course.
+**Labs:** Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it. Labs cannot be completed outside of lab section (unless they are due during weeks that lab sections do not meet).
 
 ## Communication with the Course Staff and Peer Support
 
