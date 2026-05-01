@@ -327,6 +327,19 @@ In Lab 1 you disabled AI features to build foundational skills. Now turn them ba
 
 Or use this link: [vscode://settings/chat.disableAIFeatures](vscode://settings/chat.disableAIFeatures)
 
+:::danger AI Resource Consumption — Use "Auto" Mode Only
+
+**Do not manually select expensive AI models** (like Claude Opus, GPT-4, or other premium models) for coursework in this class. The course provides access to AI tools through Cursor, but resources are shared and limited.
+
+**Always use "Auto" mode** in Cursor, which selects an appropriate model for your task. Auto mode balances capability with cost and is sufficient for all coursework in this class. Manually selecting premium models:
+- Consumes shared resources faster, potentially affecting availability for everyone
+- Provides no meaningful benefit for the tasks in this course
+- May result in you being asked to pay out of pocket if you exhaust shared quotas
+
+The default models are capable of helping with parsing, test generation, debugging, and all other tasks in this assignment. If you find yourself thinking "maybe a smarter model would help" — that's usually a sign to step back and think through the problem yourself, not to reach for a more expensive model.
+
+:::
+
 ---
 
 ## Design Task
