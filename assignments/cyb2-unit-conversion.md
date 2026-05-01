@@ -1,7 +1,6 @@
 ---
 title: "Assignment 2: Unit Conversion, Recipe and Instruction Classes"
 sidebar_position: 3
-image: /img/assignments/web/a2.png
 ---
 
 ## Overview
@@ -9,8 +8,6 @@ image: /img/assignments/web/a2.png
 Welcome to the **CookYourBooks** project! Over the course of the semester, you'll be building a comprehensive recipe management application that helps users digitize, organize, and work with their recipe collections. This application will eventually support importing recipes from various sources (including OCR from photos), storing them in a structured format, and providing both command-line and graphical interfaces for managing a personal recipe library.
 
 In this assignment, you'll expand an existing CookYourBooks domain model by implementing **unit conversion**, **recipe scaling**, and the core **recipe structure**. Building on given `Quantity` and `Ingredient` hierarchies, you'll create a flexible conversion system that supports standard metric/imperial conversions, ingredient-specific density conversions (like "1 cup flour = 125 grams"), and custom "house" overrides.
-
-![Assignment 2: Unit Conversion, Recipe and Instruction Classes](/img/assignments/web/a2.png)
 
 **The core challenge is designing how domain objects and the `ConversionRegistry` service work together** to enable recipe transformations. The `ConversionRegistry` intelligently selects conversion rules based on priority (house > recipe > standard) and specificity (ingredient-specific > generic).
 
