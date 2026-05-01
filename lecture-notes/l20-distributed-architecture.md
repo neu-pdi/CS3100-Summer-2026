@@ -18,7 +18,7 @@ After this lecture, you will be able to:
 5. Apply **security principles** (authentication, authorization, trust boundaries, CIA triad) to distributed system design
 
 :::note Important Framing
-In [L19](./l19-monoliths.md), we covered architectural styles for organizing code *within* a single deployment unit—Hexagonal, Layered, Pipelined—all living inside a monolith. We ended with a troubling observation: *once components communicate over a network, everything changes*.
+In [L19](./l19-architectural-qualities.md), we covered architectural styles for organizing code *within* a single deployment unit—Hexagonal, Layered, Pipelined—all living inside a monolith. We ended with a troubling observation: *once components communicate over a network, everything changes*.
 
 This lecture explores that change. You're not expected to design production distributed systems by the end of this lecture. The goal is to *understand* why distributed architectures are fundamentally different from monoliths, and to recognize the tradeoffs when you encounter them. Junior engineers read API documentation and debug network issues far more often than they design new distributed architectures—comprehension comes first.
 :::

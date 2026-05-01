@@ -12,7 +12,7 @@ image: /img/assignments/web/a5.png
 
 In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — a command-oriented terminal application that lets users manage their recipe library, import recipes, scale and convert ingredients, generate shopping lists, and follow recipes step-by-step while cooking.
 
-The CLI is your first **driving adapter** in the [hexagonal architecture](/lecture-notes/l16-testing2) — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to). But here's the twist: you won't use the `RecipeService` from A4. Instead, you'll design your own service layer — one that's actually well-suited for *multiple* user interfaces. In A4, we told you `RecipeService` was not ideal design. Now you get to prove you understand *why* by building something better.
+The CLI is your first **driving adapter** in the [hexagonal architecture](/lecture-notes/l16-testability) — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to). But here's the twist: you won't use the `RecipeService` from A4. Instead, you'll design your own service layer — one that's actually well-suited for *multiple* user interfaces. In A4, we told you `RecipeService` was not ideal design. Now you get to prove you understand *why* by building something better.
 
 Your assignment has two parts:
 1. **Design and implement CLI-oriented services** that coordinate the domain model and repositories for what your CLI needs
@@ -57,7 +57,7 @@ By completing this assignment, you will demonstrate proficiency in:
 
 - **Applying service boundary heuristics** — using the four heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design) (rate of change, actor, interface segregation, testability) to decompose your service layer
 - **Writing Architecture Decision Records (ADRs)** — documenting the *why* behind your service boundaries and design choices ([L18 ADR section](/lecture-notes/l18-architecture-design#architecture-decision-records-adrs); ADRs can be just as short as the sample)
-- **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testing2), [L19: Architectural Qualities](/lecture-notes/l19-monoliths))
+- **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testability), [L19: Architectural Qualities](/lecture-notes/l19-architectural-qualities))
 - **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter (it *drives* the application on behalf of the user) that consumes your services without leaking domain logic into the presentation layer; preparing for a second driving adapter (GUI) in the group project
 - **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
 - **End-to-end testing with JLine** — understanding how integration tests use dumb terminal mode to verify CLI behavior
@@ -943,14 +943,14 @@ Create exactly **4 ADRs** in a `docs/adr/` folder. Each ADR documents a signific
 
 #### Service Layer Design
 
-- **Services depend only on port interfaces** (`RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`) — never on concrete adapter classes ([L16](/lecture-notes/l16-testing2))
+- **Services depend only on port interfaces** (`RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`) — never on concrete adapter classes ([L16](/lecture-notes/l16-testability))
 - **Dependency injection** — services receive their dependencies through constructors ([L17](/lecture-notes/l17-creation-patterns))
 - **Separation of transformation from persistence** — your design should enable "preview before save" workflows (this should be documented in an ADR)
 - **Immutability** — transformations return new `Recipe` objects; don't mutate the original
 
 #### Separation of Concerns
 
-Think of your CLI as a layered system ([L19: Architectural Qualities](/lecture-notes/l19-monoliths)). Your code needs to handle three distinct responsibilities, and code for one responsibility should not mix in the concerns of another. How you name and organize these layers is up to you — what matters is that they stay separated:
+Think of your CLI as a layered system ([L19: Architectural Qualities](/lecture-notes/l19-architectural-qualities)). Your code needs to handle three distinct responsibilities, and code for one responsibility should not mix in the concerns of another. How you name and organize these layers is up to you — what matters is that they stay separated:
 
 - **Application services** (your service layer) coordinate domain operations (scaling, conversion, aggregation, search, persistence) — they do NOT contain formatting or I/O logic
 - **Presentation logic** (the code that receives a user command and decides what to do) handles command parsing and dispatch — it does NOT contain domain logic like ingredient math or conversion calculations

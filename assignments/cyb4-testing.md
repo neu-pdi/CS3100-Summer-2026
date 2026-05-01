@@ -57,7 +57,7 @@ This assignment involves design decisions and tricky parsing logic. You'll hit m
 By completing this assignment, you will demonstrate proficiency in:
 
 - **Building an application service layer** — implementing a facade that coordinates domain operations, parsing, and persistence ([L17: From Code Patterns to Architecture Patterns](/lecture-notes/l17-creation-patterns))
-- **Implementing behind an arbitrary interface** — building clean internals despite an externally-imposed API ([L16: Designing for Testability](/lecture-notes/l16-testing2))
+- **Implementing behind an arbitrary interface** — building clean internals despite an externally-imposed API ([L16: Designing for Testability](/lecture-notes/l16-testability))
 - **Parsing unstructured text** — transforming recipe and ingredient strings into structured domain objects
 - **Using dependency injection** to wire services with their dependencies ([L17](/lecture-notes/l17-creation-patterns))
 - **Unit testing with mocks** — using Mockito to test service logic in isolation ([L15: Test Doubles and Isolation](/lecture-notes/l15-testing))
@@ -998,7 +998,7 @@ Update `REFLECTION.md` to address:
 :::info Design Guidance
 
 Review the lectures on good design before implementing:
-- [L16: Designing for Testability](/lecture-notes/l16-testing2) — why facades with many responsibilities are hard to test
+- [L16: Designing for Testability](/lecture-notes/l16-testability) — why facades with many responsibilities are hard to test, and how to structure code for testability
 - [L17: From Code Patterns to Architecture Patterns](/lecture-notes/l17-creation-patterns) — service layers, dependency injection, and separating coordination from computation
 
 The principle: each class should have one job. Services coordinate; parsers parse; aggregators aggregate.

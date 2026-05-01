@@ -4,7 +4,7 @@ lecture_number: 21
 title: Serverless Architecture
 ---
 
-In [L20](./l20-networks.md), we explored distributed architecture—what changes when components communicate over networks. We saw the Fallacies of Distributed Computing and strategies for building reliable systems despite unreliable networks.
+In [L20](./l20-distributed-architecture.md), we explored distributed architecture—what changes when components communicate over networks. We saw the Fallacies of Distributed Computing and strategies for building reliable systems despite unreliable networks.
 
 This lecture introduces **serverless architecture**—an architectural style where you write functions that a cloud provider executes on demand, composing managed infrastructure services rather than managing servers yourself. We'll continue using Pawtograder and Bottlenose as our running examples—and we'll see how Pawtograder embraces serverless patterns extensively. But first, we need vocabulary for the infrastructure services that serverless applications compose.
 
@@ -173,7 +173,7 @@ With this vocabulary established, let's see how serverless architecture works.
 
 "Serverless" is a bit of a misnomer—there are still servers, you just don't manage them. The key insight is organizational: serverless is **technical partitioning with a vendor**.
 
-In [L19](./l19-monoliths.md), we discussed technical vs. domain partitioning—whether you organize code (and teams) by technical role (controllers, services, repositories) or by business capability (import, library, export). Serverless takes technical partitioning to the organizational level: a cloud vendor operates the infrastructure layer *as a service*, allowing your team to focus entirely on domain logic.
+In [L19](./l19-architectural-qualities.md), we discussed technical vs. domain partitioning—whether you organize code (and teams) by technical role (controllers, services, repositories) or by business capability (import, library, export). Serverless takes technical partitioning to the organizational level: a cloud vendor operates the infrastructure layer *as a service*, allowing your team to focus entirely on domain logic.
 
 This is Conway's Law in action. The vendor's organization is structured to specialize in infrastructure—they have teams for container orchestration, auto-scaling, monitoring, security patching. Your organization specializes in your domain—courses, assignments, grading workflows. The system boundary (your functions ↔ their infrastructure) mirrors the organizational boundary. The vendor serves thousands of clients, achieving economies of scale that no single team could justify for their own infrastructure.
 
