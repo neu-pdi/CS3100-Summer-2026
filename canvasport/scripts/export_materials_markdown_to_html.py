@@ -66,22 +66,29 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _extract_front_matter_value(front_matter: str, key: str) -> Optional[str]:
+    pattern = re.compile(rf"^{re.escape(key)}:\s*(.+)$", flags=re.MULTILINE)
+    match = pattern.search(front_matter)
+    if not match:
+        return None
+
+    value = match.group(1).strip().strip('"\'')
+    return value or None
+
+
 def strip_front_matter(text: str) -> tuple:
-    """Return (body_without_frontmatter, title_or_None)."""
+    """Return (body_without_frontmatter, title_or_None, description_or_None)."""
     if not text.startswith("---\n"):
-        return text, None
+        return text, None, None
     closing = text.find("\n---\n", 4)
     if closing == -1:
-        return text, None
+        return text, None, None
+
     front = text[4:closing]
     body = text[closing + 5 :]
-    title = None
-    for line in front.splitlines():
-        m = re.match(r'^title:\s*(.+)$', line)
-        if m:
-            title = m.group(1).strip().strip('"\'')
-            break
-    return body, title
+    title = _extract_front_matter_value(front, "title")
+    description = _extract_front_matter_value(front, "description")
+    return body, title, description
 
 
 def strip_mdx_only_lines(text: str) -> str:
@@ -530,9 +537,16 @@ def export_markdown_document(
     mermaid_cache: Dict[str, Optional[str]],
 ) -> Path:
     markdown_text = source_path.read_text(encoding="utf-8")
-    markdown_text, fm_title = strip_front_matter(markdown_text)
+    markdown_text, fm_title, fm_description = strip_front_matter(markdown_text)
+
+    front_matter_headings: List[str] = []
     if fm_title:
-        markdown_text = f"# {fm_title}\n\n" + markdown_text
+        front_matter_headings.append(f"# {fm_title}")
+    if fm_description:
+        front_matter_headings.append(f"## {fm_description}")
+    if front_matter_headings:
+        markdown_text = "\n\n".join(front_matter_headings) + "\n\n" + markdown_text
+
     markdown_text = strip_mdx_only_lines(markdown_text)
 
     markdown_text = inline_mermaid_svgs(
