@@ -860,7 +860,19 @@ def list_canvas_assignments(
     assignments = response.json()
     result: Dict[str, Dict[str, Any]] = {}
     for assignment in assignments:
-        result[str(assignment.get("id", ""))] = assignment
+        title = str(assignment.get("name", "")).strip().casefold()
+        if not title:
+            continue
+        existing = result.get(title)
+        if existing is None:
+            result[title] = assignment
+            continue
+
+        # Keep the newest assignment when duplicate titles already exist.
+        existing_updated = str(existing.get("updated_at", ""))
+        candidate_updated = str(assignment.get("updated_at", ""))
+        if candidate_updated > existing_updated:
+            result[title] = assignment
     return result
 
 
@@ -875,10 +887,16 @@ def create_or_update_assignment(
     due_at: str,
     published: bool,
     description: str = "",
+    existing_canvas_assignment_id: Optional[str] = None,
     timeout: int = 60,
 ) -> Dict[str, Any]:
     """Create or update assignment on Canvas."""
-    url = f"{api_base}/courses/{course_id}/assignments"
+    if existing_canvas_assignment_id:
+        url = f"{api_base}/courses/{course_id}/assignments/{existing_canvas_assignment_id}"
+        method = "PUT"
+    else:
+        url = f"{api_base}/courses/{course_id}/assignments"
+        method = "POST"
     
     payload = {
         "assignment[name]": title,
@@ -889,10 +907,11 @@ def create_or_update_assignment(
         "assignment[published]": "true" if published else "false",
     }
     
-    response = canvas_request("POST", url, token, timeout, data=payload)
+    response = canvas_request(method, url, token, timeout, data=payload)
     if response.status_code >= 400:
+        action = "update" if existing_canvas_assignment_id else "create"
         raise CanvasUploadError(
-            f"Failed to create assignment '{title}': {response.status_code} {response.text}"
+            f"Failed to {action} assignment '{title}': {response.status_code} {response.text}"
         )
     return response.json()
 
@@ -982,8 +1001,18 @@ def publish_assignments_and_labs(
         return {"created": 0, "updated": 0, "dryRunSkipped": 0, "failed": []}
     
     created = 0
+    updated = 0
     skipped = 0
     failed = []
+
+    existing_by_title: Dict[str, Dict[str, Any]] = {}
+    if not dry_run:
+        existing_by_title = list_canvas_assignments(
+            api_base=api_base,
+            token=token,
+            course_id=course_id,
+            timeout=timeout,
+        )
     
     # Process assignments
     for assignment in assignments_list:
@@ -1014,6 +1043,9 @@ def publish_assignments_and_labs(
         try:
             release_at = parse_datetime_for_canvas(assigned_date, "00:00", timezone)
             due_at = parse_datetime_for_canvas(due_date, due_time, timezone)
+            title_key = title.strip().casefold()
+            existing = existing_by_title.get(title_key)
+            existing_id = str(existing.get("id", "")).strip() if existing else None
             
             if dry_run:
                 has_desc = "with description" if description else "no description"
@@ -1031,10 +1063,16 @@ def publish_assignments_and_labs(
                     due_at=due_at,
                     published=is_published,
                     description=description,
+                    existing_canvas_assignment_id=existing_id,
                     timeout=timeout,
                 )
-                print(f"Assignment published: {title}")
-                created += 1
+                if existing_id:
+                    print(f"Assignment updated: {title}")
+                    updated += 1
+                else:
+                    print(f"Assignment created: {title}")
+                    created += 1
+                existing_by_title[title_key] = result
         except Exception as exc:
             failed.append({"id": assignment_id, "title": title, "error": str(exc)})
             print(f"FAILED: Assignment {title}: {exc}")
@@ -1067,6 +1105,9 @@ def publish_assignments_and_labs(
             lab_date = dates[0]
             release_at = parse_datetime_for_canvas(lab_date, "00:00", timezone)
             due_at = parse_datetime_for_canvas(lab_date, "23:59", timezone)
+            title_key = title.strip().casefold()
+            existing = existing_by_title.get(title_key)
+            existing_id = str(existing.get("id", "")).strip() if existing else None
             
             if dry_run:
                 has_desc = "with description" if description else "no description"
@@ -1084,15 +1125,21 @@ def publish_assignments_and_labs(
                     due_at=due_at,
                     published=is_published,
                     description=description,
+                    existing_canvas_assignment_id=existing_id,
                     timeout=timeout,
                 )
-                print(f"Lab published: {title}")
-                created += 1
+                if existing_id:
+                    print(f"Lab updated: {title}")
+                    updated += 1
+                else:
+                    print(f"Lab created: {title}")
+                    created += 1
+                existing_by_title[title_key] = result
         except Exception as exc:
             failed.append({"id": lab_id, "title": title, "error": str(exc)})
             print(f"FAILED: Lab {title}: {exc}")
     
-    return {"created": created, "updated": 0, "dryRunSkipped": skipped, "failed": failed}
+    return {"created": created, "updated": updated, "dryRunSkipped": skipped, "failed": failed}
 
 
 def main() -> int:

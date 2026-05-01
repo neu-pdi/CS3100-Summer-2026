@@ -25,7 +25,8 @@ import contextlib
 import functools
 import threading
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
+from urllib.parse import urlsplit, urlunsplit
 
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
@@ -313,6 +314,161 @@ def resize_images(soup: BeautifulSoup, max_width: str = "90%") -> None:
                 img["style"] = f"max-width: {max_width}; height: auto;"
 
 
+def collect_initial_document_sources(
+    repo_root: Path,
+    config_path: Path,
+    lectures_dir: Path,
+    pages_dir: Path,
+) -> Dict[str, Path]:
+    documents: Dict[str, Path] = {}
+
+    for lecture_id in load_lecture_ids(config_path):
+        try:
+            documents.setdefault(lecture_id, read_markdown_file(lectures_dir, lecture_id))
+        except FileNotFoundError:
+            continue
+
+    for page_path in pages_dir.glob("*.md"):
+        documents.setdefault(page_path.stem, page_path)
+
+    for section_name in ["assignments", "labs"]:
+        for url in load_material_urls(config_path, section_name):
+            source_path = resolve_markdown_from_url(repo_root, url)
+            stem = output_stem_from_url(url)
+            if source_path and stem:
+                documents.setdefault(stem, source_path)
+
+    return documents
+
+
+def build_export_targets(
+    known_html: Set[str],
+    known_pdf: Set[str],
+) -> Tuple[Set[str], Set[str]]:
+    return set(known_html), set(known_pdf)
+
+
+def resolve_linked_markdown_source(repo_root: Path, current_source: Path, url: str) -> Optional[Path]:
+    lowered = url.lower().strip()
+    if (
+        not lowered
+        or lowered.startswith("http://")
+        or lowered.startswith("https://")
+        or lowered.startswith("mailto:")
+        or lowered.startswith("tel:")
+        or lowered.startswith("#")
+    ):
+        return None
+
+    if classify_asset(url) != "skip":
+        return None
+
+    split = urlsplit(url)
+    path = split.path.strip()
+    if not path:
+        return None
+
+    candidates: List[Path] = []
+    if path.startswith("/"):
+        candidates.append(repo_root / path.lstrip("/"))
+    else:
+        candidates.append((current_source.parent / path).resolve())
+
+    for candidate in candidates:
+        if candidate.suffix.lower() in {".md", ".mdx"} and candidate.exists() and candidate.is_file():
+            return candidate
+        if not candidate.suffix:
+            for extension in [".md", ".mdx"]:
+                candidate_with_extension = candidate.with_suffix(extension)
+                if candidate_with_extension.exists() and candidate_with_extension.is_file():
+                    return candidate_with_extension
+
+    return None
+
+
+def expand_linked_document_sources(
+    repo_root: Path,
+    initial_documents: Dict[str, Path],
+) -> Dict[str, Path]:
+    expanded = dict(initial_documents)
+    seen_paths: Set[Path] = {path.resolve() for path in expanded.values()}
+    queue: List[Path] = list(expanded.values())
+
+    while queue:
+        current_source = queue.pop(0)
+        markdown_text = current_source.read_text(encoding="utf-8")
+        for _full, url in find_markdown_links(markdown_text):
+            linked_source = resolve_linked_markdown_source(repo_root, current_source, url)
+            if not linked_source:
+                continue
+
+            resolved_linked_source = linked_source.resolve()
+            if resolved_linked_source in seen_paths:
+                continue
+
+            seen_paths.add(resolved_linked_source)
+            expanded.setdefault(linked_source.stem, linked_source)
+            queue.append(linked_source)
+
+    return expanded
+
+
+def rewrite_internal_document_links(
+    html_text: str,
+    known_html: Set[str],
+    known_pdf: Set[str],
+) -> str:
+    soup = BeautifulSoup(html_text, "html.parser")
+
+    for anchor in soup.find_all("a", href=True):
+        href = anchor["href"].strip()
+        if not href:
+            continue
+
+        lowered = href.lower()
+        if (
+            lowered.startswith("http://")
+            or lowered.startswith("https://")
+            or lowered.startswith("mailto:")
+            or lowered.startswith("tel:")
+            or lowered.startswith("#")
+        ):
+            continue
+
+        split = urlsplit(href)
+        path = split.path or ""
+        if not path or path.startswith("files/"):
+            continue
+
+        normalized_path = path.replace("\\", "/")
+        path_obj = Path(normalized_path)
+        suffix = path_obj.suffix.lower()
+        stem = path_obj.stem if suffix else path_obj.name
+
+        replacement_path: Optional[str] = None
+
+        if normalized_path.startswith("/lecture-slides/") and stem in known_pdf:
+            replacement_path = f"{stem}.pdf"
+        elif suffix in {".md", ".mdx", ".html"} and stem in known_html:
+            replacement_path = f"{stem}.html"
+        elif normalized_path.startswith(("/lecture-notes/", "/assignments/", "/labs/", "/overview", "/doc/")):
+            if stem in known_html:
+                replacement_path = f"{stem}.html"
+            elif stem in known_pdf and normalized_path.startswith("/lecture-slides/"):
+                replacement_path = f"{stem}.pdf"
+        elif not suffix and stem in known_html:
+            replacement_path = f"{stem}.html"
+        elif not suffix and normalized_path.startswith("/lecture-slides/") and stem in known_pdf:
+            replacement_path = f"{stem}.pdf"
+
+        if replacement_path is None:
+            continue
+
+        anchor["href"] = urlunsplit(("", "", replacement_path, split.query, split.fragment))
+
+    return str(soup)
+
+
 def markdown_to_html(markdown_text: str) -> str:
     def convert_math(text: str) -> str:
         odd = True
@@ -368,6 +524,8 @@ def export_markdown_document(
     output_dir: Path,
     document_id: str,
     source_path: Path,
+    known_html: Set[str],
+    known_pdf: Set[str],
     warnings: List[str],
     mermaid_cache: Dict[str, Optional[str]],
 ) -> Path:
@@ -388,6 +546,7 @@ def export_markdown_document(
     warnings.extend(asset_warnings)
 
     html = markdown_to_html(markdown_text)
+    html = rewrite_internal_document_links(html, known_html=known_html, known_pdf=known_pdf)
     output_html_path = output_dir / f"{document_id}.html"
     output_html_path.write_text(html, encoding="utf-8")
     return output_html_path
@@ -579,11 +738,14 @@ def export_lectures(
     slides_dir: Path,
     slides_build_dir: Path,
     output_dir: Path,
+    known_html: Set[str],
+    known_pdf: Set[str],
     skip_slide_pdfs: bool,
     verbose: bool,
 ) -> Dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     lecture_ids = load_lecture_ids(config_path)
+    known_html, known_pdf = build_export_targets(known_html=known_html, known_pdf=known_pdf)
 
     warnings: List[str] = []
     mermaid_cache: Dict[str, Optional[str]] = {}
@@ -607,6 +769,8 @@ def export_lectures(
             output_dir=output_dir,
             document_id=lecture_id,
             source_path=lecture_path,
+            known_html=known_html,
+            known_pdf=known_pdf,
             warnings=warnings,
             mermaid_cache=mermaid_cache,
         )
@@ -644,6 +808,8 @@ def export_pages(
     repo_root: Path,
     pages_dir: Path,
     output_dir: Path,
+    known_html: Set[str],
+    known_pdf: Set[str],
     verbose: bool,
 ) -> Dict[str, Any]:
     """Convert all .md files in pages_dir to HTML and write them to output_dir."""
@@ -653,6 +819,7 @@ def export_pages(
         return {"exportedCount": 0, "requestedCount": 0, "pageIds": [], "warnings": []}
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    known_html, known_pdf = build_export_targets(known_html=known_html, known_pdf=known_pdf)
     warnings: List[str] = []
     mermaid_cache: Dict[str, Optional[str]] = {}
     exported = 0
@@ -669,6 +836,8 @@ def export_pages(
             output_dir=output_dir,
             document_id=page_id,
             source_path=md_path,
+            known_html=known_html,
+            known_pdf=known_pdf,
             warnings=warnings,
             mermaid_cache=mermaid_cache,
         )
@@ -694,9 +863,12 @@ def export_config_materials(
     repo_root: Path,
     config_path: Path,
     output_dir: Path,
+    known_html: Set[str],
+    known_pdf: Set[str],
     verbose: bool,
 ) -> Dict[str, Any]:
     material_items: List[Tuple[str, str]] = []
+    known_html, known_pdf = build_export_targets(known_html=known_html, known_pdf=known_pdf)
     seen_urls: Set[str] = set()
 
     for section_name in ["assignments", "labs"]:
@@ -734,6 +906,8 @@ def export_config_materials(
             output_dir=output_dir,
             document_id=stem,
             source_path=source_path,
+            known_html=known_html,
+            known_pdf=known_pdf,
             warnings=warnings,
             mermaid_cache=mermaid_cache,
         )
@@ -758,6 +932,51 @@ def export_config_materials(
     }
 
 
+def export_additional_linked_documents(
+    repo_root: Path,
+    output_dir: Path,
+    additional_documents: Dict[str, Path],
+    known_html: Set[str],
+    known_pdf: Set[str],
+    verbose: bool,
+) -> Dict[str, Any]:
+    if not additional_documents:
+        return {"exportedCount": 0, "requestedCount": 0, "documentIds": [], "warnings": []}
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    warnings: List[str] = []
+    mermaid_cache: Dict[str, Optional[str]] = {}
+    exported = 0
+
+    for index, (document_id, source_path) in enumerate(sorted(additional_documents.items()), start=1):
+        output_html_path = output_dir / f"{document_id}.html"
+        if verbose:
+            print(f"[{index}/{len(additional_documents)}] Creating linked document {output_html_path} from {source_path}")
+
+        export_markdown_document(
+            repo_root=repo_root,
+            output_dir=output_dir,
+            document_id=document_id,
+            source_path=source_path,
+            known_html=known_html,
+            known_pdf=known_pdf,
+            warnings=warnings,
+            mermaid_cache=mermaid_cache,
+        )
+        exported += 1
+
+        if verbose:
+            print(f"[{index}/{len(additional_documents)}] Done creating linked document {output_html_path}")
+
+    print(f"Exported {exported}/{len(additional_documents)} linked supporting documents to HTML in {output_dir}")
+    return {
+        "exportedCount": exported,
+        "requestedCount": len(additional_documents),
+        "documentIds": sorted(additional_documents.keys()),
+        "warnings": warnings,
+    }
+
+
 def main() -> int:
     args = parse_args()
     repo_root = Path(args.repo_root).resolve()
@@ -767,6 +986,16 @@ def main() -> int:
     slides_build_dir = (repo_root / args.slides_build_dir).resolve()
     output_dir = (repo_root / args.output_dir).resolve()
     pages_dir = (repo_root / args.pages_dir).resolve()
+
+    initial_documents = collect_initial_document_sources(
+        repo_root=repo_root,
+        config_path=config_path,
+        lectures_dir=lectures_dir,
+        pages_dir=pages_dir,
+    )
+    expanded_documents = expand_linked_document_sources(repo_root=repo_root, initial_documents=initial_documents)
+    known_html = set(expanded_documents.keys())
+    known_pdf = set(load_lecture_ids(config_path))
 
     if args.clean:
         if output_dir.exists():
@@ -783,6 +1012,8 @@ def main() -> int:
         slides_dir=slides_dir,
         slides_build_dir=slides_build_dir,
         output_dir=output_dir,
+        known_html=known_html,
+        known_pdf=known_pdf,
         skip_slide_pdfs=args.skip_slide_pdfs,
         verbose=args.verbose,
     )
@@ -790,12 +1021,29 @@ def main() -> int:
         repo_root=repo_root,
         pages_dir=pages_dir,
         output_dir=output_dir,
+        known_html=known_html,
+        known_pdf=known_pdf,
         verbose=args.verbose,
     )
     material_summary = export_config_materials(
         repo_root=repo_root,
         config_path=config_path,
         output_dir=output_dir,
+        known_html=known_html,
+        known_pdf=known_pdf,
+        verbose=args.verbose,
+    )
+    additional_documents = {
+        document_id: source_path
+        for document_id, source_path in expanded_documents.items()
+        if document_id not in initial_documents
+    }
+    linked_document_summary = export_additional_linked_documents(
+        repo_root=repo_root,
+        output_dir=output_dir,
+        additional_documents=additional_documents,
+        known_html=known_html,
+        known_pdf=known_pdf,
         verbose=args.verbose,
     )
 
@@ -807,7 +1055,8 @@ def main() -> int:
         "slidePdfRequestedCount": lecture_summary["slidePdfRequestedCount"],
         "pages": page_summary,
         "materials": material_summary,
-        "warnings": lecture_summary["warnings"] + page_summary["warnings"] + material_summary["warnings"],
+        "linkedDocuments": linked_document_summary,
+        "warnings": lecture_summary["warnings"] + page_summary["warnings"] + material_summary["warnings"] + linked_document_summary["warnings"],
     }
     manifest_path = output_dir / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
