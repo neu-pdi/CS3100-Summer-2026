@@ -31,9 +31,9 @@ In [L18 (Thinking Architecturally)](/lecture-notes/l18-architecture-design), we 
 You can't add safety the way you add a search bar. Safety is not a feature you build in Sprint 4 — it is a property that emerges from how every other feature is built. This should sound familiar, because you've heard this exact pattern all semester, applied to different quality attributes:
 
 - In [L7 (Design for Change)](/lecture-notes/l7-design-for-change), we argued that changeability comes from coupling and cohesion decisions made *during* design, not from a refactoring sprint later. Low coupling doesn't happen by accident — it happens because someone chose the right module boundaries before the code was tangled.
-- In [L16 (Designing for Testability)](/lecture-notes/l16-testing2), we showed that testability requires hexagonal architecture — separating domain logic from infrastructure — and that bolting tests onto code that wasn't designed for testability is painful and incomplete.
+- In [L16 (Designing for Testability)](/lecture-notes/l16-testability), we showed that testability requires hexagonal architecture — separating domain logic from infrastructure — and that bolting tests onto code that wasn't designed for testability is painful and incomplete.
 - In [L18 (Thinking Architecturally)](/lecture-notes/l18-architecture-design), we introduced "just enough architecture": decide the hard-to-reverse things up front, design the system so deferred decisions stay cheap. The cost of getting those early decisions wrong grows exponentially over time.
-- In [L20 (Networks and Security)](/lecture-notes/l20-networks), we stated it directly: "Security isn't a feature you bolt on at the end — it's an architectural concern that shapes design decisions throughout."
+- In [L20 (Networks and Security)](/lecture-notes/l20-distributed-architecture), we stated it directly: "Security isn't a feature you bolt on at the end — it's an architectural concern that shapes design decisions throughout."
 - In [L28 (Accessibility)](/lecture-notes/l28-accessibility), we showed that accessibility designed in from the start is straightforward; accessibility retrofitted onto an inaccessible interface is expensive, incomplete, and often patronizing.
 
 Safety follows the same rule — and the stakes are higher. When SceneItAll's firmware update uses an atomic write with rollback, that's not a "safety feature" — it's a firmware update that was *designed safely.* When it doesn't use an atomic write, the firmware update still works in the happy path. The safety gap only becomes visible when the Zigbee connection drops mid-write and the device is bricked.
@@ -68,7 +68,7 @@ In [L24 (Usability)](/lecture-notes/l24-usability), we introduced three types of
 ### The Swiss Cheese Model of Failure
 
 :::note Recall
-You've been building Swiss cheese layers all semester without naming them. Preconditions ([L4](/lecture-notes/l4-specs-contracts)) reject bad inputs. Tests ([L15](/lecture-notes/l15-testing)) catch bugs before deployment. Hexagonal architecture ([L16](/lecture-notes/l16-testing2)) isolates domain logic from infrastructure failures. Resilience patterns ([L20](/lecture-notes/l20-networks)) handle network failures. Idempotent consumers ([L33](/lecture-notes/l33-event-architecture)) handle duplicate messages. Today we name this pattern and analyze what happens when layers are removed.
+You've been building Swiss cheese layers all semester without naming them. Preconditions ([L4](/lecture-notes/l4-specs-contracts-new)) reject bad inputs. Tests ([L15](/lecture-notes/l15-testing)) catch bugs before deployment. Hexagonal architecture ([L16](/lecture-notes/l16-testability)) isolates domain logic from infrastructure failures. Resilience patterns ([L20](/lecture-notes/l20-distributed-architecture)) handle network failures. Idempotent consumers ([L33](/lecture-notes/l33-event-architecture)) handle duplicate messages. Today we name this pattern and analyze what happens when layers are removed.
 :::
 
 The Swiss cheese model (James Reason) is the most useful framework for thinking about safety in systems. The idea: every safety mechanism is a layer of defense — a slice of Swiss cheese. Each layer has holes (failure modes). **Harm occurs only when holes in multiple layers align** — when every defense fails simultaneously.
@@ -158,7 +158,7 @@ This reveals a pattern we'll explore further in [L36 (Sustainability)](/lecture-
 **Blast radius** is how much of the system — and the world — is affected when a component fails. It is the single most important factor in determining how many Swiss cheese layers you need.
 
 :::note Recall
-In [L19 (Architectural Qualities)](/lecture-notes/l19-monoliths), we noted that a monolith's deployment risk is "all-or-nothing: a bug in one feature can take down everything." That's blast radius language — L19 implicitly introduced the concept. A monolith has the maximum blast radius: every feature shares a single deployment unit.
+In [L19 (Architectural Qualities)](/lecture-notes/l19-architectural-qualities), we noted that a monolith's deployment risk is "all-or-nothing: a bug in one feature can take down everything." That's blast radius language — L19 implicitly introduced the concept. A monolith has the maximum blast radius: every feature shares a single deployment unit.
 :::
 
 Low coupling ([L7](/lecture-notes/l7-design-for-change)) limits blast radius: when modules are loosely coupled, a failure in one does not propagate to others. High coupling means a bug in the authentication module can crash the gradebook.
@@ -171,7 +171,7 @@ Why did he act? Not because he was uniquely virtuous — but because the **blast
 
 The [ACM Code of Ethics](https://www.acm.org/code-of-ethics) formalizes this: Principle 1.2 states 'Avoid harm,' and Principle 2.5 requires 'comprehensive and thorough evaluations of computer systems and their impacts, including analysis of possible risks.' Blast radius analysis IS that evaluation.
 
-In his [ICSE 2025 keynote](https://www.youtube.com/watch?v=YyFouLdwxY0), David Parnas — who invented the information hiding concepts you learned in [L6](/lecture-notes/l6-immutability-abstraction) — put it simply: "It's not the AI that's liable. It's either the people who made it or the people who use it or both. The people who made it have a duty to have a specification for it and to make sure it meets that specification. People who use it have to make sure that they have read the specification and they're not using it outside of the specification." This is the same contracts framework from [L4](/lecture-notes/l4-specs-contracts) — preconditions and postconditions — applied to professional accountability. It doesn't matter whether your system uses AI, event-driven architecture, or a single `for` loop. If its blast radius includes human safety, you are responsible for specifying what it does and verifying that it does it.
+In his [ICSE 2025 keynote](https://www.youtube.com/watch?v=YyFouLdwxY0), David Parnas — who invented the information hiding concepts you learned in [L6](/lecture-notes/l6-immutability-abstraction) — put it simply: "It's not the AI that's liable. It's either the people who made it or the people who use it or both. The people who made it have a duty to have a specification for it and to make sure it meets that specification. People who use it have to make sure that they have read the specification and they're not using it outside of the specification." This is the same contracts framework from [L4](/lecture-notes/l4-specs-contracts-new) — preconditions and postconditions — applied to professional accountability. It doesn't matter whether your system uses AI, event-driven architecture, or a single `for` loop. If its blast radius includes human safety, you are responsible for specifying what it does and verifying that it does it.
 
 **Blast radius determines how many Swiss cheese layers you need:**
 
@@ -287,12 +287,12 @@ You've learned these tools as performance, reliability, and concurrency mechanis
 
 | What you learned | Where | Its reliability function | Its **safety** function |
 |------------------|-------|------------------------|------------------------|
-| Preconditions/contracts | [L4](/lecture-notes/l4-specs-contracts) | Rejects invalid inputs at boundaries | Prevents unsafe states from being reachable — a restrictive precondition is a Swiss cheese layer |
+| Preconditions/contracts | [L4](/lecture-notes/l4-specs-contracts-new) | Rejects invalid inputs at boundaries | Prevents unsafe states from being reachable — a restrictive precondition is a Swiss cheese layer |
 | Testing (unit, integration, E2E) | [L15](/lecture-notes/l15-testing) | Catches bugs before deployment | Prevents safety-critical defects from reaching production — tests are a Swiss cheese layer with their own holes (incomplete coverage, flaky tests) |
 | `synchronized` | [L31](/lecture-notes/l31-concurrency1) | Prevents race conditions | Prevents safety-critical state corruption (door lock mixed state) |
 | `.exceptionally()` / `.orTimeout()` | [L32](/lecture-notes/l32-concurrency2) | Handles async errors | Ensures failures are visible, not silent (shade left open) |
 | Sequential consistency | [L33](/lecture-notes/l33-event-architecture) | All nodes agree | Prevents operations on stale data (lock shows "locked" when unlocked) |
-| Circuit breaker | [L20](/lecture-notes/l20-networks) | Prevents cascade failures | Stops a failing component from triggering harm in others |
+| Circuit breaker | [L20](/lecture-notes/l20-distributed-architecture) | Prevents cascade failures | Stops a failing component from triggering harm in others |
 | Idempotent operations | [L33](/lecture-notes/l33-event-architecture) | Makes retries safe | Prevents duplicate actions from causing harm (door locks twice = fine; alarm disarms twice = fine) |
 | Audit trails | [L12](/lecture-notes/l12-domain-modeling) | Enables debugging | Enables accountability, reversibility, incident investigation |
 | Fail-safe defaults | Today | Graceful degradation | System fails toward safety (lights on, doors locked) not toward harm |

@@ -4,7 +4,7 @@ lecture_number: 34
 title: Performance
 ---
 
-Throughout this course, we've touched on performance in passing — ArrayList vs LinkedList in [L3](/lecture-notes/l3-more-java), network latency in [L20](/lecture-notes/l20-networks), thread overhead in [L31](/lecture-notes/l31-concurrency1), the I/O scaled-time table in [L32](/lecture-notes/l32-concurrency2), rate limiting in [L33](/lecture-notes/l33-event-architecture). Today we bring those threads together into a coherent approach to performance engineering.
+Throughout this course, we've touched on performance in passing — ArrayList vs LinkedList in [L3](/lecture-notes/l3-more-java-new), network latency in [L20](/lecture-notes/l20-distributed-architecture), thread overhead in [L31](/lecture-notes/l31-concurrency1), the I/O scaled-time table in [L32](/lecture-notes/l32-concurrency2), rate limiting in [L33](/lecture-notes/l33-event-architecture). Today we bring those threads together into a coherent approach to performance engineering.
 
 The core principle: **measure, don't guess.** Developers have notoriously bad intuitions about where their code spends time. The scientific method from [L14 (Debugging)](/lecture-notes/l14-program-understanding) applies here too — form a hypothesis about the bottleneck, measure to test it, and iterate. The worst performance bugs come from optimizing the wrong thing.
 
@@ -132,7 +132,7 @@ Every piece of data your program uses lives somewhere in a hierarchy of storage,
 You've seen this table before — in [L32](/lecture-notes/l32-concurrency2) we used it to motivate async programming. Here the lesson is different: **architectural decisions determine where data lives, and that determines performance.**
 
 :::note Recall
-In [L3](/lecture-notes/l3-more-java), we said "use ArrayList by default" but deferred the explanation. Now we can see why: `ArrayList` stores elements contiguously in memory. When you iterate, the CPU loads a cache line (64 bytes) and gets multiple elements for free. `LinkedList` scatters nodes across the heap — every `next` pointer follows a random memory address, causing cache misses. The algorithmic complexity is the same (O(n) iteration), but the constant factor differs by 10-100x because of cache behavior.
+In [L3](/lecture-notes/l3-more-java-new), we said "use ArrayList by default" but deferred the explanation. Now we can see why: `ArrayList` stores elements contiguously in memory. When you iterate, the CPU loads a cache line (64 bytes) and gets multiple elements for free. `LinkedList` scatters nodes across the heap — every `next` pointer follows a random memory address, causing cache misses. The algorithmic complexity is the same (O(n) iteration), but the constant factor differs by 10-100x because of cache behavior.
 :::
 
 ### Latency Budgets: Where Does Time Go?
@@ -165,7 +165,7 @@ Student pushes code → GitHub webhook fires (50ms)
 Total: ~2.5 min (typical) to ~4 min (cold cache)
 ```
 
-You've experienced this latency every time you submit an assignment. The infrastructure overhead dominates — it typically takes 2-3 minutes just to go from pushing code to running tests, as GitHub queues the workflow run, finds an available runner, and provisions the environment. Optimizing test execution from 10s to 8s saves 2s — irrelevant compared to the minutes spent on infrastructure. Profile before optimizing. The infrastructure overhead connects directly to [L21 (Serverless)](/lecture-notes/l21-serverless), and the grader tarball caching by SHA connects to [L20's caching discussion](/lecture-notes/l20-networks).
+You've experienced this latency every time you submit an assignment. The infrastructure overhead dominates — it typically takes 2-3 minutes just to go from pushing code to running tests, as GitHub queues the workflow run, finds an available runner, and provisions the environment. Optimizing test execution from 10s to 8s saves 2s — irrelevant compared to the minutes spent on infrastructure. Profile before optimizing. The infrastructure overhead connects directly to [L21 (Serverless)](/lecture-notes/l21-serverless), and the grader tarball caching by SHA connects to [L20's caching discussion](/lecture-notes/l20-distributed-architecture).
 
 Amazon found that every 100ms of added latency cost them 1% of sales. Latency budgets are not academic — they directly affect business outcomes.
 
@@ -177,7 +177,7 @@ This is why **profiling matters more than algorithmic optimization** for most re
 
 | Decision | Performance implication | Lecture callback |
 |----------|----------------------|-----------------|
-| Monolith vs microservices | Method calls (ns) vs network calls (ms) | [L19](/lecture-notes/l19-monoliths) |
+| Monolith vs microservices | Method calls (ns) vs network calls (ms) | [L19](/lecture-notes/l19-architectural-qualities) |
 | Synchronous vs async | Blocking threads vs event-driven I/O | [L32](/lecture-notes/l32-concurrency2) |
 | Sequential vs eventual consistency | Wait-for-all (slow, safe) vs propagate (fast, stale) | [L33](/lecture-notes/l33-event-architecture) |
 | Thread-per-request vs thread pool | Memory scales with connections vs bounded | [L31](/lecture-notes/l31-concurrency1) |
@@ -185,7 +185,7 @@ This is why **profiling matters more than algorithmic optimization** for most re
 | Serverless vs always-on | Cold start latency (100ms-5s) vs idle resource cost | [L21](/lecture-notes/l21-serverless) |
 
 :::note
-GitHub is a Ruby on Rails monolith serving over 100 million developers. In [February–March 2026](https://github.blog/news-insights/company-news/addressing-githubs-recent-availability-issues-2/), rapid usage growth — including a tenfold spike in read traffic from popular client apps — exposed architectural limitations: a core auth database overloaded, and architectural coupling allowed localized failures to cascade across services. GitHub's response combines near-term optimization within the monolith (redesigning the user cache, isolating key dependencies like Actions and Git) with long-term architectural migration (moving from 12.5% to 50% Azure infrastructure by July, decomposing the monolith into isolated services). Sometimes you optimize within your architecture's constraints; sometimes the constraints tell you the architecture must change. (Connects to [L19](/lecture-notes/l19-monoliths).)
+GitHub is a Ruby on Rails monolith serving over 100 million developers. In [February–March 2026](https://github.blog/news-insights/company-news/addressing-githubs-recent-availability-issues-2/), rapid usage growth — including a tenfold spike in read traffic from popular client apps — exposed architectural limitations: a core auth database overloaded, and architectural coupling allowed localized failures to cascade across services. GitHub's response combines near-term optimization within the monolith (redesigning the user cache, isolating key dependencies like Actions and Git) with long-term architectural migration (moving from 12.5% to 50% Azure infrastructure by July, decomposing the monolith into isolated services). Sometimes you optimize within your architecture's constraints; sometimes the constraints tell you the architecture must change. (Connects to [L19](/lecture-notes/l19-architectural-qualities).)
 :::
 
 The key insight from [L18 (Thinking Architecturally)](/lecture-notes/l18-architecture-design): **architecture determines the ceiling of your performance.** You can optimize code within an architecture, but you can't exceed the architecture's fundamental limits. A synchronous monolith handling 10,000 concurrent users will always be limited by thread count and memory — no amount of code optimization changes that. Switching to async or event-driven architecture raises the ceiling.
@@ -219,7 +219,7 @@ public SceneSettings getSettings(Scene scene, SensorData sensors) {
 **When NOT to cache:** When inputs change every time, when staleness is unacceptable (recall [L33's consistency discussion](/lecture-notes/l33-event-architecture)), or when cache memory is a concern.
 
 :::note Recall
-In [L20](/lecture-notes/l20-networks), we discussed caching as a network optimization — Pawtograder caches grader tarballs by SHA hash. In [L33](/lecture-notes/l33-event-architecture), we formalized this: a cache is an eventually consistent copy of the source of truth. The cache invalidation problem ("when does the cache expire?") is the consistency question in disguise.
+In [L20](/lecture-notes/l20-distributed-architecture), we discussed caching as a network optimization — Pawtograder caches grader tarballs by SHA hash. In [L33](/lecture-notes/l33-event-architecture), we formalized this: a cache is an eventually consistent copy of the source of truth. The cache invalidation problem ("when does the cache expire?") is the consistency question in disguise.
 :::
 
 ### Batching: Amortize Fixed Costs

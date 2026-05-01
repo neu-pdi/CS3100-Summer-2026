@@ -6,13 +6,13 @@ title: "Sustainability"
 
 In [L35](/lecture-notes/l35-safety-reliability), we asked "who profits from a design decision, and who bears the risk?" Boeing sold sensor redundancy as an optional upgrade. Budget airlines saved money; passengers bore the risk without knowing it. That question — who benefits, who pays, and over what time horizon — is the core question of **sustainability.**
 
-In [L1](/lecture-notes/l1-intro-new), we defined software engineering as "the integral of programming over time." Every lecture since has been about what that integral measures: readability over time ([L5](/lecture-notes/l5-fp-readability-reusability)), changeability over time ([L6](/lecture-notes/l6-immutability-abstraction), [L7](/lecture-notes/l7-design-for-change)), correctness over time ([L15](/lecture-notes/l15-testing)), performance over time ([L34](/lecture-notes/l34-performance)), safety over time ([L35](/lecture-notes/l35-safety-reliability)). Today we name the thing the integral computes: **sustainability** — the preservation of long-term beneficial use of software, and its appropriate evolution, in a context that continuously changes.
+In [L1](/lecture-notes/l1-intro-new), we defined software engineering as "the integral of programming over time." Every lecture since has been about what that integral measures: readability over time ([L5](/lecture-notes/l5-fp-readability)), changeability over time ([L6](/lecture-notes/l6-immutability-abstraction), [L7](/lecture-notes/l7-design-for-change)), correctness over time ([L15](/lecture-notes/l15-testing)), performance over time ([L34](/lecture-notes/l34-performance)), safety over time ([L35](/lecture-notes/l35-safety-reliability)). Today we name the thing the integral computes: **sustainability** — the preservation of long-term beneficial use of software, and its appropriate evolution, in a context that continuously changes.
 
 ## Define software sustainability as a meta-quality attribute and connect it to the semester's recurring themes (10 minutes)
 
 ### Sustainability Is Not a Quality Attribute — It Is the Quality Attribute About Quality Attributes
 
-Throughout the semester, you've learned quality attributes: performance ([L34](/lecture-notes/l34-performance)), safety ([L35](/lecture-notes/l35-safety-reliability)), scalability ([L19](/lecture-notes/l19-monoliths)), changeability ([L6](/lecture-notes/l6-immutability-abstraction)), usability ([L24](/lecture-notes/l24-usability)), accessibility ([L28](/lecture-notes/l28-accessibility)). Sustainability asks a different question: **will those quality attributes hold up over time, and for whom?**
+Throughout the semester, you've learned quality attributes: performance ([L34](/lecture-notes/l34-performance)), safety ([L35](/lecture-notes/l35-safety-reliability)), scalability ([L19](/lecture-notes/l19-architectural-qualities)), changeability ([L6](/lecture-notes/l6-immutability-abstraction)), usability ([L24](/lecture-notes/l24-usability)), accessibility ([L28](/lecture-notes/l28-accessibility)). Sustainability asks a different question: **will those quality attributes hold up over time, and for whom?**
 
 A system can be performant today and unsustainable tomorrow — if the optimization technique creates technical debt that makes future changes impossible. A system can be accessible today and exclusionary next year — if the team that understood WCAG compliance leaves and no one maintains it. A system can be safe today and dangerous at scale — if the blast radius grows while the Swiss cheese layers stay the same ([L35](/lecture-notes/l35-safety-reliability)).
 
@@ -27,7 +27,7 @@ You didn't learn "sustainability tools" separately. You learned tools that *prod
 | Information hiding | [L6](/lecture-notes/l6-immutability-abstraction) | **Changeability** — hidden internals can evolve without breaking clients |
 | Low coupling | [L7](/lecture-notes/l7-design-for-change) | **Independence** — modules can be maintained, replaced, or scaled independently |
 | SOLID principles | [L8](/lecture-notes/l8-design-for-change-2) | **Evolvability** — code resists "software rot" as requirements change |
-| Hexagonal architecture | [L16](/lecture-notes/l16-testing2) | **Vendor independence** — swap infrastructure without rewriting domain logic |
+| Hexagonal architecture | [L16](/lecture-notes/l16-testability) | **Vendor independence** — swap infrastructure without rewriting domain logic |
 | Open source evaluation | [L23](/lecture-notes/l23-oss) | **Supply chain health** — dependencies that won't be abandoned or relicensed |
 | Accessibility | [L28](/lecture-notes/l28-accessibility) | **Inclusivity** — system serves diverse and growing user populations |
 | Staged rollout | [L35](/lecture-notes/l35-safety-reliability) | **Blast radius control** — failures don't cascade to every user simultaneously |
@@ -35,7 +35,7 @@ You didn't learn "sustainability tools" separately. You learned tools that *prod
 The recurring theme: **decisions that seem like "good engineering practice" in the short term are sustainability investments in the long term.** The converse is also true: shortcuts that seem harmless today become sustainability debts that compound.
 
 :::note Recall
-In [L4 (Specifications)](/lecture-notes/l4-specs-contracts), we saw that ambiguous specifications create a "hidden decision factory" — implementers make choices the spec didn't address, and those choices compound into maintenance burden. In [L9 (Requirements)](/lecture-notes/l9-requirements), we saw that the cost of fixing a requirements error grows from 1x during requirements gathering to 100x after deployment. Both are sustainability stories: the cost of a decision grows with time.
+In [L4 (Specifications)](/lecture-notes/l4-specs-contracts-new), we saw that ambiguous specifications create a "hidden decision factory" — implementers make choices the spec didn't address, and those choices compound into maintenance burden. In [L9 (Requirements)](/lecture-notes/l9-requirements), we saw that the cost of fixing a requirements error grows from 1x during requirements gathering to 100x after deployment. Both are sustainability stories: the cost of a decision grows with time.
 :::
 
 ## Apply the four dimensions of sustainability to evaluate design trade-offs in familiar systems (12 minutes)
@@ -44,7 +44,7 @@ In [L4 (Specifications)](/lecture-notes/l4-specs-contracts), we saw that ambiguo
 
 Sustainability is not one thing. It has four dimensions that interact and sometimes conflict:
 
-**Technical sustainability:** Can the system be maintained and evolved? This is the dimension you've spent the most time on this semester. Low coupling, high cohesion, testability, readable code, clear contracts — all serve technical sustainability. SceneItAll's hexagonal architecture ([L16](/lecture-notes/l16-testing2)) lets the team swap the Zigbee adapter for a Matter adapter without rewriting the scene activation logic. That's technical sustainability.
+**Technical sustainability:** Can the system be maintained and evolved? This is the dimension you've spent the most time on this semester. Low coupling, high cohesion, testability, readable code, clear contracts — all serve technical sustainability. SceneItAll's hexagonal architecture ([L16](/lecture-notes/l16-testability)) lets the team swap the Zigbee adapter for a Matter adapter without rewriting the scene activation logic. That's technical sustainability.
 
 **Economic sustainability:** Is the total cost of ownership viable? This goes beyond hosting costs. It includes developer time to maintain, cost of dependencies (both monetary and lock-in risk), support burden, and the opportunity cost of not building something else. Pawtograder's choice to use GitHub Actions for autograding is economically sustainable while the free tier covers the volume — but if usage grows past the free tier, we're locked into GitHub's pricing. And if GitHub changes their API, every autograder integration breaks.
 
@@ -66,7 +66,7 @@ The dimensions are not independent. Improving one can worsen another:
 
 | Decision | Technical | Economic | Environmental | Social |
 |----------|-----------|----------|---------------|--------|
-| Migrate SceneItAll from monolith to microservices | Better: independent deployment, team autonomy | Worse: operational complexity, more infrastructure | Worse: network overhead, container sprawl ([L20](/lecture-notes/l20-networks)) | Neutral |
+| Migrate SceneItAll from monolith to microservices | Better: independent deployment, team autonomy | Worse: operational complexity, more infrastructure | Worse: network overhead, container sprawl ([L20](/lecture-notes/l20-distributed-architecture)) | Neutral |
 | Add WCAG accessibility to SceneItAll app | Moderate effort | Higher dev cost | Neutral | Better: inclusive design ([L28](/lecture-notes/l28-accessibility)) |
 | Switch to serverless for SceneItAll cloud | Moderate: vendor-specific APIs | Better: pay-per-use, scale-to-zero ([L21](/lecture-notes/l21-serverless)) | Mixed: no idle waste, but cold start overhead | Worse: vendor lock-in limits who can self-host |
 | Keep all device telemetry forever | Simpler: no retention policy | Worse: storage costs grow linearly | Worse: storing data consumes energy | Worse: privacy risk grows with data volume |
@@ -173,7 +173,7 @@ The veil of ignorance doesn't tell you what to build. It tells you which trade-o
 Let's apply all four sustainability dimensions to a system you know well.
 
 **Technical sustainability:**
-- Open-source, modular design ([L16](/lecture-notes/l16-testing2) hexagonal architecture) — any institution can inspect, modify, and contribute back
+- Open-source, modular design ([L16](/lecture-notes/l16-testability) hexagonal architecture) — any institution can inspect, modify, and contribute back
 - GitHub Actions as CI — standard tooling reduces custom infrastructure, but creates platform dependency
 - Question: If GitHub changes their Actions pricing or API, how much of Pawtograder breaks?
 

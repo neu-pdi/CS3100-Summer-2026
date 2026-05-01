@@ -94,20 +94,20 @@ This policy ensures that every team member actively participates and that no stu
 Your letter grade is determined by both your total points AND meeting minimum thresholds in key categories. You must satisfy **all** requirements for a grade level to earn that grade.
 
 | Grade | Total Points | Individual Assignments | Group Assignments | Exams |
-|-------|--------------|------------------------|-------------------|-------|------|---------------|
+|-------|--------------|------------------------|-------------------|-------|
 | A | &ge;900 | &ge;320 (80%) | &ge;160 (80%) | &ge;270 (70%) |
 | B | &ge;800 | &ge;280 (70%) | &ge;140 (70%) | &ge;210 (60%) |
 | C | &ge;700 | &ge;240 (60%) | &ge;120 (60%) | &ge;175 (50%) |
-| D | &ge;600 | — | — | — | — | — |
-| F | &lt;600 or fails to meet above minimums | | | | |
+| D | &ge;600 | — | — | — |
+| F | &lt;600 or fails to meet<br>above minimums | — | — | — |
 
 **Plus/Minus Grades:** Once you meet the thresholds for a letter grade, your +/- modifier is determined by where your total points fall within that range:
 
-| Points | Grade | | Points | Grade | | Points | Grade | | Points | Grade |
-|--------|-------|-|--------|-------|-|--------|-------|-|--------|-------|
-|        |       | | 870+ | B+ | | 770+ | C+ | | 670+ | D+ |
-| 930–1000 | A | | 830–869 | B | | 730–769 | C |  | 630–669 | D |
-| 900–929 | A- | | 800–829 | B- | | 700–729 | C- | | 600–629 | D- |
+| A Points | A Grade | B Points | B Grade | C Points | C Grade | D Points | D Grade |
+|----------|---------|----------|---------|----------|---------|----------|---------|
+| — | — | 870+ | B+ | 770+ | C+ | 670+ | D+ |
+| 930–1000 | A | 830–869 | B | 730–769 | C | 630–669 | D |
+| 900–929 | A- | 800–829 | B- | 700–729 | C- | 600–629 | D- |
 
 *There is no A+ grade. If you fail to meet the thresholds for a letter grade, your grade is capped at the highest level whose thresholds you satisfy.*
 

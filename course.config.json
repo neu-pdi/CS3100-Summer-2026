@@ -259,7 +259,7 @@
         "2026-05-07"
       ],
       "topics": [
-        "Inheritance and Polymorphism in Java"
+        "Java Tooling, Inheritance and Polymorphism"
       ]
     },
     {
@@ -268,7 +268,7 @@
         "2026-05-11"
       ],
       "topics": [
-        "Java Data Structures and APIs"
+        "Inheritance and Polymorphism in Java II"
       ]
     },
     {
@@ -281,7 +281,7 @@
       ]
     },
     {
-      "lectureId": "l5-fp-readability-reusability",
+      "lectureId": "l5-fp-readability",
       "dates": [
         "2026-05-13"
       ],
@@ -317,7 +317,7 @@
       ]
     },
     {
-      "lectureId": "l14-domain-modeling",
+      "lectureId": "l12-domain-modeling",
       "dates": [
         "2026-05-20"
       ],
@@ -425,7 +425,7 @@
       ]
     },
     {
-      "lectureId": "l26",
+      "lectureId": "l26-exam2",
       "dates": [
         "2026-06-11"
       ],
@@ -520,7 +520,7 @@
       "id": "lab4",
       "title": "Lab 4: Changeability",
       "dates": [
-        "2026-01-18"
+        "2026-05-18"
       ],
       "sections": [
         "L01",
@@ -597,9 +597,10 @@
       "id": "cyb1",
       "title": "Assignment 1: Recipe Domain Model",
       "type": "homework",
-      "assignedDate": "2026-05-07",
-      "dueDate": "2026-05-14",
+      "assignedDate": "2026-01-08",
+      "dueDate": "2026-01-15",
       "dueTime": "20:59",
+      "status": "draft",
       "points": 40,
       "url": "/assignments/cyb1-recipes"
     },
@@ -610,6 +611,7 @@
       "assignedDate": "2026-05-15",
       "dueDate": "2026-05-22",
       "dueTime": "20:59",
+      "status": "published",
       "points": 60,
       "url": "/assignments/cyb2-unit-conversion"
     },

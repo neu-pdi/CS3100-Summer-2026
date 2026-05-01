@@ -26,7 +26,7 @@ private void updateIngredientsList() {
 }
 ```
 
-Every time the Model changes, we must remember to update the View. Every time the View changes, we must update the Model. This manual synchronization is tedious and error-prone. Worse, testing the Controller requires a running UI—the Controller has low *observability* and low *controllability* in the terms we introduced in [Lecture 16](./l16-testing2.md).
+Every time the Model changes, we must remember to update the View. Every time the View changes, we must update the Model. This manual synchronization is tedious and error-prone. Worse, testing the Controller requires a running UI—the Controller has low *observability* and low *controllability* in the terms we introduced in [Lecture 16](./l16-testability.md).
 
 **Model-View-ViewModel (MVVM)** evolved from MVC to address these problems. MVVM was developed by Microsoft architects in 2005 for Windows Presentation Foundation (WPF), but the pattern has spread to virtually every modern UI framework.
 
@@ -137,7 +137,7 @@ The ViewModel test runs in milliseconds, requires no UI toolkit initialization, 
 
 ## Explain why separation of concerns makes GUIs testable units (10 minutes)
 
-In [Lecture 16](./l16-testing2.md), we introduced the testing pyramid and two key properties for testable code: **observability** and **controllability**. We also covered **Hexagonal Architecture**, which separates domain logic from infrastructure through ports and adapters.
+In [Lecture 16](./l16-testability.md), we introduced the testing pyramid and two key properties for testable code: **observability** and **controllability**. We also covered **Hexagonal Architecture**, which separates domain logic from infrastructure through ports and adapters.
 
 MVC and MVVM are the GUI-specific application of these same principles:
 

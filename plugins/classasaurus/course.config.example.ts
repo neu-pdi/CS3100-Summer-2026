@@ -115,7 +115,7 @@ const config: CourseConfig = {
       topics: ['JVM Architecture', 'Memory Management', 'Data Structures'],
     },
     {
-      lectureId: 'l3-more-java',
+      lectureId: 'l3-more-java-new',
       title: 'Advanced Java Features',
       dates: ['2026-01-22', '2026-01-23', '2026-01-26'],
       topics: ['Generics', 'Collections', 'Streams', 'Lambdas'],
