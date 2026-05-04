@@ -41,12 +41,12 @@ Students can earn up to 1000 points. Your final grade is based on both the total
 |----------|--------|------------|
 | Individual Assignments (A1-A4) | 400      | 40%      |
 | Group Assignments (GA1-GA2)    | 200      | 20%      |
-| Labs and Participation   | 100      | 10%      |
+| Labs and Participation †  | 100      | 10%      |
 | Exam 1                         | 150      | 15%      |
 | Exam 2                         | 150      | 15%      |
 | **Total**                      | **1000** | **100%** |
 
-Each instructor will determine how participation is measured in their section(s). 
+† : Each instructor will determine how participation is measured in their section(s). 
 
 ### Assignment Point Distribution
 Detailed rubrics will be published with each assignment.
