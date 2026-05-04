@@ -472,7 +472,7 @@
   ],
   "labs": [
     {
-      "id": "lab1-java-setup",
+      "id": "lab1-java-setup-from-ood",
       "title": "Lab 1: Java Tooling and Setup",
       "dates": [
         "2026-05-06"
@@ -484,7 +484,7 @@
         "L04",
         "L05"
       ],
-      "url": "/labs/lab1-java-setup"
+      "url": "/labs/lab1-java-setup-from-ood"
     },
     {
       "id": "lab2",
@@ -594,15 +594,15 @@
   ],
   "assignments": [
     {
-      "id": "cyb1",
-      "title": "Assignment 1: Recipe Domain Model",
+      "id": "sor",
+      "title": "Assignment 1: Sets of Rectangles",
       "type": "homework",
-      "assignedDate": "2026-01-08",
-      "dueDate": "2026-01-15",
+      "assignedDate": "2026-05-07",
+      "dueDate": "2026-05-14",
       "dueTime": "20:59",
       "status": "draft",
       "points": 40,
-      "url": "/assignments/cyb1-recipes"
+      "url": "/assignments/sets-of-rectangles"
     },
     {
       "id": "cyb2",
