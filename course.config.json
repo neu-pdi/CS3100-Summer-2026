@@ -28,7 +28,7 @@
             "Wednesday",
             "Thursday"
           ],
-          "startTime": "9:50",
+          "startTime": "09:50",
           "endTime": "11:30",
           "location": "Boston, MA (SN 108)"
         }
@@ -120,8 +120,8 @@
             "Monday",
             "Wednesday"
           ],
-          "startTime": "8:00",
-          "endTime": "9:40",
+          "startTime": "08:00",
+          "endTime": "09:40",
           "location": "WVH 108"
         }
       ],
@@ -141,7 +141,7 @@
             "Monday",
             "Wednesday"
           ],
-          "startTime": "9:50",
+          "startTime": "09:50",
           "endTime": "11:30",
           "location": "WVG 106"
         }
