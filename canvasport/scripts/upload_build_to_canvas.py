@@ -588,6 +588,21 @@ def list_canvas_modules(
     return response.json()
 
 
+def delete_canvas_module(
+    api_base: str,
+    token: str,
+    course_id: str,
+    module_id: int,
+    timeout: int,
+) -> None:
+    url = f"{api_base}/courses/{course_id}/modules/{module_id}"
+    response = canvas_request("DELETE", url, token, timeout)
+    if response.status_code >= 400:
+        raise CanvasUploadError(
+            f"Failed to delete module {module_id}: {response.status_code} {response.text}"
+        )
+
+
 def create_canvas_module(
     api_base: str,
     token: str,
@@ -656,6 +671,21 @@ def publish_lecture_modules(
     items_created = 0
     dry_run_skipped = 0
 
+    existing_modules = list_canvas_modules(api_base=api_base, token=token, course_id=course_id, timeout=timeout)
+    if dry_run:
+        for m in existing_modules:
+            print(f"[DRY RUN] Would delete module: {m.get('name')} (id={m.get('id')})")
+    else:
+        for m in existing_modules:
+            delete_canvas_module(
+                api_base=api_base,
+                token=token,
+                course_id=course_id,
+                module_id=int(m["id"]),
+                timeout=timeout,
+            )
+            print(f"Module deleted: {m.get('name')} (id={m.get('id')})")
+
     if dry_run:
         for lecture in lecture_metadata:
             lecture_id = lecture["lectureId"]
@@ -679,10 +709,7 @@ def publish_lecture_modules(
             "dryRunSkipped": dry_run_skipped,
         }
 
-    existing_modules = list_canvas_modules(api_base=api_base, token=token, course_id=course_id, timeout=timeout)
-    module_by_name: Dict[str, Dict[str, Any]] = {
-        str(m.get("name", "")).strip().casefold(): m for m in existing_modules
-    }
+    module_by_name: Dict[str, Dict[str, Any]] = {}
 
     for lecture in lecture_metadata:
         lecture_id = lecture["lectureId"]
