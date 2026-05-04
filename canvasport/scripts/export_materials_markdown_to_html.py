@@ -355,6 +355,18 @@ def build_export_targets(
     return set(known_html), set(known_pdf)
 
 
+def should_export_markdown_html(source_path: Path, output_html_path: Path) -> bool:
+    if not output_html_path.exists():
+        return True
+    return source_path.stat().st_mtime > output_html_path.stat().st_mtime
+
+
+def should_export_slide_pdf(slide_html_path: Path, output_pdf_path: Path) -> bool:
+    if not output_pdf_path.exists():
+        return True
+    return slide_html_path.stat().st_mtime > output_pdf_path.stat().st_mtime
+
+
 def resolve_linked_markdown_source(repo_root: Path, current_source: Path, url: str) -> Optional[Path]:
     lowered = url.lower().strip()
     if (
@@ -702,18 +714,20 @@ def export_slide_pdfs(
     slides_build_dir: Path,
     output_dir: Path,
     warnings: List[str],
-) -> int:
+    verbose: bool,
+) -> Dict[str, int]:
     if not slides_build_dir.exists() or not slides_build_dir.is_dir():
         warnings.append(f"[slides] built slides directory not found: {slides_build_dir}")
-        return 0
+        return {"exportedCount": 0, "skippedCount": 0}
 
     slide_sources = sorted(slides_dir.glob("*.mdx"))
     slides_by_slug: Dict[str, Path] = {p.stem: p for p in slide_sources}
 
     exported = 0
+    skipped = 0
     build_root = slides_build_dir.parent
     with serve_build_for_slides(repo_root=repo_root, build_root=build_root) as slides_base_url:
-        for lecture_id in lecture_ids:
+        for index, lecture_id in enumerate(lecture_ids, start=1):
             selected_slide_slug, warning = _select_slide_slug(
                 lecture_id=lecture_id,
                 slides_by_slug=slides_by_slug,
@@ -729,6 +743,15 @@ def export_slide_pdfs(
                 continue
 
             output_pdf = output_dir / f"{lecture_id}.pdf"
+            if not should_export_slide_pdf(slide_html, output_pdf):
+                skipped += 1
+                if verbose:
+                    print(f"[{index}/{len(lecture_ids)}] Skipping {output_pdf}: up to date")
+                continue
+
+            if verbose:
+                print(f"[{index}/{len(lecture_ids)}] Creating {output_pdf} from {slide_html}")
+
             # Use print view and suppress notes to keep only visible slide content.
             slide_url = f"{slides_base_url}/lecture-slides/{selected_slide_slug}/?print-pdf&showNotes=false"
             pdf_error = render_slide_pdf_with_playwright(
@@ -741,8 +764,10 @@ def export_slide_pdfs(
                 continue
 
             exported += 1
+            if verbose:
+                print(f"[{index}/{len(lecture_ids)}] Done creating {output_pdf}; moving to next lecture")
 
-    return exported
+    return {"exportedCount": exported, "skippedCount": skipped}
 
 
 def export_lectures(
@@ -764,6 +789,7 @@ def export_lectures(
     warnings: List[str] = []
     mermaid_cache: Dict[str, Optional[str]] = {}
     exported_html = 0
+    skipped_html = 0
 
     for index, lecture_id in enumerate(lecture_ids, start=1):
         output_html_path = output_dir / f"{lecture_id}.html"
@@ -773,6 +799,12 @@ def export_lectures(
             warnings.append(str(err))
             if verbose:
                 print(f"[{index}/{len(lecture_ids)}] Skipping {lecture_id}: source file not found")
+            continue
+
+        if not should_export_markdown_html(lecture_path, output_html_path):
+            skipped_html += 1
+            if verbose:
+                print(f"[{index}/{len(lecture_ids)}] Skipping {output_html_path}: up to date")
             continue
 
         if verbose:
@@ -793,26 +825,38 @@ def export_lectures(
         exported_html += 1
 
     exported_slide_pdfs = 0
+    skipped_slide_pdfs = 0
     if not skip_slide_pdfs:
-        exported_slide_pdfs = export_slide_pdfs(
+        slide_pdf_summary = export_slide_pdfs(
             repo_root=repo_root,
             lecture_ids=lecture_ids,
             slides_dir=slides_dir,
             slides_build_dir=slides_build_dir,
             output_dir=output_dir,
             warnings=warnings,
+            verbose=verbose,
         )
+        exported_slide_pdfs = slide_pdf_summary["exportedCount"]
+        skipped_slide_pdfs = slide_pdf_summary["skippedCount"]
 
-    print(f"Exported {exported_html}/{len(lecture_ids)} lecture notes to HTML in {output_dir}")
+    print(
+        f"Exported {exported_html}/{len(lecture_ids)} lecture notes to HTML in {output_dir}"
+        f" ({skipped_html} skipped as up to date)"
+    )
     if skip_slide_pdfs:
         print("Skipped slide PDF export (--skip-slide-pdfs)")
     else:
-        print(f"Exported {exported_slide_pdfs}/{len(lecture_ids)} slide decks to PDF in {output_dir}")
+        print(
+            f"Exported {exported_slide_pdfs}/{len(lecture_ids)} slide decks to PDF in {output_dir}"
+            f" ({skipped_slide_pdfs} skipped as up to date)"
+        )
     return {
         "exportedHtmlCount": exported_html,
+        "skippedHtmlCount": skipped_html,
         "requestedCount": len(lecture_ids),
         "lectureIds": lecture_ids,
         "slidePdfExportedCount": exported_slide_pdfs,
+        "slidePdfSkippedCount": skipped_slide_pdfs,
         "slidePdfRequestedCount": len(lecture_ids),
         "warnings": warnings,
     }
@@ -837,10 +881,17 @@ def export_pages(
     warnings: List[str] = []
     mermaid_cache: Dict[str, Optional[str]] = {}
     exported = 0
+    skipped = 0
 
     for index, md_path in enumerate(md_files, start=1):
         page_id = md_path.stem
         output_html_path = output_dir / f"{page_id}.html"
+
+        if not should_export_markdown_html(md_path, output_html_path):
+            skipped += 1
+            if verbose:
+                print(f"[{index}/{len(md_files)}] Skipping {output_html_path}: up to date")
+            continue
 
         if verbose:
             print(f"[{index}/{len(md_files)}] Creating {output_html_path} from {md_path}")
@@ -860,13 +911,14 @@ def export_pages(
         if verbose:
             print(f"[{index}/{len(md_files)}] Done creating {output_html_path}; moving to next page")
 
-    print(f"Exported {exported}/{len(md_files)} pages to HTML in {output_dir}")
+    print(f"Exported {exported}/{len(md_files)} pages to HTML in {output_dir} ({skipped} skipped as up to date)")
     if warnings:
         print(f"Page export warnings: {len(warnings)}")
         for w in warnings:
             print(f"  {w}")
     return {
         "exportedCount": exported,
+        "skippedCount": skipped,
         "requestedCount": len(md_files),
         "pageIds": [md_path.stem for md_path in md_files],
         "warnings": warnings,
@@ -900,6 +952,7 @@ def export_config_materials(
     warnings: List[str] = []
     mermaid_cache: Dict[str, Optional[str]] = {}
     exported = 0
+    skipped = 0
 
     for index, (section_name, url) in enumerate(material_items, start=1):
         source_path = resolve_markdown_from_url(repo_root, url)
@@ -912,6 +965,12 @@ def export_config_materials(
             continue
 
         output_html_path = output_dir / f"{stem}.html"
+        if not should_export_markdown_html(source_path, output_html_path):
+            skipped += 1
+            if verbose:
+                print(f"[{index}/{len(material_items)}] Skipping {output_html_path}: up to date")
+            continue
+
         if verbose:
             print(f"[{index}/{len(material_items)}] Creating {output_html_path} from {source_path}")
 
@@ -930,13 +989,17 @@ def export_config_materials(
         if verbose:
             print(f"[{index}/{len(material_items)}] Done creating {output_html_path}; moving to next material")
 
-    print(f"Exported {exported}/{len(material_items)} assignments/labs to HTML in {output_dir}")
+    print(
+        f"Exported {exported}/{len(material_items)} assignments/labs to HTML in {output_dir}"
+        f" ({skipped} skipped as up to date)"
+    )
     if warnings:
         print(f"Material export warnings: {len(warnings)}")
         for warning in warnings:
             print(f"  {warning}")
     return {
         "exportedCount": exported,
+        "skippedCount": skipped,
         "requestedCount": len(material_items),
         "items": [
             {"section": section_name, "url": url, "stem": output_stem_from_url(url)}
@@ -961,9 +1024,16 @@ def export_additional_linked_documents(
     warnings: List[str] = []
     mermaid_cache: Dict[str, Optional[str]] = {}
     exported = 0
+    skipped = 0
 
     for index, (document_id, source_path) in enumerate(sorted(additional_documents.items()), start=1):
         output_html_path = output_dir / f"{document_id}.html"
+        if not should_export_markdown_html(source_path, output_html_path):
+            skipped += 1
+            if verbose:
+                print(f"[{index}/{len(additional_documents)}] Skipping linked document {output_html_path}: up to date")
+            continue
+
         if verbose:
             print(f"[{index}/{len(additional_documents)}] Creating linked document {output_html_path} from {source_path}")
 
@@ -982,9 +1052,13 @@ def export_additional_linked_documents(
         if verbose:
             print(f"[{index}/{len(additional_documents)}] Done creating linked document {output_html_path}")
 
-    print(f"Exported {exported}/{len(additional_documents)} linked supporting documents to HTML in {output_dir}")
+    print(
+        f"Exported {exported}/{len(additional_documents)} linked supporting documents to HTML in {output_dir}"
+        f" ({skipped} skipped as up to date)"
+    )
     return {
         "exportedCount": exported,
+        "skippedCount": skipped,
         "requestedCount": len(additional_documents),
         "documentIds": sorted(additional_documents.keys()),
         "warnings": warnings,
@@ -1063,9 +1137,11 @@ def main() -> int:
 
     manifest = {
         "exportedLectureCount": lecture_summary["exportedHtmlCount"],
+        "skippedLectureCount": lecture_summary["skippedHtmlCount"],
         "requestedLectureCount": lecture_summary["requestedCount"],
         "lectures": lecture_summary["lectureIds"],
         "slidePdfExportedCount": lecture_summary["slidePdfExportedCount"],
+        "slidePdfSkippedCount": lecture_summary["slidePdfSkippedCount"],
         "slidePdfRequestedCount": lecture_summary["slidePdfRequestedCount"],
         "pages": page_summary,
         "materials": material_summary,
