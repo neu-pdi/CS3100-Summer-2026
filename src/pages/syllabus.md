@@ -30,7 +30,7 @@ Students complete individual programming assignments that build into a larger pr
 
 The course schedule can be found in the calendar below. We will make every attempt to stick with this schedule and update the calendar if it changes.
 
-<iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FNew_York&showPrint=0&src=MDRzNTVqZHBzNzU0bTdwZ2QxcHZnMnY2MjhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ef6c00" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"/>
+<iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FNew_York&showPrint=0&src=MDRzNTVqZHBzNzU0bTdwZ2QxcHZnMnY2MjhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ef6c00" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 
 
 ## Grading
