@@ -488,6 +488,31 @@ def rewrite_internal_document_links(
     return str(soup)
 
 
+def convert_task_list_markers(markdown_text: str) -> str:
+    """Convert markdown task markers to HTML checkboxes for list items."""
+
+    def replace_unchecked(match: re.Match) -> str:
+        return f'{match.group(1)}<input type="checkbox" disabled> '
+
+    def replace_checked(match: re.Match) -> str:
+        return f'{match.group(1)}<input type="checkbox" checked disabled> '
+
+    # Convert only list-item task syntax so inline text like "input is [X]" is unaffected.
+    markdown_text = re.sub(
+        r"^(\s*(?:[-+*]|\d+\.)\s+)\[\s\]\s+",
+        replace_unchecked,
+        markdown_text,
+        flags=re.MULTILINE,
+    )
+    markdown_text = re.sub(
+        r"^(\s*(?:[-+*]|\d+\.)\s+)\[[xX]\]\s+",
+        replace_checked,
+        markdown_text,
+        flags=re.MULTILINE,
+    )
+    return markdown_text
+
+
 def markdown_to_html(markdown_text: str) -> str:
     def convert_math(text: str) -> str:
         odd = True
@@ -504,6 +529,8 @@ def markdown_to_html(markdown_text: str) -> str:
             else:
                 result += char
         return result
+
+    markdown_text = convert_task_list_markers(markdown_text)
 
     html_body = markdown.markdown(
         markdown_text,
