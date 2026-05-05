@@ -17,8 +17,6 @@ You'll implement the conversion service and the `Recipe` and `Instruction` domai
 
 **How you achieve this is up to you.** Your design decisions will determine extensibility for future requirements like recipe export formats, display customizations, and bulk conversions.
 
-**Due:** Friday, May 21, 2026 at 11:59 PM Boston Time
-
 **Prerequisites:** This assignment builds on provided code and your understanding of Java concepts from Assignment 1.
 
 ## Learning Outcomes
