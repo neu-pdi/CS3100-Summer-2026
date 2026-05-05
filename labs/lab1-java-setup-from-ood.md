@@ -51,7 +51,7 @@ Before starting, ensure you have:
 - [ ] git installed on your computer
 - [ ] VS Code installed
 
-For help with git and VS Code installation, see the [CS 2100 setup instructions](https://neu-pdi.github.io/cs2100-public-resources/setup).
+For help with git installation, see the [CS 2100 setup instructions](https://neu-pdi.github.io/cs2100-public-resources/setup/#git-installation). If you do not have VS Code on your computer, simply install it by [downloading from here](https://code.visualstudio.com/). Further instructions for VS Code setup are included later in this lab.
 
 ## 2.1: Set Up Pawtograder and GitHub
 
@@ -86,6 +86,7 @@ We'll use Eclipse Temurin, a free, open-source distribution of Java.
 
 1. Go to the Adoptium download page: https://adoptium.net/temurin/releases/?version=21
 2. Select your operating system:
+
    - **macOS**: Choose `.pkg` installer (use **aarch64** for Apple Silicon Macs, **x64** for Intel Macs)
    - **Windows**: Choose `.msi` installer (**x64** for most computers)
    - **Linux**: Choose `.tar.gz` or use your distribution's package manager
@@ -103,6 +104,7 @@ We'll use Eclipse Temurin, a free, open-source distribution of Java.
 1. Open the downloaded `.msi` file
 2. Follow the installation wizard
 3. **Important:** On the "Custom Setup" screen, make sure these options are enabled:
+
    - ✅ "Set JAVA_HOME variable"
    - ✅ "Add to PATH"
 
@@ -116,6 +118,8 @@ sudo apt install temurin-21-jdk
 # 3 Organizing projects on your machine
 
 We recommend that you create a folder on your computer that will contain all the projects for this class (e.g. a folder called `CS3100`). While it is not required, it is recommended for ease-of-use that you do not have spaces in the folder name.
+
+**Note**: Please do not put this folder at a place where it is being backed up by some other program (e.g. OneDrive, dropbox, Google Drive, etc.). This often creates problems when one program (e.g. your IDE like VS Code) is changing things inside the folder while the backup program is also working there.
 
 ## 3.1 Basic terminal commands
 
@@ -193,7 +197,7 @@ Now you're ready to clone your lab repository. First, find your repository in Pa
 
 ## 4.3 Install Suggested Extensions
 
-When the project opens, VS Code will prompt you to install recommended extensions. **Click "Install"** when you see this prompt. *We* trust these extensions, and encourage you to trust and use them, too.
+When the project opens, VS Code will prompt you to install recommended extensions. **Click "Install"** when you see this prompt. *We* have curated this list of extensions for the workflow of this course, and therefore encourage you to trust and use them too.
 
 If you don't see the prompt (or accidentally dismissed it):
 
@@ -290,7 +294,7 @@ We recommend [setting the default](https://stackoverflow.com/a/45899693/631051) 
 
 ### 5.1.1 Fixing Errors
 
-For this class, you will find actual code in the src folder. Expand that folder on the project side window to reveal two other folders: `main` and `test` each with a folder called `java` in it. `main/java` is the *sources root*:  it is where the project expects all your code to be. Similarly `test/java` is the *test sources root*: it is where the project expects all your tests to be. You can open files in VS Code by double-clicking them. You will notice there are some building errors in one of the source code files.
+For this class, you will find actual code in the `src` folder. Expand that folder on the project side window to reveal two other folders: `main` and `test` each with a folder called `java` in it. `main/java` is the *sources root*:  it is where the project expects all your code to be. Similarly `test/java` is the *test sources root*: it is where the project expects all your tests to be. You can open files in VS Code by double-clicking them. You will notice there are some building errors in one of the source code files.
 
    1. Hover your mouse over the error line and you should see a tooltip with an error message in it. Error messages are read better by clicking on the "Problems" tab at the bottom of the window.
 
@@ -356,6 +360,8 @@ Working Directory → (git add) → Staging Area → (git commit) → Local Repo
 
 > 📚 **Want a deeper dive?** See the [CS 2100 Git introduction](https://neu-pdi.github.io/cs2100-public-resources/lecture-notes/next/l1-intro-python1#git) for a more thorough explanation with helpful diagrams and analogies.
 
+**Note** Look below for a warning about using `git add .` even though the above page recommends it. 
+
 ## 6.2 Committing Your Work
 
 Follow this workflow to submit your lab (and future assignments):
@@ -378,7 +384,7 @@ This way is recommended for this lab, because it forces you to complete each ste
 2. Navigate to the project folder (in this lab, that is your Lab 1 folder).
 3. Type `git status`. This will show you which files have changed since the last time you committed, and which files are untracked (i.e. not backed up in Git). Since you only changed files within the `src/` folder, you should only have to pay attention to these files.
 4. Navigate to the folder that contains your code. You may use `git status .` to check the status of only files within the current folder.
-5. For each file that you wish to submit, type `git add <filename>`. If you use `git status` after this, you will see that the file(s) you added are shown in the staging area.
+5. For each file that you wish to submit, type `git add <filename>`. If you use `git status` after this, you will see that the file(s) you added are shown in the staging area. **Do not use `git add .` which will add every file in the current folder to the staging area, including hidden files!** Instead add each file you want to, explicitly.
 6. Once all the changed files are shown in the staging area, type `git commit -m <message>`. Replace `<message>` with a helpful text message that reminds you of what the changes are about.
 7. To push the changes to Github (i.e. to submit on Pawtograder), type `git push origin main` (only `git push` will also work for now).
 
@@ -403,20 +409,18 @@ Before submitting, ensure:
 
 - [ ] `./gradlew compileJava` passes with **0 warnings**
 - [ ] `./gradlew test` passes with all tests passing
-- [ ] You've fixed the static analysis warnings in `DeviceManager.java`
-- [ ] You've fixed the bug in `Fan.java`
-- [ ] You've implemented `setColorTemperature()` in `TunableWhiteLight.java`
-- [ ] You've added the new test in `LightTest.java`
+- [ ] You've fixed the error in the code
+- [ ] You've fixed the error in the tests
 - [ ] You've completed `REFLECTION.md`
 - [ ] All changes are committed and pushed to GitHub
 
-## Troubleshooting
+# 8 Troubleshooting
 
-### I installed Java 25 instead of Java 21
+## 8.1 I installed Java 25 instead of Java 21
 
 Java 25 is **not compatible** with our build tools. You need to install Java 21 and set it as your default.
 
-#### macOS
+### macOS
 
 1. Install Java 21 (see instructions above)
 2. List your installed Java versions:
@@ -460,26 +464,26 @@ In extreme cases, you can also try:
 3. Select the Java 21 option from the list
 4. Verify: `java -version` should show version 21
 
-### "java: command not found"
+## 8.2 "java: command not found"
 
 Make sure you opened a **new** terminal after installing Java. If still not working:
 - **macOS/Linux**: Add `export JAVA_HOME=$(/usr/libexec/java_home -v 21)` to your `~/.zshrc` or `~/.bashrc`
 - **Windows**: Verify JAVA_HOME is set in System Environment Variables
 
-### VS Code doesn't recognize Java
+## 8.3 VS Code doesn't recognize Java
 
 1. Open Command Palette (⌘+Shift+P / Ctrl+Shift+P)
 2. Type "Java: Configure Java Runtime"
 3. Make sure Java 21 is detected and selected
 
-### Gradle build fails
+## 8.4 Gradle build fails
 
 Try clearing the Gradle cache:
 ```bash
 ./gradlew clean build --refresh-dependencies
 ```
 
-### SSH Authentication Issues
+## 8.5 SSH Authentication Issues
 
 If you're having trouble with SSH authentication:
 
@@ -516,7 +520,7 @@ If you're having trouble with SSH authentication:
   git remote set-url origin git@github.com:neu-cs3100/sp26-lab1-<your-username>.git
   ```
 
-## Resources
+## 8.6 Resources
 
 - [Java 21 Documentation](https://docs.oracle.com/en/java/javase/21/)
 - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
