@@ -390,19 +390,19 @@ public class Light implements IoTDevice {
 
 This class shows several features of Java:
 
-    * `class Light implements IoTDevice` makes the promise that this class provides implementations for all the methods specified in the `IoTDevice` interface. If the class omits any of these methods, Java will produce compilation errors.
+  * `class Light implements IoTDevice` makes the promise that this class provides implementations for all the methods specified in the `IoTDevice` interface. If the class omits any of these methods, Java will produce compilation errors.
 
-    * Notice how each field of this class is marked `private`. This is an access modifier. An access modifier restricts the place in the code from where this field can be accessed. `private` is the most restrictive access modifier: these fields cannot be accessed from anywhere except from inside this class. This is good design practice: always minimize the places from where details of a class can be accessed.
+  * Notice how each field of this class is marked `private`. This is an access modifier. An access modifier restricts the place in the code from where this field can be accessed. `private` is the most restrictive access modifier: these fields cannot be accessed from anywhere except from inside this class. This is good design practice: always minimize the places from where details of a class can be accessed.
 
-    * All the methods are marked `public`: this means they can be called from anywhere. This is the least restrictive access modifier. 
+  * All the methods are marked `public`: this means they can be called from anywhere. This is the least restrictive access modifier. 
 
-    * Each method that emanates from the interface is annotated by `@Override`. It indicates that "the origins of this method lie somewhere else, related to this class". Java mandates that all methods in an interface be public in a class that implements that interface. This ensures that a developer can look at an interface and know which methods in an implementing class can be called from anywhere.
+  * Each method that emanates from the interface is annotated by `@Override`. It indicates that "the origins of this method lie somewhere else, related to this class". Java mandates that all methods in an interface be public in a class that implements that interface. This ensures that a developer can look at an interface and know which methods in an implementing class can be called from anywhere.
 
-    * Note that some of the fields are also marked as `final`. This means that these fields, once initialized in the constructor, cannot be re-assigned. In the above example, since the brightness of the light does not change, this field is marked `final`. Any attempt to re-assign this field will result in a compilation error.
+  * Note that some of the fields are also marked as `final`. This means that these fields, once initialized in the constructor, cannot be re-assigned. In the above example, since the brightness of the light does not change, this field is marked `final`. Any attempt to re-assign this field will result in a compilation error.
 
-    * Java supports single-line and multiple-line comments. It is best practice to describe an interface or a class in a couple of sentences above it. It is also best practice to write similar documentation for each method inside the class.
+  * Java supports single-line and multiple-line comments. It is best practice to describe an interface or a class in a couple of sentences above it. It is also best practice to write similar documentation for each method inside the class.
 
-    * Java takes its object-oriented nature more seriously. Specifically every method in Java must be written inside a clas or interface.
+  * Java takes its object-oriented nature more seriously. Specifically every method in Java must be written inside a clas or interface.
 
 The `Fan` and `Thermostat` classes are similar and can be found in the accompanying code.
 
