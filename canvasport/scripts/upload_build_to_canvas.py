@@ -855,6 +855,12 @@ def parse_datetime_for_canvas(date_str: str, time_str: Optional[str], tz_name: s
     return utc_dt.isoformat()
 
 
+def resolve_assigned_time(entry: Dict[str, Any]) -> str:
+    """Return configured assignedTime or default release time of 18:00."""
+    assigned_time = str(entry.get("assignedTime", "")).strip()
+    return assigned_time or "18:00"
+
+
 def load_assignments_and_labs(
     config_path: Path,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], str]:
@@ -1047,6 +1053,7 @@ def publish_assignments_and_labs(
         title = assignment.get("title", "")
         points = assignment.get("points", 0)
         assigned_date = assignment.get("assignedDate")
+        assigned_time = resolve_assigned_time(assignment)
         due_date = assignment.get("dueDate")
         due_time = assignment.get("dueTime", "23:59")
         status = assignment.get("status", "draft")
@@ -1068,7 +1075,7 @@ def publish_assignments_and_labs(
             continue
         
         try:
-            release_at = parse_datetime_for_canvas(assigned_date, "00:00", timezone)
+            release_at = parse_datetime_for_canvas(assigned_date, assigned_time, timezone)
             due_at = parse_datetime_for_canvas(due_date, due_time, timezone)
             title_key = title.strip().casefold()
             existing = existing_by_title.get(title_key)
@@ -1076,7 +1083,11 @@ def publish_assignments_and_labs(
             
             if dry_run:
                 has_desc = "with description" if description else "no description"
-                print(f"[DRY RUN] Assignment: {title} (points: {points}, due: {due_date}, published: {is_published}, {has_desc})")
+                print(
+                    f"[DRY RUN] Assignment: {title} "
+                    f"(release: {assigned_date} {assigned_time}, due: {due_date} {due_time}, "
+                    f"points: {points}, published: {is_published}, {has_desc})"
+                )
                 skipped += 1
             else:
                 result = create_or_update_assignment(
@@ -1109,6 +1120,7 @@ def publish_assignments_and_labs(
         lab_id = lab.get("id")
         title = lab.get("title", "")
         dates = lab.get("dates", [])
+        assigned_time = resolve_assigned_time(lab)
         status = lab.get("status", "draft")
         is_published = status == "published"
         points = 0
@@ -1130,7 +1142,7 @@ def publish_assignments_and_labs(
         
         try:
             lab_date = dates[0]
-            release_at = parse_datetime_for_canvas(lab_date, "00:00", timezone)
+            release_at = parse_datetime_for_canvas(lab_date, assigned_time, timezone)
             due_at = parse_datetime_for_canvas(lab_date, "23:59", timezone)
             title_key = title.strip().casefold()
             existing = existing_by_title.get(title_key)
@@ -1138,7 +1150,11 @@ def publish_assignments_and_labs(
             
             if dry_run:
                 has_desc = "with description" if description else "no description"
-                print(f"[DRY RUN] Lab: {title} (date: {lab_date}, published: {is_published}, {has_desc})")
+                print(
+                    f"[DRY RUN] Lab: {title} "
+                    f"(release: {lab_date} {assigned_time}, due: {lab_date} 23:59, "
+                    f"published: {is_published}, {has_desc})"
+                )
                 skipped += 1
             else:
                 result = create_or_update_assignment(
