@@ -2,11 +2,6 @@
 title: "Assignment 5: Interactive CLI"
 sidebar_position: 6
 ---
-
-# TODO: Verify all links in this page before publishing
-# TODO: Move Command Reference content to a separate linked page
-# TODO: Verify that grading can be split by service tests vs. CLI tests to support this as a potential paired assignment (Person A owns services + unit tests, Person B owns CLI + E2E tests)
-
 ## Update log
 - 3/16/2026: When displaying a recipe with no servings information, use the phrase "No Servings" (applies to `show`, `recipes` listing, `cook` mode header).
 
@@ -96,7 +91,7 @@ Apply the four service boundary heuristics from L18:
 1. **Rate of Change** — UI formatting changes fastest; domain operations change less frequently; infrastructure changes rarely. Things that change at different speeds should be separate.
 2. **Actor** — Different actors should inform different service boundaries, just as the Student, Instructor, and Sysadmin each got their own slice of Pawtograder.
 3. **Interface Segregation** — Each part of your CLI should depend only on the service capabilities it actually needs. Avoid fat service interfaces that force callers to depend on methods they don't use.
-4. **Testability** — Things that need independent testing should be separable. Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.D
+4. **Testability** — Things that need independent testing should be separable. Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.
 
 ### Data Persistence
 
@@ -237,7 +232,7 @@ Apply the L18 heuristics to decide where each concern belongs, and document your
 
 ## Implementation Task
 
-Once your ADRs are written, implement your design. The command reference and full example session are on the [Command Reference page](/assignments/Appendices/a5-command-reference).
+Once your ADRs are written, implement your design. The command reference and full example session are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference).
 
 ### Command Summary
 
