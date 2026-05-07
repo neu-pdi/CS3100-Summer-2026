@@ -9,9 +9,9 @@ import fs from 'fs';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 // LUCIA: The other baseURL needs to be the repo name as that is how it will be deployed on neu-pdi.
 // For Netlify or other deployments, make sure their environment var BASE_URL is defined to avoid having to change this.
-const baseUrl = process.env.BASE_URL || 'cs3100-summer-public-resources/';
+const baseUrl = process.env.BASE_URL || '/CS3100-Summer-2026/';
 const courseConfigPath = path.resolve(__dirname, 'course.config.json');
-type CourseConfigLite = { lectures?: { lectureId: string }[] };
+type CourseConfigLite = { lectures?: { lectureId: string }[]; assignments?: { url?: string }[] };
 
 function getLectureNotesIncludePatterns(): string[] {
   const defaultPatterns = ['index.md', 'index.mdx', 'l0*.md', 'l0*.mdx'];
@@ -29,6 +29,26 @@ function getLectureNotesIncludePatterns(): string[] {
   }
 }
 
+function getAssignmentsIncludePatterns(): string[] {
+  const defaultPatterns = ['index.md', 'index.mdx', 'git-workflow.md', 'git-workflow.mdx', 'cyb1-recipes.md', 'cyb1-recipes.mdx'];
+
+  try {
+    const configRaw = fs.readFileSync(courseConfigPath, 'utf-8');
+    const courseConfig = JSON.parse(configRaw) as CourseConfigLite;
+    const assignmentSlugs = (courseConfig.assignments || [])
+      .map((a) => a.url)
+      .filter(Boolean)
+      .map((url) => url!.split('/').pop()!);
+
+    const assignmentPatterns = assignmentSlugs.flatMap((slug) => [`${slug}.md`, `${slug}.mdx`]);
+    return [...defaultPatterns, ...assignmentPatterns];
+  } catch (error) {
+    console.warn('Failed to load course.config.json for assignment include patterns. Falling back to defaults.');
+    return defaultPatterns;
+  }
+}
+
+const assignmentsIncludePatterns = getAssignmentsIncludePatterns();
 const lectureNotesIncludePatterns = getLectureNotesIncludePatterns();
 
 const config: Config = {
@@ -50,7 +70,7 @@ const config: Config = {
   // GitHub pages deployment config.
   // LUCIA: The organization and project name need to match where this is deployed!
   organizationName: 'neu-pdi', // Usually your GitHub org/user name.
-  projectName: 'cs3100-summer-public-resources', // Usually your repo name.
+  projectName: 'CS3100-Summer-2026', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -79,7 +99,7 @@ const config: Config = {
         id: 'labs',
         path: 'labs',
         routeBasePath: 'labs',
-        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        editUrl: 'https://github.com/neu-pdi/CS3100-Spring-2026/edit/main/',
         sidebarPath: './sidebars.ts',
         remarkPlugins: [remarkMath],
         rehypePlugins: [rehypeKatex],
@@ -91,8 +111,9 @@ const config: Config = {
         id: 'assignments',
         path: 'assignments',
         routeBasePath: 'assignments',
-        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        editUrl: 'https://github.com/neu-pdi/CS3100-Spring-2026/edit/main/',
         sidebarPath: './sidebars.ts',
+        include: assignmentsIncludePatterns,
         remarkPlugins: [remarkMath],
         rehypePlugins: [rehypeKatex],
       },
@@ -103,7 +124,7 @@ const config: Config = {
         id: 'lecture-slides',
         path: 'lecture-slides',
         routeBasePath: 'lecture-slides',
-        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        editUrl: 'https://github.com/neu-pdi/CS3100-Spring-2026/edit/main/',
         sidebarPath: './sidebars.ts',
         remarkPlugins: [remarkMath],
         rehypePlugins: [rehypeKatex],
@@ -168,8 +189,8 @@ const config: Config = {
           path: 'lecture-notes',
           routeBasePath: 'lecture-notes',
           include: lectureNotesIncludePatterns,
-          sidebarPath: './lecture-notes-sidebars.ts',
-          editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+          sidebarPath: './sidebars.ts',
+          editUrl: 'https://github.com/neu-pdi/CS3100-Spring-2026/edit/main/',
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
         },
@@ -239,7 +260,12 @@ const config: Config = {
           to: '/staff',
           position: 'left',
           label: 'Staff',
-        }
+        },
+        {
+          to: '/showcase',
+          position: 'left',
+          label: 'Project Gallery',
+        },
       ],
     },
     footer: {

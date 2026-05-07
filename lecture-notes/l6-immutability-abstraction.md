@@ -55,7 +55,7 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
 * The core idea to information hiding is that we should design our system so that it is broken into "modules" that are relatively independent.
 * What is a module?
     * A module is a self-contained unit of code. More specifically:
-        * Each module should have a well-defined interface that specifies the behavior of the module. That specification should be restrictive, general and clear ([Lecture 4](./l4-specs-contracts.md))
+        * Each module should have a well-defined interface that specifies the behavior of the module. That specification should be restrictive, general and clear ([Lecture 4](./l4-specs-contracts-new.md))
         * The implementation of the module should be hidden from other modules and can be independently compiled.
         * Each module should be self-contained and should not depend on the implementation details of other modules.
     * A module could be a class, a package, or even a whole program. Modules can be composed together to form larger modules.

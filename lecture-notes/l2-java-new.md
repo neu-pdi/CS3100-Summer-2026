@@ -4,6 +4,7 @@ lecture_number: 2
 title: Java Deep Dive, Inheritance and Polymorphism
 ---
 
+
 [Accompanying Java code](/code/lectures/l2-java-new/code.zip)
 
 # 1 Deep(er) Dive into Java

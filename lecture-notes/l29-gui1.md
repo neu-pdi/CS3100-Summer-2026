@@ -170,7 +170,7 @@ This separation provides the same benefits we discussed in [Lecture 6](./l6-immu
 
 **High cohesion**: Each component has a single responsibility. The Model exhibits *functional cohesion* (all code related to business logic), the View exhibits *communication cohesion* (all code operating on the same visual representation), and the Controller exhibits *sequential cohesion* (coordinating the flow from user input to model update to view refresh).
 
-**Testability**: As we discussed in [Lecture 16](./l16-testing2.md), separating infrastructure from domain code is the key to testability. The Model *is* your domain code—pure business logic with no UI dependencies. You can test it with simple unit tests: create a Recipe, call `scale(8)`, and verify ingredient quantities. No GUI required.
+**Testability**: As we discussed in [Lecture 16](./l16-testability.md), separating infrastructure from domain code is the key to testability. The Model *is* your domain code—pure business logic with no UI dependencies. You can test it with simple unit tests: create a Recipe, call `scale(8)`, and verify ingredient quantities. No GUI required.
 
 ### MVC in JavaFX
 

@@ -4,8 +4,6 @@ lecture_number: 1
 title: Designs and Programming Languages
 image: /img/lectures/web/l1.png
 ---
-Designs and Programming Languages
-================
  
    * [Python Source (.zip)](/code/lectures/l1-intro/python.zip)
    * [Java Source (.zip)](/code/lectures/l1-intro/java.zip)
