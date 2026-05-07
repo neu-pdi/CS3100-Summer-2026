@@ -14,12 +14,13 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime
+from html import escape
 import json
 import mimetypes
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 import markdown
 import pytz
@@ -357,6 +358,32 @@ def rewrite_internal_links_for_canvas(
     return pattern.sub(replace_attr, html_text)
 
 
+def rewrite_math_for_canvas(html_text: str, canvas_base_url: str) -> str:
+    """Convert <math>...</math> tags to Canvas equation image markup."""
+
+    base = canvas_base_url.strip().rstrip("/")
+    pattern = re.compile(r"<math>(.*?)</math>", flags=re.IGNORECASE | re.DOTALL)
+
+    def replace_math(match: re.Match) -> str:
+        latex = match.group(1).strip()
+        if not latex:
+            return ""
+
+        # Canvas expects the equation path segment to be URL-encoded twice.
+        encoded_once = quote(latex, safe="")
+        encoded_twice = quote(encoded_once, safe="")
+        escaped_latex = escape(latex, quote=True)
+        return (
+            f'<img class="equation_image" '
+            f'title="{escaped_latex}" '
+            f'src="{base}/equation_images/{encoded_twice}" '
+            f'alt="LaTeX: {escaped_latex}" '
+            f'data-equation-content="{escaped_latex}" />'
+        )
+
+    return pattern.sub(replace_math, html_text)
+
+
 def lecture_title_from_html(html_text: str, fallback: str) -> str:
     match = re.search(r"<h[1-6][^>]*>(.*?)</h[1-6]>", html_text, flags=re.IGNORECASE | re.DOTALL)
     if not match:
@@ -490,6 +517,7 @@ def publish_lecture_pages(
             unresolved_links=unresolved_links,
             source_slug=slug,
         )
+        html_text = rewrite_math_for_canvas(html_text, canvas_base_url=CANVAS_BASE_URL)
         title = lecture_title_from_html(html_text, fallback=slug)
         lecture_pages[slug] = {"title": title, "pageUrl": slug}
 
@@ -553,6 +581,7 @@ def rewrite_lecture_pages_after_mapping(
             unresolved_links=unresolved_links,
             source_slug=slug,
         )
+        html_text = rewrite_math_for_canvas(html_text, canvas_base_url=CANVAS_BASE_URL)
         title = lecture_title_from_html(html_text, fallback=slug)
 
         if dry_run:
@@ -620,7 +649,28 @@ def create_canvas_module(
         raise CanvasUploadError(
             f"Failed to create module '{module_name}': {response.status_code} {response.text}"
         )
-    return response.json()
+
+    module = response.json()
+    module_id = module.get("id")
+    if not module_id:
+        return module
+
+    # Canvas appears to ignore module[published] on create for some deployments,
+    # so publish explicitly after the module exists.
+    publish_url = f"{api_base}/courses/{course_id}/modules/{module_id}"
+    publish_response = canvas_request(
+        "PUT",
+        publish_url,
+        token,
+        timeout,
+        data={"module[published]": "true"},
+    )
+    if publish_response.status_code >= 400:
+        raise CanvasUploadError(
+            f"Failed to publish module '{module_name}' ({module_id}): "
+            f"{publish_response.status_code} {publish_response.text}"
+        )
+    return publish_response.json()
 
 
 def list_canvas_module_items(
@@ -822,6 +872,7 @@ def publish_syllabus(
         unresolved_links=unresolved_links,
         source_slug="syllabus",
     )
+    html_text = rewrite_math_for_canvas(html_text, canvas_base_url=CANVAS_BASE_URL)
 
     if dry_run:
         print("[DRY RUN] Syllabus update")
@@ -1069,6 +1120,7 @@ def publish_assignments_and_labs(
                 source_slug=f"assignment:{assignment_id or 'unknown'}",
             )
             description = rewrite_file_links_for_canvas(description, file_url_map)
+            description = rewrite_math_for_canvas(description, canvas_base_url=CANVAS_BASE_URL)
         
         if not assignment_id or not title or not assigned_date or not due_date:
             failed.append({"id": assignment_id, "title": title, "error": "missing required fields"})
@@ -1135,6 +1187,7 @@ def publish_assignments_and_labs(
                 source_slug=f"lab:{lab_id or 'unknown'}",
             )
             description = rewrite_file_links_for_canvas(description, file_url_map)
+            description = rewrite_math_for_canvas(description, canvas_base_url=CANVAS_BASE_URL)
         
         if not lab_id or not title or not dates:
             failed.append({"id": lab_id, "title": title, "error": "missing required fields"})
