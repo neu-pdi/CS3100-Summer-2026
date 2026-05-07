@@ -6,8 +6,6 @@ sidebar_position: 2
 Sets of Rectangles
 =========
 
-Starter code: [code.zip](/code/assignments/setofrectangles/code.zip)
-
 # 1 Introduction
 
 A lot of applications have "tile" data: data that can be represented using rectangular tiles in 2D space. Google map tiles, 2D drawings and designs, floor plans are some examples. In this assignment we will work with axis-aligned rectangles (i.e. rectangles whose sides are horizontal and vertical only). Such rectangles are characterized by the position of their lower left corner $(x,y)$, their width and height. For simplicity we will assume all of these quantities are integers, and the width and height are positive. We will specifically target 2D drawing as an application.
@@ -36,35 +34,39 @@ Given two rectangles, how do we find out if they overlap or not? The problem can
 
 # 2.2 Contained difference $(A \setminus B)$
 
-Consider a set that contains a single rectangle $A$. We consider another rectangle $B$ such that $B$ is fully contained in $A$, i.e. there is no part of $B$ that does not overlap with $A$. We wish to compute the set of rectangles that represents the subtraction of $B$ from $A$. The illustration below shows some cases:
+Consider a set that contains a single rectangle $A$. We consider another rectangle $B$ such that $B$ is fully contained in $A$, i.e. there is no part of $B$ that does not overlap with $A$. We wish to compute the set of rectangles that represents the subtraction of $B$ from $A$. The illustration below shows some cases ($A$ is red, $B$ is green):
 
 ![Image not loaded](/img/assignments/set-of-rectangles/contained-difference.png)
 
-We divide $A$ into $4$ rectangles as the first example shows. If some sides of the rectangles coincide then we may get fewer rectangles as the next two examples show. This contained difference operation is the building block for the two set operations we actually want.
+We divide $A$ into $8$ rectangles as the first example shows. If some sides of the rectangles coincide then we may get fewer rectangles as the next two examples show. This contained difference operation is the building block for the two set operations we actually want.
 
 # 2.3 Subtracting a rectangle from a set $(S - A)$
 
-![Image not loaded](/img/assignments/set-of-rectangles/subtract.png)
-
-Consider a set $S$ of rectangles. We wish to subtract a rectangle $B$ from this set. This can be accomplished as follows:
+Consider a set $S$ of rectangles. We wish to subtract a rectangle $A$ from this set. This can be accomplished as follows:
 
    1. Initialize the result set $T$ to be empty.
-   2. For each rectangle $A$ in $S$:
+   2. For each rectangle $B$ in $S$:
 
-       i. If $B$ does not overlap with $A$ add $A$ to $T$ and move to the next rectangle.
+       i. If $A$ does not overlap with $B$ add $B$ to $T$ and move to the next rectangle.
 
-       ii. If $B$ overlaps with $A$ in a non-zero area, find their intersection $R$, and add the contained difference (subtract $R$ from $A$) to $T$.
+       ii. If $A$ overlaps with $B$ in a non-zero area, find their intersection $R$, and add the contained difference ($B \setminus R$) to $T$.
 
    3. Return $T$ as the result.
 
-# 2.3 Add a rectangle to a set $(A + B)$
+The illustration below shows this algorithm for a simple case: $S$ is a set with one rectangle (green) and $A$ is shown in cyan.
+
+![Image not loaded](/img/assignments/set-of-rectangles/subtract.png)
+
+# 2.4 Add a rectangle to a set $(S + A)$
+
+Consider a set $S$ of rectangles. We wish to add a rectangle $A$ to this set. As it turns out, this operation is an extension of subtraction:
+
+   1. Compute $T$ as $S - A$.
+   2. Add $A$ to $T$ and return the result.
+
+The illustration below shows this algorithm for a simple case: $S$ is a set with one rectangle (green) and $A$ is shown in cyan.
 
 ![Image not loaded](/img/assignments/set-of-rectangles/add.png)
-
-Consider a set $S$ of rectangles. We wish to add a rectangle $B$ to this set. As it turns out, this operation is an extension of subtraction:
-
-   1. Compute $T$ as $S - B$.
-   2. Add $B$ to $T$ and return the result.
 
 # 3 What to do
 
@@ -72,21 +74,23 @@ All code should be in the `box` package.
 
 You are provided the `BoxSet` interface with this assignment. Here are the details of each method:
    
-
    * The `add` and `subtract` methods should throw an `IllegalArgumentException` if the box passed to it does not have a positive width and height.
    * The `getBoxes` method should return an array with each element containing exactly four numbers: the x, y, width and height of the rectangle in that order. For example, if there are two rectangles in this set, then the first rectangle would be (arr[0][0],arr[0][1],arr[0][2],arr[0][3]) and the second rectangle would be (arr[1][0],arr[1][1],arr[1][2],arr[1][3]).
+
+You are not allowed to change the `BoxSet` interface in any way (i.e. do not add, remove or edit any methods).
 
 Your task is to implement this interface in a class named `SimpleBoxSet` and test it. This class should have only one public constructor that does not take any arguments and creates an empty set of boxes. Other than this constructor and the methods mandated by the interface, it should have no other new public methods. 
 
 Here are some helpful pointers:
 
-   * You may use any suitable way available in the JDK to represent the set of rectangles. **However you are not allowed to use the existing `Rectangle` class available in the JDK**.
-   * Note that the `add` and `subtract` method do not return anything. That is, they change the current set to the result.
-   * Note that this is a "set" of boxes: it should not contain the same box more than once.
-   * Note that the `getBoxes` method does not impose any order on the rectangles that are returned. In other words, this implementation can return the rectangles in any order, so long as it returns all of them.
-   * To create an array for the `getBoxes` method, use this: `arr = new int[n][4]` where `n` is the number of rectangles.
+  * It may be helpful to write a class that represents a single box. Write suitable operations such as overlapping and contained-difference in it with another single box, and then use them in the `SimpleBoxSet` class. 
+  * You may use any suitable way available in the JDK to represent the set of rectangles. **However you are not allowed to use the existing `Rectangle` class available in the JDK**. The main reason for this is that the `Rectangle` class is related to GUIs which are not relevant to this assignment. 
+  * Note that the `add` and `subtract` method do not return anything. That is, they change the current set to the result.
+  * Note that this is a "set" of boxes: it should not contain the same box more than once.
+  * Note that the `getBoxes` method does not impose any order on the rectangles that are returned. In other words, this implementation can return the rectangles in any order, so long as it returns all of them.
+  * To create an array for the `getBoxes` method, use this: `arr = new int[n][4]` where `n` is the number of rectangles.
 
-You are encouraged to write other interfaces and classes as you see fit. However your work will also be judged by the design of those classes (in other words, you have the freedom to define other classes and interfaces, but do not have the freedom to design them as badly as you want without a point penalty).
+Although you are encouraged to write other interfaces and classes as you see fit, your work will be judged by the design of those classes. In other words, you have the freedom to define other classes and interfaces, but do not have the freedom to design them as badly as you want without a point penalty.
 
 # 3.1 Testing
 
@@ -97,6 +101,12 @@ You are expected to test your code thoroughly. This means you should write tests
    3. Complete the class and make sure it passes all your tests.
 
 If you wrote other classes, you are expected to write tests for them as well.
+
+Here are some hints for how to think about tests:
+
+  1. Start by testing with only single rectangles (i.e. create a set with one rectangle and add or subtract one rectangle from it).
+  2. For each operation consider when the rectangles in question overlap and when they do not (e.g. add a rectangle that does not overlap with any rectangle in a set).
+  3. Consider edge-cases (literally!): what happens if the rectangles "touch"?
 
 
 ## 3.2 Documentation
