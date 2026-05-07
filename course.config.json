@@ -477,6 +477,7 @@
       "dates": [
         "2026-05-06"
       ],
+      "status": "published",
       "sections": [
         "L01",
         "L02",
@@ -598,9 +599,10 @@
       "title": "Assignment 1: Sets of Rectangles",
       "type": "homework",
       "assignedDate": "2026-05-07",
+      "assignedTime": "18:00",
       "dueDate": "2026-05-14",
       "dueTime": "20:59",
-      "status": "draft",
+      "status": "published",
       "points": 40,
       "url": "/assignments/sets-of-rectangles"
     },
@@ -659,8 +661,8 @@
       "id": "cyb6",
       "title": "Group Assignment 2",
       "type": "homework",
-      "assignedDate": "2026-03-13",
-      "dueDate": "2026-03-18",
+      "assignedDate": "2026-06-13",
+      "dueDate": "2026-06-18",
       "dueTime": "20:59",
       "points": 30,
       "url": "/assignments/cyb10-design-sprint"
