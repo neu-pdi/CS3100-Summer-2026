@@ -207,7 +207,7 @@ If you encounter a situation where you believe something is wrong with the autog
 
 This is the first course in the curriculum that incorporates the use of AI in software development. The overall objective is to balance two goals. First, prepare students for practical software development that increasingly uses artificial intelligence. Secondly, ensuring that students still receive the core foundational skills of software development that will serve them for their entire professional lives (to develop without and with AI).
 
-[Our detailed approach is described here.](/src/pages/ai)
+[Our detailed approach is described here.](ai)
 
 ## Inclusive Environment
 
