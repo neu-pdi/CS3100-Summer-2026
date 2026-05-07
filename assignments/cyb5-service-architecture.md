@@ -9,7 +9,6 @@ sidebar_position: 6
 
 ## Update log
 - 3/16/2026: When displaying a recipe with no servings information, use the phrase "No Servings" (applies to `show`, `recipes` listing, `cook` mode header).
-- 3/16/2026: Added Windows hint: use `WindowsPathAwareParser` so backslashes in paths work correctly. See [JLine setup](#jline-rich-terminal-interaction).
 
 ---
 
@@ -70,7 +69,7 @@ By completing this assignment, you will demonstrate proficiency in:
 
 ### Actors: Who Uses CookYourBooks?
 
-The **actor heuristic** from L18 says: *different actors — people who use the system in different ways and whose needs change independently — should be served by different service boundaries.* CookYourBooks serves three distinct actors:
+The **actor heuristic** from L18 says: *different actors — people who use the system in different ways and whose needs change independently — should be served by different service boundaries.* CookYourBooks serves three distinct actors, each using different CLI commands (defined [here](/assignments/Appendices/cyb5-command-reference.md)):
 
 | Actor | Goals | Key Commands |
 |---------|-------|--------------|
@@ -97,7 +96,7 @@ Apply the four service boundary heuristics from L18:
 1. **Rate of Change** — UI formatting changes fastest; domain operations change less frequently; infrastructure changes rarely. Things that change at different speeds should be separate.
 2. **Actor** — Different actors should inform different service boundaries, just as the Student, Instructor, and Sysadmin each got their own slice of Pawtograder.
 3. **Interface Segregation** — Each part of your CLI should depend only on the service capabilities it actually needs. Avoid fat service interfaces that force callers to depend on methods they don't use.
-4. **Testability** — Things that need independent testing should be separable. Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.
+4. **Testability** — Things that need independent testing should be separable. Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.D
 
 ### Data Persistence
 
@@ -331,7 +330,7 @@ The starter code includes `JLineExample.java` you can run to see basic JLine fea
 
 ### Error Handling
 
-Error messages must be **actionable** — tell the user what went wrong and what they can do about it. Exact error messages for each command are specified in the [Command Reference](/assignments/Appendices/a5-command-reference).
+Error messages must be **actionable** — tell the user what went wrong and what they can do about it. Exact error messages for each command are specified in the [Command Reference](/assignments/Appendices/cyb5-command-reference).
 
 #### Ambiguous Match Format
 
