@@ -166,6 +166,8 @@ Open a terminal.
 
 Before you can clone repositories from our course organization, you need to connect your local Git installation to GitHub with proper authorization. You should do this so that you would not need to enter your credentials each and every time you want to upload a change. This is done by creating "SSH keys". You can think of them as a pair of keys that identify you specifically. 
 
+### 4.1.1 Set up SSH key
+
 Please follow [the detailed instructions here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent). **Be sure to follow the instructions for your operating system**.
 
 In order to verify that your setup works correctly, open a terminal (on Mac/Linux) or Git Bash on Windows and type this:
@@ -174,7 +176,19 @@ In order to verify that your setup works correctly, open a terminal (on Mac/Linu
 
 Don't change the email. The response should be a greeting with your GitHub username.
 
-If you see this message, **SSH is configured correctly!** You can now clone repositories using SSH URLs (which start with `git@github.com:` instead of `https://`).
+If you see this message, **SSH is configured correctly!** 
+
+### 4.1.2 Configure SSO
+
+You need to enable Single Sign On for the `neu-cs3100` organization as it requires it. [The instructions can be found here](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-single-sign-on/authorizing-an-ssh-key-for-use-with-single-sign-on), but summarized below for convenience:
+
+1. On your web browser log in to your Github account.
+2. Click on your profile (top right) and then Settings --> SSH Keys. Next to the SSH key you just added, click on "Configure SSO".
+3. Add the `neu-cs3100` organization. 
+
+You may have completed this step for CS 2100, but you need to do it separately and explicitly for every course. 
+
+You can now clone repositories using SSH URLs (which start with `git@github.com:` instead of `https://`).
 
 ## 4.2 Clone the Lab Repository
 
