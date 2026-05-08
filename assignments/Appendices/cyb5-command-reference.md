@@ -88,7 +88,7 @@ Joy of Cooking (8 recipes):
 ```
 
 **Requirements:**
-- When a recipe has no servings information, display `No Servings` in place of the servings line. This applies wherever recipe servings are shown: `recipes`, `show`, and `cook` mode header.
+- When a recipe has no servings information, display `No servings` in place of the servings line. This applies wherever recipe servings are shown: `recipes`, `show`, and `cook` mode header.
 
 **Error handling:**
 - Collection not found: `Collection not found: 'Unknown Collection'. Use 'collections' to see available collections.`
@@ -194,7 +194,7 @@ Instructions:
   1. Preheat oven to 350°F
   2. Mix dry ingredients
   3. Cream butter and sugar
-  4. Combine and fold in chocolate chips
+  4. Combine and fold in chocolate chip
   5. Bake for 12 minutes
 ```
 
@@ -232,7 +232,6 @@ Imports a recipe from a JSON file and adds it to the specified collection. The J
 
 **On success:**
 ```text
-Imported 'Grandma's Apple Pie' into 'Holiday Favorites'.
 ```
 
 **Error handling:**
