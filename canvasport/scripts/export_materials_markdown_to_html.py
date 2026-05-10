@@ -35,10 +35,16 @@ from bs4 import BeautifulSoup
 
 from markdownextensions import (
     AsciiArtExtension,
+    CautionExtension,
+    DangerExtension,
     ExerciseExtension,
+    InfoExtension,
     IncerciseExtension,
     MarginNotesExtension,
+    NoteExtension,
+    TipExtension,
     TodoExtension,
+    WarningExtension,
 )
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp", ".ico", ".avif", ".tif", ".tiff"}
@@ -539,6 +545,12 @@ def markdown_to_html(markdown_text: str) -> str:
             MarginNotesExtension(),
             IncerciseExtension(),
             ExerciseExtension(),
+            NoteExtension(),
+            TipExtension(),
+            InfoExtension(),
+            WarningExtension(),
+            CautionExtension(),
+            DangerExtension(),
             AsciiArtExtension(),
             "codehilite",
             "fenced_code",
