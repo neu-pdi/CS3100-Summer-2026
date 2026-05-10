@@ -14,7 +14,7 @@ Many figures, such as building facades can be represented using rectangles. When
 
 # 2 Sets of Rectangles
 
-A set of rectangles is defined as a collection of non-overlapping axis-aligned rectangles **(rectangles that touch can co-exist in the set)**. This means that the total area occupied by the drawing is simply the sum of the areas of rectangles that make up the drawing. Being a set, there is no possibility of the same rectangle occurring more than once. The figure below illustrates some examples.
+A set of rectangles is defined as a collection of non-overlapping axis-aligned rectangles **(rectangles that touch can co-exist in the set)**. Being a set, there is no possibility of the same rectangle occurring more than once. The figure below illustrates some examples.
 
 ![Image not loaded](/img/assignments/set-of-rectangles/set-examples.png)
 
