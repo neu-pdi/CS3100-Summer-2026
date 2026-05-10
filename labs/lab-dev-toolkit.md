@@ -4,8 +4,6 @@ sidebar_position: 2
 
 # Lab : Developer Toolkit
 
-![Lab : Developer Toolkit - A bright, organized lo-fi pixel art scene of a daytime coding workspace. Afternoon sunlight streams through a window with a plant on the sill. A clean monitor displays a terminal with './gradlew build SUCCESS' in green. On the tidy desk: a neatly annotated assignment printout, colorful sticky notes reading 'git pull first!' and 'spotlessApply', a hand-drawn git branch diagram pinned to a small corkboard, and an index card showing 'Recipe.Java ✗' crossed out next to 'Recipe.java ✓' (intentional! we cross out the WRONG capitalization of the file extension, must be Java with a capital J on the oen crossed out). An orange cat lounges contentedly in a sunny spot nearby. A terminal cheat sheet is pinned to the wall. A second monitor shows Pawtograder with green checkmarks. A fresh cup of tea. Cheerful blues and warm yellows. The vibe is 'I've got this.' Title: 'Lab 3: Developer Toolkit'](/img/labs/web/lab3.png)
-
 Students come to CS3100 from many different paths. Some transferred from other universities. Some took CS2100, and others took CS2510. Some learned Python but not Java. Some are command-line wizards; others have never opened a terminal. We're all starting from different places, and we're all learning about where each other have come from.
 
 **That's all fine.** But software engineering requires a baseline fluency with tools—terminals, version control, build systems, IDEs—that isn't always explicitly taught. We've assumed too much in the past, and we'd rather fill any gaps now than have tools get in the way of learning design.
@@ -35,8 +33,6 @@ The autograder will run and give you points, but **passing all autograder tests 
 
 By the end of this lab, you will be able to:
 
-- Navigate and interpret CS3100 assignment specifications effectively
-- Use Pawtograder to check your submission status and understand autograder feedback
 - Execute essential terminal commands for navigating your file system and using git
 - Configure VS Code for Java development and use its git integration
 - Run Gradle commands and interpret build/test output
@@ -339,7 +335,7 @@ VS Code is more than a text editor—it's a powerful IDE when properly configure
 1. Close VS Code completely
 2. Open VS Code
 3. Go to `File → Open Folder` (NOT Open File!)
-4. Navigate to your lab3 directory and select it
+4. Navigate to your lab2 directory and select it
 5. You should see the full project tree in the Explorer sidebar
 
 **In `exercises/Part2Exercises.java`:**
@@ -356,10 +352,9 @@ public class Part2Exercises {
 
 ### Exercise 2.2: Terminal Tips in VS Code
 
-You already learned to open and configure the terminal in Part 2. Here are a few more tips:
+You already learned to open and configure the terminal in Part 1. Here are a few more tips:
 
-**Multiple terminals:** Click the `+` icon in the terminal panel to open additional terminals. Useful when you want one terminal running `./gradlew test --continuous` while you edit code in another.
-See [VS Code Terminal Basics](https://code.visualstudio.com/docs/terminal/basics) for more.
+**Multiple terminals:** Click the `+` icon in the terminal panel to open additional terminals. 
 
 **Split terminals:** Click the split icon to see two terminals side-by-side.
 
@@ -398,7 +393,7 @@ VS Code's Source Control panel provides a visual interface to git.
 5. Click the checkmark to commit
 6. Click "Sync Changes" to push
 
-**Record in `Part2Exercises.java`:**
+**Make changes to `Part2Exercises.java`: do not write answers in a separate file!**
 
 ```java
     // Question 5: What keyboard shortcut opens the Source Control panel?
@@ -442,7 +437,7 @@ Think of Gradle as your project's "chef":
 
 ### Exercise 3.1: Essential Gradle Commands
 
-Run each command and observe what happens:
+Run each command in the terminal and observe what happens:
 
 ```bash
 # Compile your code (but don't run tests)
@@ -478,6 +473,15 @@ public class Part3Exercises {
     public static final String Q3_WHY_WRAPPER = ""; // Fill this in (hint: consistency)
 }
 ```
+
+It is also possible to run a gradle task in "watch mode". For example if one types `./gradlew test --continuous`, it will do the following:
+
+1. Run the requested gradle task (`test`)
+2. After the task is done, it will keep Gradle running.
+3. If any of the relevant files change (e.g. you change your code, tests or build.gradle), it will run this task automatically.
+
+In other words, gradle will behave like VS Code does (when you edit code, it immediately shows you errors without you telling it to do so).
+
 
 ### Exercise 3.2: Reading Gradle Errors
 
@@ -563,7 +567,7 @@ Gradle errors can be cryptic. If you're stuck on a build error for more than 15 
 - What command you ran
 - What you've already tried
 
-**Can't make office hours?** Post to the **Lab 3** discussion topic on Pawtograder with the same information. You can use your real name or your pseudonym—whichever you prefer.
+**Can't make office hours?** Post to the **Lab 2** discussion topic on Pawtograder with the same information. You can use your real name or your pseudonym—whichever you prefer.
 
 :::
 
@@ -684,7 +688,7 @@ Complete `REFLECTION.md` with your answers to:
 
 2. **The .Java Incident:** Why do you think a file named `BoxSet.Java` wouldn't be recognized by the Java compiler? What does this tell you about Java and file naming?
 
-3. **Help Queue Experience:** Describe your experience opening a help request in the "Developer Toolkit Lab Testing" queue. (See Part 5)
+3. **Help Queue Experience:** Describe your experience opening a help request in the "Developer Toolkit Lab Testing" queue. (See Part 4)
 
 4. **Forum Contribution:** Paste the link to your discussion forum post, or describe what you contributed.
 
