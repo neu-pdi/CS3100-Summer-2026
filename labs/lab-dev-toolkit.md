@@ -124,7 +124,8 @@ pwd
 # 3. List all files including hidden ones
 ls -la
 
-# 4. You should see a .git folder. What does this indicate?
+# 4. You should see a .git folder. What does its presence indicate?
+
 # Record your answer in Part1Exercises.java
 
 # 5. Navigate to the src/main/java directory
