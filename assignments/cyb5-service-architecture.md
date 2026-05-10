@@ -55,7 +55,7 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Writing Architecture Decision Records (ADRs)** — documenting the *why* behind your service boundaries and design choices ([L18 ADR section](/lecture-notes/l18-architecture-design#architecture-decision-records-adrs); ADRs can be just as short as the sample)
 - **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testability), [L19: Architectural Qualities](/lecture-notes/l19-architectural-qualities))
 - **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter (it *drives* the application on behalf of the user) that consumes your services without leaking domain logic into the presentation layer; preparing for a second driving adapter (GUI) in the group project
- **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
+- **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
 - **End-to-end testing with JLine** — understanding how integration tests use dumb terminal mode to verify CLI behavior
 - **Interactive UX for terminals** — building rich interactions including step-by-step cooking mode, tab completion, and contextual help
 
@@ -65,7 +65,7 @@ By completing this assignment, you will demonstrate proficiency in:
 
 ### Actors: Who Uses CookYourBooks?
 
-The **actor heuristic** from L18 says: *different actors — people who use the system in different ways and whose needs change independently — should be served by different service boundaries.* CookYourBooks serves three distinct actors, each using different CLI commands (defined [here](/assignments/Appendices/cyb5-command-reference.md)):
+The **actor heuristic** from L18 says: *different actors — people who use the system in different ways and whose needs change independently — should be served by different service boundaries.* CookYourBooks serves three distinct actors, each using different CLI commands (defined [in this command reference](/assignments/Appendices/cyb5-command-reference.md)):
 
 | Actor | Goals | Key Commands |
 |---------|-------|--------------|
@@ -236,6 +236,8 @@ Apply the L18 heuristics to decide where each concern belongs, and document your
 Once your ADRs are written, implement your design. The command reference and full example session are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference).
 
 ### Command Summary
+
+Below are all the commands in a convenient table. The full reference and details for each commands are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference.md).
 
 | Category | Command | Description |
 |----------|---------|-------------|
