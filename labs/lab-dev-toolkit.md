@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Lab : Developer Toolkit
+# Lab: Developer Toolkit
 
 Students come to CS3100 from many different paths. Some transferred from other universities. Some took CS2100, and others took CS2510. Some learned Python but not Java. Some are command-line wizards; others have never opened a terminal. We're all starting from different places, and we're all learning about where each other have come from.
 
@@ -10,24 +10,22 @@ Students come to CS3100 from many different paths. Some transferred from other u
 
 Consider this lab an interlude before Assignment 2: a chance to ensure everyone has the same foundation, regardless of where you started.
 
-:::danger Checklist: Required for Credit
+> ⚠️  Checklist: Required for Credit
+>
+> **You MUST complete ALL of the following to receive credit for this lab:**
+>
+> - [ ] **Open a help request** in the "Develop Lab Testing" queue on Pawtograder (Part 5)
+> - [ ] **Make a discussion forum post** (Part 6)
+> - [ ] **Complete `REFLECTION.md`** with thoughtful answers
+> - [ ] **Push your work to GitHub** before the deadline
+>
+> **Due:** 9pm on the day of the lab.
+>
 
-**You MUST complete ALL of the following to receive credit for this lab:**
-
-- [ ] **Open a help request** in the "Develop Lab Testing" queue on Pawtograder (Part 5)
-- [ ] **Make a discussion forum post** (Part 6)
-- [ ] **Complete `REFLECTION.md`** with thoughtful answers
-- [ ] **Push your work to GitHub** before the deadline
-
-**Due:** 9pm on the day of the lab.
-
-:::
-
-:::tip About Grading
-
-The autograder will run and give you points, but **passing all autograder tests is NOT required** to receive credit for this lab. As long as you complete the checklist above with good-faith effort, you will receive full credit. Don't stress about getting every answer perfect—focus on learning the tools.
-
-:::
+> 💡 About Grading
+>
+> The autograder will run and give you points, but **passing all autograder tests is NOT required** to receive credit for this lab. As long as you complete the checklist above with good-faith effort, you will receive full credit. Don't stress about getting every answer perfect—focus on learning the tools.
+>
 
 ## Learning Objectives
 
@@ -46,12 +44,11 @@ By the end of this lab, you will be able to:
 **Never** put your Java projects in folders synced by OneDrive, iCloud, Dropbox, Google Drive, or similar services. These sync tools do not play nicely with Java development tools and git.
 
 **Symptoms of this problem:**
+
 - Random build failures that fix themselves
 - Files mysteriously changing or disappearing
 - Git showing hundreds of unexpected modified files
 - IDE errors about locked files
-
-:::
 
 ---
 
@@ -67,25 +64,27 @@ Before we dive into commands, let's make sure you can open a terminal properly.
 
 You can also use the menu: **View → Terminal**
 
-:::warning Windows Users: Use Git Bash, Not PowerShell
+> ⚠️ Windows Users: Use Git Bash, Not PowerShell
+>
+> This is important! Windows has multiple terminal options, and the default (PowerShell) uses different commands than Mac/Linux. For this course, **use Git Bash** so your commands match what we teach.
+>
+> **To check which shell you're using:** Look at the dropdown in the terminal panel. It might say "powershell", "cmd", or "bash".
+>
+> **To switch to Git Bash:**
+>
+> 1. Click the dropdown arrow next to the `+` button in the terminal panel
+> 2. Select **Git Bash**
+>
+> **To make Git Bash your default (recommended):**
+>
+> 1. Press `Ctrl+Shift+P` to open the Command Palette
+> 2. Type "Terminal: Select Default Profile"
+> 3. Select **Git Bash**
+> 4. Close and reopen your terminal — it should now default to Git Bash
+>
+> If you don't see Git Bash as an option, you may need to install Git for Windows from [git-scm.com](https://git-scm.com/download/win).
 
-This is important! Windows has multiple terminal options, and the default (PowerShell) uses different commands than Mac/Linux. For this course, **use Git Bash** so your commands match what we teach.
 
-**To check which shell you're using:** Look at the dropdown in the terminal panel. It might say "powershell", "cmd", or "bash".
-
-**To switch to Git Bash:**
-1. Click the dropdown arrow next to the `+` button in the terminal panel
-2. Select **Git Bash**
-
-**To make Git Bash your default (recommended):**
-1. Press `Ctrl+Shift+P` to open the Command Palette
-2. Type "Terminal: Select Default Profile"
-3. Select **Git Bash**
-4. Close and reopen your terminal — it should now default to Git Bash
-
-If you don't see Git Bash as an option, you may need to install Git for Windows from [git-scm.com](https://git-scm.com/download/win).
-
-:::
 
 **Verify your terminal is working:** Type `pwd` and press Enter. You should see your current directory path. If you see an error like "'pwd' is not recognized", you're in PowerShell or CMD — switch to Git Bash.
 
@@ -157,6 +156,7 @@ While VS Code's git integration is convenient, understanding command-line git is
 #### What Is Git?
 
 Git is a version control system — it tracks changes to your files over time, letting you:
+
 - See what changed and when
 - Undo mistakes by going back to earlier versions
 - Collaborate with others without overwriting each other's work
@@ -304,13 +304,11 @@ echo $JAVA_HOME
     public static final String Q7_JAVA_ENV_VAR = ""; // Fill this in
 ```
 
-:::note Stuck? Get Help!
-
-If any git command gives you an unexpected error, or you're confused about what a command does, **this is a perfect office hours question**. Bring your laptop, show the TA what you tried, and they'll help you understand what's happening.
-
-**Can't make office hours?** Post your question to the **Lab 2** discussion topic on Pawtograder. Include what command you ran and what error you saw. Classmates and TAs monitor the forum and can often help quickly. You can post using your real name or your pseudonym—whichever you're comfortable with.
-
-:::
+> 📝 Stuck? Get Help!
+>
+>If any git command gives you an unexpected error, or you're confused about what a command does, **this is a perfect office hours question**. Bring your laptop, show the TA what you tried, and they'll help you understand what's happening.
+>
+>**Can't make office hours?** Post your question to the **Lab 2** discussion topic on Pawtograder. Include what command you ran and what error you saw. Classmates and TAs monitor the forum and can often help quickly. You can post using your real name or your pseudonym—whichever you're comfortable with.
 
 ---
 
@@ -326,8 +324,10 @@ VS Code is more than a text editor—it's a powerful IDE when properly configure
 2. **Opening the wrong folder:** Opening your `cs3100` directory (which contains multiple projects) instead of the specific project folder like `su26-lab2-yourUsername`
 
 **Why this matters:**
+
 - Without the folder open, VS Code can't find your `build.gradle`
 - Java extension can't understand your project structure, so it can't provide features like:
+
     - Git integration
     - Autocomplete and error highlighting
 
@@ -431,6 +431,7 @@ Gradle is the build system that compiles your code, runs tests, and packages you
 ### What Is Gradle?
 
 Think of Gradle as your project's "chef":
+
 - Recipes (`build.gradle`): Instructions for how to build your project
 - Ingredients (dependencies): Libraries your project needs
 - Kitchen (Gradle daemon): The runtime that executes tasks
@@ -491,6 +492,7 @@ Gradle errors can be intimidating, but they follow a pattern. Let's learn to dec
 **Step 1: Break something on purpose**
 
 Open any Java file in your project (for example, `Part3Exercises.java`) and introduce a syntax error:
+
 - Remove a semicolon from the end of a line, or
 - Delete a closing brace `}`, or
 - Misspell a keyword like `public` → `pubic`
@@ -546,6 +548,7 @@ Execution failed for task ':test'.
 **To view the report:** Copy the `file:///...` URL from the terminal output and paste it into your web browser's address bar. The report will open showing detailed test results.
 
 **The test report shows:**
+
 - Overall pass/fail summary
 - Each test class and its tests
 - For failures: the expected vs. actual values
@@ -561,16 +564,15 @@ Execution failed for task ':test'.
     public static final String Q7_TEST_ONLY_COMMAND = ""; // Fill this in
 ```
 
-:::note Build Problems? Get Help!
-
-Gradle errors can be cryptic. If you're stuck on a build error for more than 15 minutes, **bring it to office hours**. TAs have seen most common issues and can often spot the problem quickly. Come prepared with:
-- The exact error message (screenshot or copy-paste)
-- What command you ran
-- What you've already tried
-
-**Can't make office hours?** Post to the **Lab 2** discussion topic on Pawtograder with the same information. You can use your real name or your pseudonym—whichever you prefer.
-
-:::
+> 📝 Build Problems? Get Help!
+>
+>Gradle errors can be cryptic. If you're stuck on a build error for more than 15 minutes, **bring it to office hours**. TAs have seen most common issues and can often spot the problem quickly. Come prepared with:
+>
+> - The exact error message (screenshot or copy-paste)
+> - What command you ran
+> - What you've already tried
+>
+>**Can't make office hours?** Post to the **Lab 2** discussion topic on Pawtograder with the same information. You can use your real name or your pseudonym—whichever you prefer.
 
 ---
 
@@ -580,11 +582,10 @@ Knowing how to get unstuck is as important as knowing how to code. This section 
 
 ### Exercise 4.1: Open a Test Help Request (Required!)
 
-:::warning This Exercise is Mandatory
+> ⚠️ This Exercise is Mandatory
+>
+>You **must** complete this exercise to receive credit for this lab. Opening a help request in the test queue verifies that you know how to use office hours when you need them.
 
-You **must** complete this exercise to receive credit for this lab. Opening a help request in the test queue verifies that you know how to use office hours when you need them.
-
-:::
 
 **Your task:**
 
@@ -594,6 +595,7 @@ You **must** complete this exercise to receive credit for this lab. Opening a he
 4. The request will be **automatically closed after a few days**—you don't need to wait for a TA. TAs will not be responding to help requests in this queue. If you actually need help, please join the "TA Pool" queue.
 
 **In `REFLECTION.md`, answer these questions about your experience:**
+
 - Did you find the help queue easily?
 - What information did the queue ask you to provide?
 - How might you use office hours queues in the future when you're actually stuck?
@@ -610,16 +612,15 @@ Software development is collaborative. Learning to ask good questions and help o
 
 ### Exercise 5.1: Make a Forum Post
 
-:::warning This Exercise is Mandatory
-
-You **must** complete this exercise to receive credit for this lab.
-
-:::
+> ⚠️ This Exercise is Mandatory
+>
+>You **must** complete this exercise to receive credit for this lab.
 
 **You MUST complete one of the following options to receive credit for this lab:**
 
 #### Option A: Ask a Question
 Post a genuine question about something from Labs 1-2 or Assignment 1. A good question includes:
+
 - What you're trying to do
 - What you expected to happen
 - What actually happened
@@ -627,12 +628,14 @@ Post a genuine question about something from Labs 1-2 or Assignment 1. A good qu
 
 #### Option B: Answer Someone's Question
 Find a question from another student and provide a helpful response. A good answer:
+
 - Directly addresses their question
 - Explains the "why" not just the "what"
 - Provides a concrete example or next step
 
 #### Option C: Share a Tip You Learned
 Post something useful you discovered while working on the course. For example:
+
 - A VS Code shortcut that saved you time
 - A git workflow that helped
 - A debugging technique that worked
@@ -640,6 +643,7 @@ Post something useful you discovered while working on the course. For example:
 
 #### Option D: Post a Course-Related Meme
 Create or share a meme related to:
+
 - Your Assignment 1 experience
 - Common Java/git struggles
 - Build system frustrations
@@ -651,14 +655,17 @@ Post it in the `#memes` category. Humor helps us all cope!
 **When asking questions:**
 
 ❌ **Bad:** "My code doesn't work"
+
 ✅ **Good:** "My `SimpleBoxSet.add()` works but the test expects `IllegalArgumentException`. I don't understand what it is expecting me to do. Am I misreading this?"
 
 ❌ **Bad:** "Can someone help me?"
+
 ✅ **Good:** "I'm getting a `NullPointerException` at line 42 of ... Here's my constructor code: [code snippet]"
 
 **When answering:**
 
 ❌ **Bad:** "Just use .equals()"
+
 ✅ **Good:** "The issue is that you're using `==` to compare Strings, which checks if they're the same object in memory. Use `.equals()` instead, which compares the actual content. For example: `if (name.equals(other.name))` instead of `if (name == other.name)`"
 
 ### Show Appreciation with Likes
@@ -669,6 +676,7 @@ The discussion forum has a **karma system**. When someone posts a helpful answer
 - **Reply karma**: Earned when your answers and comments get likes
 
 Liking posts helps in several ways:
+
 - It signals to others which answers are reliable
 - It encourages helpful community members to keep contributing
 - It helps TAs identify students who are actively helping their peers
