@@ -10,22 +10,19 @@ Students come to CS3100 from many different paths. Some transferred from other u
 
 Consider this lab an interlude before Assignment 2: a chance to ensure everyone has the same foundation, regardless of where you started.
 
-> ⚠️  Checklist: Required for Credit
->
-> **You MUST complete ALL of the following to receive credit for this lab:**
->
-> - [ ] **Open a help request** in the "Develop Lab Testing" queue on Pawtograder (Part 5)
-> - [ ] **Make a discussion forum post** (Part 6)
-> - [ ] **Complete `REFLECTION.md`** with thoughtful answers
-> - [ ] **Push your work to GitHub** before the deadline
->
-> **Due:** 9pm on the day of the lab.
->
+**⚠️  Checklist: Required for Credit**
 
-> 💡 About Grading
->
-> The autograder will run and give you points, but **passing all autograder tests is NOT required** to receive credit for this lab. As long as you complete the checklist above with good-faith effort, you will receive full credit. Don't stress about getting every answer perfect—focus on learning the tools.
->
+**You MUST complete ALL of the following to receive credit for this lab:**
+
+- [ ] **Open a help request** in the "Develop Lab Testing" queue on Pawtograder (Part 5)
+- [ ] **Make a discussion forum post** (Part 6)
+- [ ] **Complete `REFLECTION.md`** with thoughtful answers
+- [ ] **Push your work to GitHub** before the deadline
+
+**💡 About Grading**
+
+The autograder will run and give you points, but **passing all autograder tests is NOT required** to receive credit for this lab. As long as you complete the checklist above with good-faith effort, you will receive full credit. Don't stress about getting every answer perfect—focus on learning the tools.
+
 
 ## Learning Objectives
 
@@ -64,25 +61,25 @@ Before we dive into commands, let's make sure you can open a terminal properly.
 
 You can also use the menu: **View → Terminal**
 
-> ⚠️ Windows Users: Use Git Bash, Not PowerShell
->
-> This is important! Windows has multiple terminal options, and the default (PowerShell) uses different commands than Mac/Linux. For this course, **use Git Bash** so your commands match what we teach.
->
-> **To check which shell you're using:** Look at the dropdown in the terminal panel. It might say "powershell", "cmd", or "bash".
->
-> **To switch to Git Bash:**
->
-> 1. Click the dropdown arrow next to the `+` button in the terminal panel
-> 2. Select **Git Bash**
->
-> **To make Git Bash your default (recommended):**
->
-> 1. Press `Ctrl+Shift+P` to open the Command Palette
-> 2. Type "Terminal: Select Default Profile"
-> 3. Select **Git Bash**
-> 4. Close and reopen your terminal — it should now default to Git Bash
->
-> If you don't see Git Bash as an option, you may need to install Git for Windows from [git-scm.com](https://git-scm.com/download/win).
+**⚠️ Windows Users: Use Git Bash, Not PowerShell**
+
+This is important! Windows has multiple terminal options, and the default (PowerShell) uses different commands than Mac/Linux. For this course, **use Git Bash** so your commands match what we teach.
+
+**To check which shell you're using:** Look at the dropdown in the terminal panel. It might say "powershell", "cmd", or "bash".
+
+**To switch to Git Bash:**
+
+1. Click the dropdown arrow next to the `+` button in the terminal panel
+2. Select **Git Bash**
+
+**To make Git Bash your default (recommended):**
+
+1. Press `Ctrl+Shift+P` to open the Command Palette
+2. Type "Terminal: Select Default Profile"
+3. Select **Git Bash**
+4. Close and reopen your terminal — it should now default to Git Bash
+
+If you don't see Git Bash as an option, you may need to install Git for Windows from [git-scm.com](https://git-scm.com/download/win).
 
 
 
@@ -304,11 +301,11 @@ echo $JAVA_HOME
     public static final String Q7_JAVA_ENV_VAR = ""; // Fill this in
 ```
 
-> 📝 Stuck? Get Help!
->
->If any git command gives you an unexpected error, or you're confused about what a command does, **this is a perfect office hours question**. Bring your laptop, show the TA what you tried, and they'll help you understand what's happening.
->
->**Can't make office hours?** Post your question to the **Lab 2** discussion topic on Pawtograder. Include what command you ran and what error you saw. Classmates and TAs monitor the forum and can often help quickly. You can post using your real name or your pseudonym—whichever you're comfortable with.
+**📝 Stuck? Get Help!**
+
+If any git command gives you an unexpected error, or you're confused about what a command does, **this is a perfect office hours question**. Bring your laptop, show the TA what you tried, and they'll help you understand what's happening.
+
+**Can't make office hours?** Post your question to the **Lab 2** discussion topic on Pawtograder. Include what command you ran and what error you saw. Classmates and TAs monitor the forum and can often help quickly. You can post using your real name or your pseudonym—whichever you're comfortable with.
 
 ---
 
@@ -564,15 +561,15 @@ Execution failed for task ':test'.
     public static final String Q7_TEST_ONLY_COMMAND = ""; // Fill this in
 ```
 
-> 📝 Build Problems? Get Help!
->
->Gradle errors can be cryptic. If you're stuck on a build error for more than 15 minutes, **bring it to office hours**. TAs have seen most common issues and can often spot the problem quickly. Come prepared with:
->
-> - The exact error message (screenshot or copy-paste)
-> - What command you ran
-> - What you've already tried
->
->**Can't make office hours?** Post to the **Lab 2** discussion topic on Pawtograder with the same information. You can use your real name or your pseudonym—whichever you prefer.
+**📝 Build Problems? Get Help!**
+
+Gradle errors can be cryptic. If you're stuck on a build error for more than 15 minutes, **bring it to office hours**. TAs have seen most common issues and can often spot the problem quickly. Come prepared with:
+
+- The exact error message (screenshot or copy-paste)
+- What command you ran
+- What you've already tried
+
+**Can't make office hours?** Post to the **Lab 2** discussion topic on Pawtograder with the same information. You can use your real name or your pseudonym—whichever you prefer.
 
 ---
 
@@ -582,9 +579,9 @@ Knowing how to get unstuck is as important as knowing how to code. This section 
 
 ### Exercise 4.1: Open a Test Help Request (Required!)
 
-> ⚠️ This Exercise is Mandatory
->
->You **must** complete this exercise to receive credit for this lab. Opening a help request in the test queue verifies that you know how to use office hours when you need them.
+**⚠️ This Exercise is Mandatory**
+
+You **must** complete this exercise to receive credit for this lab. Opening a help request in the test queue verifies that you know how to use office hours when you need them.
 
 
 **Your task:**
@@ -612,9 +609,9 @@ Software development is collaborative. Learning to ask good questions and help o
 
 ### Exercise 5.1: Make a Forum Post
 
-> ⚠️ This Exercise is Mandatory
->
->You **must** complete this exercise to receive credit for this lab.
+**⚠️ This Exercise is Mandatory**
+
+You **must** complete this exercise to receive credit for this lab.
 
 **You MUST complete one of the following options to receive credit for this lab:**
 
