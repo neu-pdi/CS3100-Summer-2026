@@ -1,11 +1,10 @@
 ---
-sidebar_position: 3
-image: /img/labs/web/lab3.png
+sidebar_position: 2
 ---
 
-# Lab 3: Developer Toolkit
+# Lab : Developer Toolkit
 
-![Lab 3: Developer Toolkit - A bright, organized lo-fi pixel art scene of a daytime coding workspace. Afternoon sunlight streams through a window with a plant on the sill. A clean monitor displays a terminal with './gradlew build SUCCESS' in green. On the tidy desk: a neatly annotated assignment printout, colorful sticky notes reading 'git pull first!' and 'spotlessApply', a hand-drawn git branch diagram pinned to a small corkboard, and an index card showing 'Recipe.Java ✗' crossed out next to 'Recipe.java ✓' (intentional! we cross out the WRONG capitalization of the file extension, must be Java with a capital J on the oen crossed out). An orange cat lounges contentedly in a sunny spot nearby. A terminal cheat sheet is pinned to the wall. A second monitor shows Pawtograder with green checkmarks. A fresh cup of tea. Cheerful blues and warm yellows. The vibe is 'I've got this.' Title: 'Lab 3: Developer Toolkit'](/img/labs/web/lab3.png)
+![Lab : Developer Toolkit - A bright, organized lo-fi pixel art scene of a daytime coding workspace. Afternoon sunlight streams through a window with a plant on the sill. A clean monitor displays a terminal with './gradlew build SUCCESS' in green. On the tidy desk: a neatly annotated assignment printout, colorful sticky notes reading 'git pull first!' and 'spotlessApply', a hand-drawn git branch diagram pinned to a small corkboard, and an index card showing 'Recipe.Java ✗' crossed out next to 'Recipe.java ✓' (intentional! we cross out the WRONG capitalization of the file extension, must be Java with a capital J on the oen crossed out). An orange cat lounges contentedly in a sunny spot nearby. A terminal cheat sheet is pinned to the wall. A second monitor shows Pawtograder with green checkmarks. A fresh cup of tea. Cheerful blues and warm yellows. The vibe is 'I've got this.' Title: 'Lab 3: Developer Toolkit'](/img/labs/web/lab3.png)
 
 Students come to CS3100 from many different paths. Some transferred from other universities. Some took CS2100, and others took CS2510. Some learned Python but not Java. Some are command-line wizards; others have never opened a terminal. We're all starting from different places, and we're all learning about where each other have come from.
 
@@ -17,54 +16,18 @@ Consider this lab an interlude before Assignment 2: a chance to ensure everyone 
 
 **You MUST complete ALL of the following to receive credit for this lab:**
 
-- [ ] **Open a help request** in the "Lab 3 Testing" queue on Pawtograder (Part 5)
+- [ ] **Open a help request** in the "Develop Lab Testing" queue on Pawtograder (Part 5)
 - [ ] **Make a discussion forum post** (Part 6)
 - [ ] **Complete `REFLECTION.md`** with thoughtful answers
 - [ ] **Push your work to GitHub** before the deadline
 
-**Due:** Oakland: during your lab session. Boston: by end of week.
+**Due:** 9pm on the day of the lab.
 
 :::
 
 :::tip About Grading
 
-The autograder will run and give you points, but **passing all autograder tests is NOT required** to receive credit for this lab. As long as you complete the checklist above with good-faith effort, you'll receive full credit. Don't stress about getting every answer perfect—focus on learning the tools.
-
-:::
-
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
-<Tabs>
-<TabItem value="boston" label="Boston (Asynchronous)" default>
-
-**Boston students:** You'll complete this lab on your own time. That makes this the perfect opportunity to practice a crucial skill: **using office hours effectively**.
-
-If you get stuck on *anything*—a command that doesn't work, a concept that's unclear, a tool that's misbehaving—**come to office hours**. TAs are available throughout the week specifically to help with exactly these kinds of issues. Don't spend hours frustrated when a 5-minute conversation could unblock you.
-
-Finding and using [office hours](https://app.pawtograder.com/course/500/office-hours?view=browse&queue=514) is part of the learning in this lab.
-
-</TabItem>
-<TabItem value="oakland" label="Oakland (In-Person)">
-
-**Oakland students:** You'll complete this lab during your scheduled lab section with TAs available to help.
-
-**Take advantage of having TAs in the room!** If you get stuck on *anything*—a command that doesn't work, a concept that's unclear, a tool that's misbehaving—raise your hand. Don't spend 20 minutes frustrated when a 2-minute conversation could unblock you.
-
-Work with your neighbors. Compare notes. If someone near you figures something out, ask them to explain it.
-
-</TabItem>
-</Tabs>
-
-:::tip The Case of the Missing File
-
-Every semester, students spend hours debugging why the autograder "can't find" their file. They check their code, rewrite their logic, question their understanding of Java—when the real culprit is something like:
-
-`MeasuredIngredient.Java` instead of `MeasuredIngredient.java`
-
-**Java is case-sensitive. File extensions matter. Details matter.**
-
-This kind of issue isn't about skill level—it's about knowing where to look. It **regularly** stumps the professors. This lab teaches you to see what's actually happening in your development environment, so you can spend your time on the interesting problems.
+The autograder will run and give you points, but **passing all autograder tests is NOT required** to receive credit for this lab. As long as you complete the checklist above with good-faith effort, you will receive full credit. Don't stress about getting every answer perfect—focus on learning the tools.
 
 :::
 
@@ -81,11 +44,8 @@ By the end of this lab, you will be able to:
 
 ## Before You Begin
 
-**Prerequisites:** Complete Labs 1-2. Assignment 1 experience is helpful but not required.
 
-**Clone the Lab Repository:** Clone your lab3 repository from Pawtograder.
-
-:::danger Do NOT Clone Into Cloud-Synced Folders
+**Clone the Lab Repository:** Clone your lab2 repository from Pawtograder.
 
 **Never** put your Java projects in folders synced by OneDrive, iCloud, Dropbox, Google Drive, or similar services. These sync tools do not play nicely with Java development tools and git.
 
@@ -95,106 +55,11 @@ By the end of this lab, you will be able to:
 - Git showing hundreds of unexpected modified files
 - IDE errors about locked files
 
-**Where to put your projects instead:**
-- **Windows:** `C:\Users\YourName\cs3100\` (not in `Documents` if that syncs to OneDrive)
-- **Mac:** `~/cs3100/` or `~/Developer/cs3100/`
-
-If you've already cloned to a synced folder, move your project now before continuing.
-
 :::
 
 ---
 
-## Part 1: Reading Assignments Like a Detective (15 minutes)
-
-The most common source of lost points isn't bugs in your code—it's misunderstanding what the assignment is asking for. Let's develop some detective skills.
-
-### Exercise 1.1: Anatomy of an Assignment Specification
-
-Open the [Assignment 1 specification](/assignments/cyb1-recipes) in another tab. Let's dissect its structure:
-
-**Every CS3100 assignment has these key sections:**
-
-| Section | What It Tells You |
-|---------|-------------------|
-| **Overview** | The big picture—what you're building and why |
-| **Learning Outcomes** | Skills being assessed (hint: this is what we grade!) |
-| **Technical Specifications** | Exact requirements, method signatures, expected behavior |
-| **Invariants and Contracts** | Preconditions, postconditions, exceptions |
-| **Testing Overview** | What tests you need to write |
-| **Grading Rubric** | Exactly how points are allocated |
-
-**Your task:** In the starter code, open `exercises/Part1Exercises.java`. Answer the questions by filling in the string constants. These questions test whether you can find specific information in the Assignment 1 spec.
-
-```java
-public class Part1Exercises {
-    // Question 1: According to the spec, what exception should ExactQuantity's
-    // constructor throw if the amount is not positive?
-    public static final String Q1_EXCEPTION_TYPE = ""; // Fill this in
-
-    // Question 2: What is the DECIMAL_PRECISION constant value required for
-    // ExactQuantity and RangeQuantity?
-    public static final int Q2_DECIMAL_PRECISION = 0; // Fill this in
-
-    // Question 3: According to the grading rubric, how many points is
-    // FractionalQuantityTest worth?
-    public static final int Q3_FRACTIONAL_TEST_POINTS = 0; // Fill this in
-
-    // Question 4: What annotation does the spec say eliminates the need to
-    // test for null parameter exceptions?
-    public static final String Q4_NULL_ANNOTATION = ""; // Fill this in
-
-    // Question 5: In the toString() for FractionalQuantity, what format is used
-    // when whole > 0 AND numerator > 0? (Copy the exact format string from spec)
-    public static final String Q5_TOSTRING_FORMAT = ""; // Fill this in
-}
-```
-
-### Exercise 1.2: Reading Instructor Tests
-
-When instructor tests are available, they're a goldmine of information about expected behavior.
-
-**Open `src/test/java/exercises/SampleInstructorTest.java`** in the lab repository. This simulates the kind of tests the autograder runs.
-
-Answer these questions in `exercises/Part1Exercises.java`:
-
-```java
-    // Question 6: Looking at the sample instructor test, what value does
-    // testExactQuantityToStringFormatting expect for 2.5 cups?
-    public static final String Q6_EXPECTED_OUTPUT = ""; // Fill this in
-
-    // Question 7: What assertion method is used to verify exceptions are thrown?
-    public static final String Q7_ASSERTION_METHOD = ""; // Fill this in
-```
-
-### Exercise 1.3: Using Pawtograder Effectively
-
-**Navigate to Pawtograder** and find your Assignment 1 submission (or Lab 1/2 if you haven't submitted A1).
-
-**Explore these features:**
-
-1. **Submission History:** Click on your assignment to see all submissions. Note the timestamps and scores.
-
-2. **Autograder Output:** Expand a submission to see the detailed test results. Each failing test shows:
-   - The test name (tells you what's being tested)
-   - Expected vs. actual output (tells you what went wrong)
-   - Sometimes a hint (if configured by the instructor)
-
-**Fill in `exercises/Part1Exercises.java`:**
-
-```java
-    // Question 8: In Pawtograder, what is the maximum number of submissions
-    // allowed per day for Assignment 1?
-    public static final int Q8_MAX_SUBMISSIONS = 0; // Fill this in
-
-    // Question 9: True or false: Pawtograder shows you hints about bugs your
-    // tests didn't catch (one per submission).
-    public static final boolean Q9_HINTS_AVAILABLE = false; // Fill this in
-```
-
----
-
-## Part 2: Terminal Mastery (20 minutes)
+## Part 1: Terminal Mastery
 
 The terminal is your direct line to the computer. Mastering basic commands will save you hours of frustration.
 
@@ -234,7 +99,7 @@ Here's your survival guide to terminal commands:
 
 | Command | What It Does | Example |
 |---------|-------------|---------|
-| `pwd` | **P**rint **W**orking **D**irectory - shows where you are | `pwd` → `/Users/yourname/cs3100/sp26-lab3-your-username` |
+| `pwd` | **P**rint **W**orking **D**irectory - shows where you are | `pwd` → `/Users/yourname/cs3100/su26-lab2-your-username` |
 | `ls` | **L**i**s**t files in current directory | `ls` → shows files and folders |
 | `ls -la` | List ALL files (including hidden) with details | `ls -la` → shows `.git`, permissions, dates |
 | `cd <path>` | **C**hange **D**irectory | `cd src/main/java` |
@@ -248,7 +113,7 @@ Here's your survival guide to terminal commands:
 | `rm <file>` | Remove a file (careful!) | `rm unwanted.txt` |
 | `clear` | Clear the terminal screen | `clear` |
 
-### Exercise 2.1: Navigation Challenge
+### Exercise 1.1: Navigation Challenge
 
 Open a terminal in VS Code (you set this up in the previous section).
 
@@ -258,13 +123,13 @@ Open a terminal in VS Code (you set this up in the previous section).
 # 1. Print your current working directory
 pwd
 
-# 2. What is the output? Record it in Part2Exercises.java
+# 2. What is the output? Record it in Part1Exercises.java
 
 # 3. List all files including hidden ones
 ls -la
 
 # 4. You should see a .git folder. What does this indicate?
-# Record your answer in Part2Exercises.java
+# Record your answer in Part1Exercises.java
 
 # 5. Navigate to the src/main/java directory
 cd src/main/java
@@ -273,10 +138,10 @@ cd src/main/java
 # (Hint: you can use multiple .. separated by /)
 ```
 
-**Fill in `exercises/Part2Exercises.java`:**
+**Fill in `exercises/Part1Exercises.java`:**
 
 ```java
-public class Part2Exercises {
+public class Part1Exercises {
     // Question 1: What command shows your current directory?
     public static final String Q1_PWD_COMMAND = ""; // Fill this in
 
@@ -288,7 +153,7 @@ public class Part2Exercises {
 }
 ```
 
-### Exercise 2.2: Git Concepts and Commands
+### Exercise 1.2: Git Concepts and Commands
 
 While VS Code's git integration is convenient, understanding command-line git is essential for debugging issues. Let's start with some key concepts.
 
@@ -346,7 +211,7 @@ We'll return to discuss branching in greater detail when we get closer to the gr
 
 #### Complete the Git Challenge
 
-1. Make a small change to `exercises/Part2Exercises.java` (fill in an answer)
+1. Make a small change to `exercises/Part1Exercises.java` (fill in an answer)
 2. Run each command and observe the output:
 
 ```bash
@@ -354,19 +219,19 @@ We'll return to discuss branching in greater detail when we get closer to the gr
 git status
 
 # Stage your change
-git add exercises/Part2Exercises.java
+git add exercises/Part1Exercises.java
 
 # Check status again - what changed?
 git status
 
 # Commit with a message
-git commit -m "Complete Part 2 exercises"
+git commit -m "Complete Part 1 exercises"
 
 # Push to GitHub
 git push
 ```
 
-### Exercise 2.3: Dealing with Git Rejections
+### Exercise 1.3: Dealing with Git Rejections
 
 One of the most frustrating git experiences is a **rejected push**. Let's understand why this happens and how to fix it.
 
@@ -396,7 +261,7 @@ git commit -m "Merge remote changes"
 git push
 ```
 
-**Record your understanding in `Part2Exercises.java`:**
+**Record your understanding in `Part1Exercises.java`:**
 
 ```java
     // Question 4: What command downloads changes from GitHub without merging?
@@ -406,7 +271,7 @@ git push
     public static final String Q5_FIX_REJECTION = ""; // e.g., "git pull, git push"
 ```
 
-### Exercise 2.4: Finding Your Java Version
+### Exercise 1.4: Finding Your Java Version
 
 A common source of build errors is having the wrong Java version. **This course uses Java 21.** If you don't have Java 21 installed, see [Lab 1: Java Setup](/labs/lab1-java-setup) for installation instructions.
 
@@ -432,7 +297,7 @@ echo $JAVA_HOME
 # This should point to your Java 21 installation
 ```
 
-**Record in `Part2Exercises.java`:**
+**Record in `Part1Exercises.java`:**
 
 ```java
     // Question 6: What Java version is this course using? (Just the major version number)
@@ -446,22 +311,22 @@ echo $JAVA_HOME
 
 If any git command gives you an unexpected error, or you're confused about what a command does, **this is a perfect office hours question**. Bring your laptop, show the TA what you tried, and they'll help you understand what's happening.
 
-**Can't make office hours?** Post your question to the **Lab 3** discussion topic on Pawtograder. Include what command you ran and what error you saw. Classmates and TAs monitor the forum and can often help quickly. You can post using your real name or your pseudonym—whichever you're comfortable with.
+**Can't make office hours?** Post your question to the **Lab 2** discussion topic on Pawtograder. Include what command you ran and what error you saw. Classmates and TAs monitor the forum and can often help quickly. You can post using your real name or your pseudonym—whichever you're comfortable with.
 
 :::
 
 ---
 
-## Part 3: VS Code Deep Dive (15 minutes)
+## Part 2: VS Code Deep Dive
 
 VS Code is more than a text editor—it's a powerful IDE when properly configured.
 
-### Exercise 3.1: Opening Projects Correctly
+### Exercise 2.1: Opening Projects Correctly
 
 **The Two Most Common VS Code Mistakes:**
 
 1. **Opening a file instead of a folder:** Using `File → Open File` instead of `File → Open Folder`
-2. **Opening the wrong folder:** Opening your `cs3100` directory (which contains multiple projects) instead of the specific project folder like `sp26-lab3-yourUsername`
+2. **Opening the wrong folder:** Opening your `cs3100` directory (which contains multiple projects) instead of the specific project folder like `su26-lab2-yourUsername`
 
 **Why this matters:**
 - Without the folder open, VS Code can't find your `build.gradle`
@@ -477,10 +342,10 @@ VS Code is more than a text editor—it's a powerful IDE when properly configure
 4. Navigate to your lab3 directory and select it
 5. You should see the full project tree in the Explorer sidebar
 
-**In `exercises/Part3Exercises.java`:**
+**In `exercises/Part2Exercises.java`:**
 
 ```java
-public class Part3Exercises {
+public class Part2Exercises {
     // Question 1: What VS Code menu option should you use to open a project?
     public static final String Q1_OPEN_PROJECT = ""; // Fill this in
 
@@ -489,7 +354,7 @@ public class Part3Exercises {
 }
 ```
 
-### Exercise 3.2: Terminal Tips in VS Code
+### Exercise 2.2: Terminal Tips in VS Code
 
 You already learned to open and configure the terminal in Part 2. Here are a few more tips:
 
@@ -500,7 +365,7 @@ See [VS Code Terminal Basics](https://code.visualstudio.com/docs/terminal/basics
 
 **Terminal history:** Press the up arrow to cycle through previous commands. This saves a lot of retyping!
 
-**Record in `Part3Exercises.java`:**
+**Record in `Part2Exercises.java`:**
 
 ```java
     // Question 3: What keyboard shortcut opens the integrated terminal?
@@ -510,7 +375,7 @@ See [VS Code Terminal Basics](https://code.visualstudio.com/docs/terminal/basics
     public static final String Q4_RECOMMENDED_SHELL = ""; // Fill this in
 ```
 
-### Exercise 3.3: Source Control Panel
+### Exercise 2.3: Source Control Panel
 
 VS Code's Source Control panel provides a visual interface to git.
 
@@ -526,14 +391,14 @@ VS Code's Source Control panel provides a visual interface to git.
 
 **Make another change and commit using only the VS Code interface:**
 
-1. Modify `Part3Exercises.java` (fill in more answers)
+1. Modify `Part2Exercises.java` (fill in more answers)
 2. Go to Source Control panel
 3. Stage your changes (click the +)
 4. Enter a commit message
 5. Click the checkmark to commit
 6. Click "Sync Changes" to push
 
-**Record in `Part3Exercises.java`:**
+**Record in `Part2Exercises.java`:**
 
 ```java
     // Question 5: What keyboard shortcut opens the Source Control panel?
@@ -543,7 +408,7 @@ VS Code's Source Control panel provides a visual interface to git.
     public static final String Q6_BRANCH_LOCATION = ""; // Fill this in
 ```
 
-### Exercise 3.4: Useful Keyboard Shortcuts
+### Exercise 2.4: Useful Keyboard Shortcuts
 
 Master these shortcuts to navigate code faster:
 
@@ -559,11 +424,11 @@ Master these shortcuts to navigate code faster:
 | `Shift+F12` | `Shift+F12` | Find All References |
 | `Cmd+G` | `Ctrl+G` | Go to Line |
 
-**Practice:** Use `Cmd/Ctrl+P` and type "Part3" to quickly open `Part3Exercises.java`.
+**Practice:** Use `Cmd/Ctrl+P` and type "Part3" to quickly open `Part2Exercises.java`.
 
 ---
 
-## Part 4: Gradle Demystified (15 minutes)
+## Part 3: Gradle Demystified
 
 Gradle is the build system that compiles your code, runs tests, and packages your application. Understanding it will save you hours of debugging.
 
@@ -575,7 +440,7 @@ Think of Gradle as your project's "chef":
 - Kitchen (Gradle daemon): The runtime that executes tasks
 - Dishes (outputs): Compiled classes, test reports, bundles of your app
 
-### Exercise 4.1: Essential Gradle Commands
+### Exercise 3.1: Essential Gradle Commands
 
 Run each command and observe what happens:
 
@@ -599,10 +464,10 @@ Run each command and observe what happens:
 ./gradlew tasks
 ```
 
-**Record in `exercises/Part4Exercises.java`:**
+**Record in `exercises/Part3Exercises.java`:**
 
 ```java
-public class Part4Exercises {
+public class Part3Exercises {
     // Question 1: What Gradle command compiles code AND runs tests?
     public static final String Q1_BUILD_COMMAND = ""; // Fill this in
 
@@ -614,13 +479,13 @@ public class Part4Exercises {
 }
 ```
 
-### Exercise 4.2: Reading Gradle Errors
+### Exercise 3.2: Reading Gradle Errors
 
 Gradle errors can be intimidating, but they follow a pattern. Let's learn to decode them by creating an error ourselves.
 
 **Step 1: Break something on purpose**
 
-Open any Java file in your project (for example, `Part4Exercises.java`) and introduce a syntax error:
+Open any Java file in your project (for example, `Part3Exercises.java`) and introduce a syntax error:
 - Remove a semicolon from the end of a line, or
 - Delete a closing brace `}`, or
 - Misspell a keyword like `public` → `pubic`
@@ -642,7 +507,7 @@ You'll see an error! Take a moment to read it carefully.
 
 **Step 3: Record your observation**
 
-In `Part4Exercises.java`, record what you observed:
+In `Part3Exercises.java`, record what you observed:
 
 ```java
     // Question 4: What syntax error did you introduce?
@@ -656,7 +521,7 @@ In `Part4Exercises.java`, record what you observed:
 
 Restore the code to its working state and run `./gradlew compileJava` again to verify it succeeds.
 
-### Exercise 4.3: Understanding Test Output
+### Exercise 3.3: Understanding Test Output
 
 Run the tests:
 ```bash
@@ -681,7 +546,7 @@ Execution failed for task ':test'.
 - For failures: the expected vs. actual values
 - Stack traces showing exactly where the failure occurred
 
-**Record in `Part4Exercises.java`:**
+**Record in `Part3Exercises.java`:**
 
 ```java
     // Question 6: Where does Gradle put the HTML test report?
@@ -689,150 +554,6 @@ Execution failed for task ':test'.
 
     // Question 7: What Gradle command runs ONLY the tests (not other checks)?
     public static final String Q7_TEST_ONLY_COMMAND = ""; // Fill this in
-```
-
-### Exercise 4.4: Targeted Test Running
-
-You don't always need to run ALL tests. Here's how to run specific tests:
-
-```bash
-# Run tests in a specific class
-./gradlew test --tests "exercises.Part1ExercisesTest"
-
-# Run a specific test method
-./gradlew test --tests "exercises.Part1ExercisesTest.testQuestion1"
-
-# Run tests matching a pattern
-./gradlew test --tests "*Part*"
-```
-
-### Exercise 4.5: Writing Tests That Catch Bugs
-
-On assignments, you don't just write code—you write tests. And Pawtograder doesn't just check if your tests pass on correct code. It checks if your tests **catch bugs**.
-
-Here's how it works: Pawtograder runs your tests against the correct implementation (they should pass), then runs them against intentionally buggy implementations (they should fail). If your tests pass on buggy code, they're not catching the bugs they're supposed to catch.
-
-**You can simulate this yourself!** This is exactly how you should verify your tests work:
-
-1. **Write your answer** (e.g., fill in `Q2_DECIMAL_PRECISION = 3` in Part1Exercises.java)
-2. **Write a test** that checks the answer
-3. **Intentionally break your answer** (e.g., change it to `Q2_DECIMAL_PRECISION = 5`)
-4. **Run your test** — it should now FAIL
-5. **Fix your answer** back to the correct value
-6. **Run your test again** — it should PASS
-
-If your test passes even when the answer is wrong, your test isn't actually testing anything useful!
-
-**Your task:** Open `src/test/java/exercises/Part1ExercisesTest.java`. You'll see a starter test file. Implement these tests:
-
-```java
-@Test
-void testDecimalPrecisionIsCorrect() {
-    // TODO: Write a test that verifies Q2_DECIMAL_PRECISION has the correct value
-    // Hint: Use assertEquals(expected, Part1Exercises.Q2_DECIMAL_PRECISION)
-}
-
-@Test
-void testExceptionTypeIsCorrect() {
-    // TODO: Write a test that verifies Q1_EXCEPTION_TYPE has the correct value
-}
-```
-
-**After writing each test:**
-1. Run `./gradlew test` — your test should PASS
-2. Change your answer in `Part1Exercises.java` to something wrong
-3. Run `./gradlew test` again — your test should now FAIL
-4. Change your answer back to the correct value
-
-If your test didn't fail when the answer was wrong, your test isn't checking what you think it's checking. Fix it!
-
-:::tip This Is How Pawtograder Grades Your Tests
-
-On assignments, Pawtograder uses "mutation testing" — it introduces small bugs into correct code and checks if your tests catch them. You earn test points by catching these bugs.
-
-**The workflow above is exactly how you can verify your tests locally before submitting.** Don't just check that tests pass — check that they fail when they should!
-
-:::
-
-### Exercise 4.6: Code Quality Tools (NullAway and Spotless)
-
-CS3100 projects include two code quality tools that run automatically when you build. These tools catch common bugs and enforce consistent formatting—but they can be confusing if you don't know what they're telling you.
-
-#### Spotless: Code Formatting
-
-Spotless automatically checks that your code follows a consistent style (indentation, spacing, line breaks, etc.). When Spotless fails, you'll see something like:
-
-```
-> Task :spotlessJavaCheck FAILED
-The following files had format violations:
-    src/main/java/exercises/Part1Exercises.java
-```
-
-**The fix is simple:** Run the auto-formatter:
-
-```bash
-./gradlew spotlessApply
-```
-
-This automatically reformats your code. Then commit the changes. That's it!
-
-**Pro tip:** Run `spotlessApply` before every commit to avoid formatting failures. The handout repository *should* automatically configure VSCode to run this on every save for you too - if it doesn't, feel free to drop in to office hours or post on the forum for troubleshooting help - this can be a very helpful feature!
-
-#### NullAway: Null Safety
-
-NullAway helps prevent `NullPointerException` — one of the most common Java bugs. It analyzes your code to find places where you might accidentally use `null`.
-
-When NullAway fails, you'll see something like:
-
-```
-> Task :compileJava FAILED
-error: [NullAway] returning @Nullable expression from method with @NonNull return type
-    return ingredient.getName();
-           ^
-```
-
-**Common NullAway errors and fixes:**
-
-| Error | What It Means | How to Fix |
-|-------|--------------|------------|
-| `returning @Nullable expression from @NonNull method` | Your method promises to never return null, but it might | Add a null check, or change the return type to `@Nullable` |
-| `dereferencing expression that is @Nullable` | You're calling a method on something that might be null | Add a null check before using it: `if (x != null) { x.doThing(); }` |
-| `passing @Nullable parameter where @NonNull is required` | A method requires a non-null argument, but you're passing something that might be null | Check for null first, or ensure the value is never null |
-
-**Example fixes:**
-
-```java
-// ❌ NullAway error: ingredient might be null
-public String getIngredientName() {
-    return ingredient.getName();  // Error if ingredient is null!
-}
-
-// ✅ Option 1: Check for null and provide a default
-public String getIngredientName() {
-    if (ingredient == null) {
-        return "Unknown";
-    }
-    return ingredient.getName();
-}
-
-// ✅ Option 2: Assert non-null with Objects.requireNonNull
-// Use this when null would be a bug (e.g., in a constructor)
-public Recipe(String name, Ingredient ingredient) {
-    this.name = Objects.requireNonNull(name, "name cannot be null");
-    this.ingredient = Objects.requireNonNull(ingredient, "ingredient cannot be null");
-}
-```
-
-`Objects.requireNonNull()` tells NullAway "I guarantee this isn't null" and throws a helpful `NullPointerException` with your message if it ever is. Use it in constructors and at method entry points where null would be a programming error, not a normal case to handle.
-
-**Record in `Part4Exercises.java`:**
-
-```java
-    // Question 8: What Gradle command auto-fixes formatting issues?
-    public static final String Q8_FORMAT_COMMAND = ""; // Fill this in
-
-    // Question 9: What common Java exception does NullAway help prevent?
-    public static final String Q9_NULLAWAY_PREVENTS = ""; // Fill this in
 ```
 
 :::note Build Problems? Get Help!
@@ -848,11 +569,11 @@ Gradle errors can be cryptic. If you're stuck on a build error for more than 15 
 
 ---
 
-## Part 5: Getting Help Effectively (5 minutes)
+## Part 4: Getting Help Effectively
 
 Knowing how to get unstuck is as important as knowing how to code. This section introduces you to the course's help queue system.
 
-### Exercise 5.1: Open a Test Help Request (Required!)
+### Exercise 4.1: Open a Test Help Request (Required!)
 
 :::warning This Exercise is Mandatory
 
@@ -862,8 +583,8 @@ You **must** complete this exercise to receive credit for this lab. Opening a he
 
 **Your task:**
 
-1. Go to [Pawtograder Office Hours](https://app.pawtograder.com/course/500/office-hours)
-2. Find and join the **"Lab 3 Testing"** queue
+1. Go to [Pawtograder Office Hours](https://app.pawtograder.com/course/554/office-hours)
+2. Find and join the **"Developer Lab Testing"** queue
 3. Open a help request (you can write anything—"Testing the queue" is fine)
 4. The request will be **automatically closed after a few days**—you don't need to wait for a TA. TAs will not be responding to help requests in this queue. If you actually need help, please join the "TA Pool" queue.
 
@@ -878,11 +599,11 @@ When you're stuck on an assignment, knowing exactly how to join office hours cou
 
 ---
 
-## Part 6: Community Engagement (10 minutes)
+## Part 5: Community Engagement
 
-Software development is collaborative. Learning to ask good questions and help others is a crucial skill. This class has over 400 students, and the discussion forum is a great place to connect.
+Software development is collaborative. Learning to ask good questions and help others is a crucial skill. The discussion forum is a great place to connect.
 
-### Exercise 6.1: Make a Forum Post (Required!)
+### Exercise 5.1: Make a Forum Post
 
 :::warning This Exercise is Mandatory
 
@@ -893,7 +614,7 @@ You **must** complete this exercise to receive credit for this lab.
 **You MUST complete one of the following options to receive credit for this lab:**
 
 #### Option A: Ask a Question
-Post a genuine question about something from Labs 1-3 or Assignment 1. A good question includes:
+Post a genuine question about something from Labs 1-2 or Assignment 1. A good question includes:
 - What you're trying to do
 - What you expected to happen
 - What actually happened
@@ -916,7 +637,6 @@ Post something useful you discovered while working on the course. For example:
 Create or share a meme related to:
 - Your Assignment 1 experience
 - Common Java/git struggles
-- The `.Java` vs `.java` situation
 - Build system frustrations
 
 Post it in the `#memes` category. Humor helps us all cope!
@@ -926,10 +646,10 @@ Post it in the `#memes` category. Humor helps us all cope!
 **When asking questions:**
 
 ❌ **Bad:** "My code doesn't work"
-✅ **Good:** "My `FractionalQuantity.toString()` returns '1/2 cup' but the test expects '1/2 cups'. I've checked the spec section 5.3.6 and I think singular is correct for fractions. Am I misreading this?"
+✅ **Good:** "My `SimpleBoxSet.add()` works but the test expects `IllegalArgumentException`. I don't understand what it is expecting me to do. Am I misreading this?"
 
 ❌ **Bad:** "Can someone help me?"
-✅ **Good:** "I'm getting a `NullPointerException` at line 42 of MeasuredIngredient.java when I call `quantity.getUnit()`. I've verified that I'm passing a non-null Quantity to the constructor. Here's my constructor code: [code snippet]"
+✅ **Good:** "I'm getting a `NullPointerException` at line 42 of ... Here's my constructor code: [code snippet]"
 
 **When answering:**
 
@@ -960,17 +680,15 @@ In `REFLECTION.md`, include a link to your forum post or a brief description of 
 
 Complete `REFLECTION.md` with your answers to:
 
-1. **Assignment Navigation:** What's one thing about reading assignment specifications that you'll do differently now?
+1. **Terminal Skills:** Which terminal command do you think will be most useful for you going forward? Why?
 
-2. **Terminal Skills:** Which terminal command do you think will be most useful for you going forward? Why?
+2. **The .Java Incident:** Why do you think a file named `BoxSet.Java` wouldn't be recognized by the Java compiler? What does this tell you about Java and file naming?
 
-3. **The .Java Incident:** Why do you think a file named `MeasuredIngredient.Java` wouldn't be recognized by the Java compiler? What does this tell you about Java and file naming?
+3. **Help Queue Experience:** Describe your experience opening a help request in the "Developer Toolkit Lab Testing" queue. (See Part 5)
 
-4. **Help Queue Experience:** Describe your experience opening a help request in the "Lab 3 Testing" queue. (See Part 5)
+4. **Forum Contribution:** Paste the link to your discussion forum post, or describe what you contributed.
 
-5. **Forum Contribution:** Paste the link to your discussion forum post, or describe what you contributed.
-
-6. **Remaining Questions:** What's one thing you're still confused about after this lab? (This helps us improve!)
+5. **Remaining Questions:** What's one thing you're still confused about after this lab? (This helps us improve!)
 
 ---
 
