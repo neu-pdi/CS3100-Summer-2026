@@ -10,7 +10,9 @@ Students come to CS3100 from many different paths. Some transferred from other u
 
 Consider this lab an interlude before Assignment 2: a chance to ensure everyone has the same foundation, regardless of where you started.
 
-:::info ⚠️  Checklist: Required for Credit**
+:::warning
+
+**Checklist: Required for Credit**
 
 **You MUST complete ALL of the following to receive credit for this lab:**
 
@@ -21,7 +23,9 @@ Consider this lab an interlude before Assignment 2: a chance to ensure everyone 
 
 :::
 
-:::info 💡 About Grading**
+:::info 
+
+**About Grading**
 
 The autograder will run and give you points, but **passing all autograder tests is NOT required** to receive credit for this lab. As long as you complete the checklist above with good-faith effort, you will receive full credit. Don't stress about getting every answer perfect—focus on learning the tools.
 
@@ -64,7 +68,9 @@ Before we dive into commands, let's make sure you can open a terminal properly.
 
 You can also use the menu: **View → Terminal**
 
-:::warning ⚠️ Windows Users: Use Git Bash, Not PowerShell
+:::warning 
+
+**Windows Users: Use Git Bash, Not PowerShell**
 
 This is important! Windows has multiple terminal options, and the default (PowerShell) uses different commands than Mac/Linux. For this course, use Git Bash so your commands match what we teach.
 
@@ -477,7 +483,9 @@ public class Part3Exercises {
 }
 ```
 
-:::tip It is also possible to run a gradle task in "watch mode". For example if one types `./gradlew test --continuous`, it will do the following:
+:::tip 
+
+It is also possible to run a gradle task in "watch mode". For example if one types `./gradlew test --continuous`, it will do the following:
 
 1. Run the requested gradle task (`test`)
 2. After the task is done, it will keep Gradle running.
@@ -567,7 +575,9 @@ Execution failed for task ':test'.
     public static final String Q7_TEST_ONLY_COMMAND = ""; // Fill this in
 ```
 
-:::tip 📝 Build Problems? Get Help!
+:::tip 
+
+Build Problems? Get Help!
 
 Gradle errors can be cryptic. If you're stuck on a build error for more than 15 minutes, **bring it to office hours**. TAs have seen most common issues and can often spot the problem quickly. Come prepared with:
 
@@ -586,7 +596,9 @@ Knowing how to get unstuck is as important as knowing how to code. This section 
 
 ### Exercise 4.1: Open a Test Help Request (Required!)
 
-:::warning ⚠️ This Exercise is Mandatory
+:::warning 
+
+**This Exercise is Mandatory**
 
 You **must** complete this exercise to receive credit for this lab. Opening a help request in the test queue verifies that you know how to use office hours when you need them.
 :::
@@ -616,7 +628,9 @@ Software development is collaborative. Learning to ask good questions and help o
 
 ### Exercise 5.1: Make a Forum Post
 
-:::warning ⚠️ This Exercise is Mandatory
+:::warning 
+
+**This Exercise is Mandatory**
 
 You **must** complete this exercise to receive credit for this lab.
 :::
