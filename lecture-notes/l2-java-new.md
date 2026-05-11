@@ -26,11 +26,15 @@ The first step *compiles* the Java source code, while the second step *runs* it.
 
 Irrespective of the programming language used, all code written in a "high-level" (human-readable and human-understandable) language must be translated into low-level instructions that can be executed on the CPU. Java performs this in two steps:
 
-    1. The Java source code (*.java) files are converted into *bytecode*. Specifically each class or interface produces a single .class file. The program that performs this translation is *javac*.
+### Step 1
 
-    *Bytecode* is simply a set of instructions for a fictitious machine, called the *Java Virtual Machine* (JVM). It looks like low-level assembly language code (given a file *Fan.class*, one can see this code by using another program: `javap -c Fan.class`. Try it!). In this way, this translation does not depend on different CPUs and operating systems that currently exist or may be created in the future. In that sense, the *bytecode* is platform-independent. The JVM can be thought as simply a specification for a machine, detailing which instructions it supports.
+The Java source code (*.java) files are converted into *bytecode*. Specifically each class or interface produces a single .class file. The program that performs this translation is *javac*.
 
-    2. The *bytecode* is then executed chunk-by-chunk by giving it to the second program *java*. This program translates the bytecode into CPU instructions. One way to think about this step is that the program *java* represents the JVM, on which the bytecode is run. 
+*Bytecode* is simply a set of instructions for a fictitious machine, called the *Java Virtual Machine* (JVM). It looks like low-level assembly language code (given a file *Fan.class*, one can see this code by using another program: `javap -c Fan.class`. Try it!). In this way, this translation does not depend on different CPUs and operating systems that currently exist or may be created in the future. In that sense, the *bytecode* is platform-independent. The JVM can be thought as simply a specification for a machine, detailing which instructions it supports.
+
+### Step 2
+
+The *bytecode* is then executed chunk-by-chunk by giving it to the second program *java*. This program translates the bytecode into CPU instructions. One way to think about this step is that the program *java* represents the JVM, on which the bytecode is run. 
 
 The remarkable result of this process is that one can produce *.class* files by running *javac* on one platform, copy them over to another platform and run it using *java* on it! This is the "write once, run anywhere" promise that the founders of Java made. Since its inception, other programming languages have also implemented this idea. There are other languages that run on the JVM, like Clojure, Kotlin, Scala, and Groovy. These languages, like Java, are compiled into bytecode.
 
@@ -42,9 +46,9 @@ Java (like Python) offers a vast library of classes and frameworks developed by 
 
 When we install Java on our computers, we installed two distinct things:
 
-    1. The Java Development Toolkit (JDK): this is what is needed to *write* or *develop* Java programs. Programmers need this. This includes tools like *javac* and *javap*, among others.
+1. The Java Development Toolkit (JDK): this is what is needed to *write* or *develop* Java programs. Programmers need this. This includes tools like *javac* and *javap*, among others.
 
-    2. The Java Runtime Environment (JRE): this is what is needed to *run* Java programs. This is needed not just by programmers but also end-users. Most operating systems come with the JRE pre-installed. 
+2. The Java Runtime Environment (JRE): this is what is needed to *run* Java programs. This is needed not just by programmers but also end-users. Most operating systems come with the JRE pre-installed. 
 
 It is possible to install several versions of the JDK and JRE simultaneously on a single computer. When we write Java programs we must specify which JDK version we will use to compile it. When we run Java programs we must specify which JRE version to use.
 
@@ -108,13 +112,13 @@ The JDK comes with a useful program called *javadoc* that converts the comments 
 
 In general, the process of converting all the source files into a form that can be executed is called *building*. As we write larger programs, there is a lot of background work that needs to be done in order to build a program:
 
-    1. Identify which libraries are needed (dependencies). Identify which versions of those libraries are to be used.
+1. Identify which libraries are needed (dependencies). Identify which versions of those libraries are to be used.
 
-    2. Download dependencies if needed and wire them with the code so that they can be found when building.
-    
-    3. Support various things you can do with the code (build into an application, run an application, run only tests, verify the code style, etc.)
-    
-    4. Specify where the produced files (build artifacts) should be stored. Build artifacts for Java programs may include bytecode files, packaged *jar* files that can be executed like an application, documentation, etc.
+2. Download dependencies if needed and wire them with the code so that they can be found when building.
+
+3. Support various things you can do with the code (build into an application, run an application, run only tests, verify the code style, etc.)
+
+4. Specify where the produced files (build artifacts) should be stored. Build artifacts for Java programs may include bytecode files, packaged *jar* files that can be executed like an application, documentation, etc.
 
 To manage all this and more, we use a build system. A build system comprises of one or more files where we specify relevant settings, and a program that interprets these files to accomplish all the above tasks. One popular example is Gradle, which we will use in this course.
 
@@ -122,15 +126,15 @@ To manage all this and more, we use a build system. A build system comprises of 
 
 Most modern IDEs provide a way to create Gradle projects. A Gradle project may comprise of the following:
 
-    1. *settings.gradle*: often auto-generated, this specifies the root folder inside which other files relevant to this project reside. Once generated, this file changes infrequently.
+1. *settings.gradle*: often auto-generated, this specifies the root folder inside which other files relevant to this project reside. Once generated, this file changes infrequently.
 
-    2. *build.gradle*: this is the main configuration file. This stores information such as tasks, dependencies, versions, etc. This file changes as more libraries are used in the project, the location of the libraries changes, etc. For a Java project, this file stores the JDK version, JUnit version, application starting point, location of source files, etc.
+2. *build.gradle*: this is the main configuration file. This stores information such as tasks, dependencies, versions, etc. This file changes as more libraries are used in the project, the location of the libraries changes, etc. For a Java project, this file stores the JDK version, JUnit version, application starting point, location of source files, etc.
 
-    3. "Sources root": although not an official term, this is the root folder that contains all the Java source code files. When the project is built, Gradle looks within this folder. For Java projects, this is usually in "project-root/src/main/java". 
+3. "Sources root": although not an official term, this is the root folder that contains all the Java source code files. When the project is built, Gradle looks within this folder. For Java projects, this is usually in "project-root/src/main/java". 
 
-    4. "Test Sources root": although not an official term, this is the root folder that contains all the tests for a project. It promotes the practice of maintaining code and tests in separate places within the project. When tests are to be run, Gradle looks within this folder. For Java projects, this is usually in "project-root/src/main/test".
+4. "Test Sources root": although not an official term, this is the root folder that contains all the tests for a project. It promotes the practice of maintaining code and tests in separate places within the project. When tests are to be run, Gradle looks within this folder. For Java projects, this is usually in "project-root/src/main/test".
 
-    5. *gradlew*: this is the script or batch program that "runs" Gradle. This file is produced once and rarely changes. This file is used to run specific tasks defined in the *build.gradle*. For example, to build and run a project from the terminal, we use `> gradlew run`.
+5. *gradlew*: this is the script or batch program that "runs" Gradle. This file is produced once and rarely changes. This file is used to run specific tasks defined in the *build.gradle*. For example, to build and run a project from the terminal, we use `> gradlew run`.
 
 # 3 Inheritance as a Core Concept
 
@@ -157,9 +161,12 @@ An abstract class that contains *only* public method signatures is conceptually 
 A concrete class provides implementations of all the methods it promises. Concrete classes can be instantiated.
 
 In Java, classes (abstract or concrete)
-    - Can extend exactly one superclass (which may itself extend another class)
-    - Can implement multiple interfaces
-    - Inherit fields and methods from its superclass, can also *override* methods
+
+- Can extend exactly one superclass (which may itself extend another class)
+
+- Can implement multiple interfaces
+
+- Inherit fields and methods from its superclass, can also *override* methods
 
 ## 3.4 Access Modifiers
 
@@ -171,13 +178,13 @@ In Java, classes (abstract or concrete)
 
 The following are some best-practice rules to think about when designing classes and interfaces:
 
-    * Each interface and class should represent one thing (single responsibility). 
+* Each interface and class should represent one thing (single responsibility). 
 
-    * Use access modifiers judiciously: only provide access where you need. Make fields `private`, or if necessary, `protected`, never `public`. Make as many methods non-public as possible. The more things you hide about a class, the simpler it is to use.
+* Use access modifiers judiciously: only provide access where you need. Make fields `private`, or if necessary, `protected`, never `public`. Make as many methods non-public as possible. The more things you hide about a class, the simpler it is to use.
 
-    * Avoid duplication of code: duplication is not only redundant but also makes maintenance difficult. Capture common aspects higher up in the inheritance hierarchy.
+* Avoid duplication of code: duplication is not only redundant but also makes maintenance difficult. Capture common aspects higher up in the inheritance hierarchy.
 
-    * Do not lose meaning: don't be tempted to "optimize" your design at the cost of diluting what a class or interface represents.
+* Do not lose meaning: don't be tempted to "optimize" your design at the cost of diluting what a class or interface represents.
 
 # 4 A More Elaborate IoTDevice System
 
@@ -186,79 +193,72 @@ We now add more functionality to our IoT device system from the previous lecture
 ## 4.1 First Cut
 
 We start by modifying the design as follows:
-    - `DimmableLight` extends `Light` and adds `setBrightness` and `getBrightness`.
-    - `TunableWhiteLight` extends `Light`. It stores the color temperature as a single number, and adds `setColorTemperature` and `getColorTemperature`.
+    
+- `DimmableLight` extends `Light` and adds `setBrightness` and `getBrightness`.
+- `TunableWhiteLight` extends `Light`. It stores the color temperature as a single number, and adds `setColorTemperature` and `getColorTemperature`.
 
 ```mermaid
 classDiagram
-    direction TB
+  class IoTDevice {
+    <<interface>>
+    +String identify()
+    +void turnOn()
+    +void turnOff()
+    +boolean isOn()
+}
+class Light {
+    #String name
+    -boolean isOn
+    #int brightness
+    +Light(String name, int brightness)
+    +String identify()
+    +void turnOn()
+    +void turnOff()
+    +boolean isOn()
+    +int getBrightness()
+}
+class DimmableLight {
+    +int MIN_BRIGHTNESS$
+    +int MAX_BRIGHTNESS$
+    +DimmableLight(String name, int brightness)
+    +void setBrightness(int value)
+    +String identify()
+}
+class Fan {
+    -String name
+    -boolean isOn
+    -int speed
+    +Fan(String name, int speed)
+    +String identify()
+    +void turnOn()
+    +void turnOff()
+    +boolean isOn()
+}
+class Thermostat {
+    -String name
+    -boolean isOn
+    -int temperature
+    +Thermostat(String name, int temperature)
+    +String identify()
+    +void turnOn()
+    +void turnOff()
+    +boolean isOn()
+}
+class TunableWhiteLight {
+    -int colorTemperature
+    +int MIN_COLORTEMPERATURE$
+    +int MAX_COLORTEMPERATURE$
+    +TunableWhiteLight(String name, int initialBrightness, int initColorTemperature)
+    +int getColorTemperature()
+    +void setColorTemperature(int temp)
+    +String identify()
+}
 
-    class IoTDevice {
-        <<interface>>
-        +String identify()
-        +void turnOn()
-        +void turnOff()
-        +boolean isOn()
-    }
-
-    class Light {
-        #String name
-        -boolean isOn
-        #int brightness
-        +Light(String name, int brightness)
-        +String identify()
-        +void turnOn()
-        +void turnOff()
-        +boolean isOn()
-        +int getBrightness()
-    }
-
-    class DimmableLight {
-        +int MIN_BRIGHTNESS$
-        +int MAX_BRIGHTNESS$
-        +DimmableLight(String name, int brightness)
-        +void setBrightness(int value)
-        +String identify()
-    }
-
-    class Fan {
-        -String name
-        -boolean isOn
-        -int speed
-        +Fan(String name, int speed)
-        +String identify()
-        +void turnOn()
-        +void turnOff()
-        +boolean isOn()
-    }
-
-    class Thermostat {
-        -String name
-        -boolean isOn
-        -int temperature
-        +Thermostat(String name, int temperature)
-        +String identify()
-        +void turnOn()
-        +void turnOff()
-        +boolean isOn()
-    }
-
-    class TunableWhiteLight {
-        -int colorTemperature
-        +int MIN_COLORTEMPERATURE$
-        +int MAX_COLORTEMPERATURE$
-        +TunableWhiteLight(String name, int initialBrightness, int initColorTemperature)
-        +int getColorTemperature()
-        +void setColorTemperature(int temp)
-        +String identify()
-    }
-
-    IoTDevice <|-- Light
-    IoTDevice <|-- Fan
-    IoTDevice <|-- Thermostat
-    Light <|-- DimmableLight
-    Light <|-- TunableWhiteLight
-
+IoTDevice <|-- Light
+IoTDevice <|-- Fan
+IoTDevice <|-- Thermostat
+Light <|-- DimmableLight
+Light <|-- TunableWhiteLight
 ```
 
 Note the use of access modifiers: all fields are marked as `private` in their respective classes. However different types of light may need to access their own brightness, as well as their names. So those fields are marked as `protected` in the `Light` class.
@@ -267,9 +267,11 @@ Note the use of access modifiers: all fields are marked as `private` in their re
 
 We notice that some things are duplicated across multiple classes:
 
-    * `Light`, `Fan` and `Thermostat` all have a name and an on-off status. This makes sense since all devices should have them.
-    * `Light`, `Fan` and `Thermostat` all implement the `isOn()`, `turnOn()` and `turnOff()` methods in the same way.
-    * Constructors of all different types of light initialize their names and brightness levels.
+* `Light`, `Fan` and `Thermostat` all have a name and an on-off status. This makes sense since all devices should have them.
+
+* `Light`, `Fan` and `Thermostat` all implement the `isOn()`, `turnOn()` and `turnOff()` methods in the same way.
+
+* Constructors of all different types of light initialize their names and brightness levels.
 
 Since all types of devices have some things in common, we introduce a basic type of device between the `IoTDevice` interface and all the classes that implement it.
 
@@ -330,72 +332,68 @@ The constructor of the `Light` class receives a name and a brightness value. It 
 
 ```mermaid
 classDiagram
-    direction TB
+direction TB
+  class IoTDevice {
+    <<interface>>
+    +String identify()
+    +void turnOn()
+    +void turnOff()
+    +boolean isOn()
+}
+class BaseIoTDevice {
+    <<abstract>>
+    #String name
+    #boolean isOn
+    #BaseIoTDevice(String name)
+    +void turnOn()
+    +void turnOff()
+    +boolean isOn()
+}
 
-    class IoTDevice {
-        <<interface>>
-        +String identify()
-        +void turnOn()
-        +void turnOff()
-        +boolean isOn()
-    }
+class Light {
+    #int brightness
+    +Light(String name, int brightness)
+    +String identify()
+    +int getBrightness()
+}
 
-    class BaseIoTDevice {
-        <<abstract>>
-        #String name
-        #boolean isOn
-        #BaseIoTDevice(String name)
-        +void turnOn()
-        +void turnOff()
-        +boolean isOn()
-    }
+class DimmableLight {
+    +int MIN_BRIGHTNESS$
+    +int MAX_BRIGHTNESS$
+    +DimmableLight(String name, int brightness)
+    +void setBrightness(int value)
+    +String identify()
+}
 
-    class Light {
-        #int brightness
-        +Light(String name, int brightness)
-        +String identify()
-        +int getBrightness()
-    }
+class Fan {
+    -int speed
+    +Fan(String name, int speed)
+    +String identify()
+}
 
-    class DimmableLight {
-        +int MIN_BRIGHTNESS$
-        +int MAX_BRIGHTNESS$
-        +DimmableLight(String name, int brightness)
-        +void setBrightness(int value)
-        +String identify()
-    }
+class Thermostat {
+    -int temperature
+    +Thermostat(String name, int temperature)
+    +String identify()
+}
 
-    class Fan {
-        -int speed
-        +Fan(String name, int speed)
-        +String identify()
-    }
-
-    class Thermostat {
-        -int temperature
-        +Thermostat(String name, int temperature)
-        +String identify()
-    }
-
-    class TunableWhiteLight {
-        -int colorTemperature
-        +int MIN_COLORTEMPERATURE$
-        +int MAX_COLORTEMPERATURE$
-        +TunableWhiteLight(String name, int initialBrightness, int initColorTemperature)
-        +int getColorTemperature()
-        +void setColorTemperature(int temp)
-        +String identify()
-    }
+class TunableWhiteLight {
+    -int colorTemperature
+    +int MIN_COLORTEMPERATURE$
+    +int MAX_COLORTEMPERATURE$
+    +TunableWhiteLight(String name, int initialBrightness, int initColorTemperature)
+    +int getColorTemperature()
+    +void setColorTemperature(int temp)
+    +String identify()
+}
 
 
-    IoTDevice <|.. BaseIoTDevice
-    BaseIoTDevice <|-- Light
-    BaseIoTDevice <|-- Fan
-    BaseIoTDevice <|-- Thermostat
-    Light <|-- DimmableLight
-    Light <|-- TunableWhiteLight
-
-
+IoTDevice <|.. BaseIoTDevice
+BaseIoTDevice <|-- Light
+BaseIoTDevice <|-- Fan
+BaseIoTDevice <|-- Thermostat
+Light <|-- DimmableLight
+Light <|-- TunableWhiteLight
 ```
 Note the relationships: `class Light extends BaseIoTDevice` depicts that *Light is a BaseIoTDevice*. Correspondingly, the `Light` class inherits several fields and methods from `BaseIoTDevice`. Methods such as `identify()` that work differently for each concrete class are implemented separately. In this way each class contains only aspects unique to it. Thus proper use of inheritance not only models the domain effectively, but also tangible benefits in code.
 
@@ -406,16 +404,21 @@ It seems like interfaces and abstract classes are somewhat redundant. This is tr
 
 However interfaces in Java have some unique aspects. An interface
 
-    - Can extend one or more interfaces.
-    - Can provide a default implementation for some methods. This can make the code messy, so it is not recommended.
-    - Declares methods that can only be `public` in implementing classes.
+- Can extend one or more interfaces.
+
+- Can provide a default implementation for some methods. This can make the code messy, so it is not recommended.
+
+- Declares methods that can only be `public` in implementing classes.
 
 In contrast, an abstract class
 
-    - Can contain fields.
-    - Can extend up to one superclass and multiple interfaces.
-    - Can contain methods having any access modifier (`private`, `public`, `protected` or package-private)
-    - Can provide a default implementation for some methods
+- Can contain fields.
+
+- Can extend up to one superclass and multiple interfaces.
+
+- Can contain methods having any access modifier (`private`, `public`, `protected` or package-private)
+
+- Can provide a default implementation for some methods
 
 A common pattern in Java is to pair an interface with a **skeletal implementation** (also called an "abstract base class"). We have done this above with `IoTDevice` and `BaseIoTDevice`. This gives callers flexibility: they can extend the abstract class for convenience, or implement the interface directly if they need different behavior. This pattern can be seen throughout the Java standard library with classes like `AbstractList`, `AbstractMap`, and `AbstractCollection`.
 
@@ -425,9 +428,11 @@ Some objects legitimately belong to multiple categories (e.g., a ceiling fan wit
 
 This is called the "diamond problem." Java avoids it by restricting multiple inheritance to interfaces:
 
-    - Interfaces don't provide implementations (usually), so there's no ambiguity
-    - The implementing class must provide the implementation
-    - This forces explicit design decisions rather than implicit (and potentially confusing) behavior
+- Interfaces don't provide implementations (usually), so there's no ambiguity
+
+- The implementing class must provide the implementation
+
+- This forces explicit design decisions rather than implicit (and potentially confusing) behavior
 
 # 6 How Java Works: Some Important Concepts
 
@@ -458,10 +463,12 @@ Note the type of the variables `livingRoomLight` and `fan`. Doing this is in fac
 "Dynamic dispatch" is the process by which the JVM determines which method to call at runtime. Specifically the JVM delays *deciding* which implementation to use (*dispatch*) until the last minute (*dynamic*) when the program is run and it comes to that line. At that time, it pays attention to the object it is referring to, rather than the type of the variable. 
 
 Here is how the JVM implements dynamic dispatch to call method $m$ on object $o$ of type $T$:
+
 1. If $T$ contains a declaration of $m$, use that.
+
 2. If $T$ has a superclass $S$ that contains a declaration of $m$, use that. If not, continue recursively with $S$'s superclass.
 
- Consider the following example:
+Consider the following example:
 
 ```java
 Light l = new TunableWhiteLight("living-room", 2700, 100);
