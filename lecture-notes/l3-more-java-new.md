@@ -110,8 +110,11 @@ Please refer to [this tutorial](https://docs.oracle.com/javase/tutorial/java/gen
 # 2 Java's core data structures 
 
 Arrays in Java are the most basic data structure. Arrays are:
+
 - Of a fixed size, once created
+
 - Zero-indexed (first element is at index 0)
+
 - Stored contiguously in memory, enabling efficient access of any element (this property is called *random access*)
 
 The Java API also provides a number of core data structures that are useful for programming. Collectively, these are called the *Collections API*. They are implemented as classes in the `java.util` package.
