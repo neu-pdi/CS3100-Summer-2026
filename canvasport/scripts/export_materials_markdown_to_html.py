@@ -276,11 +276,68 @@ def render_mermaid_to_svg(mermaid_code: str, timeout_seconds: int = 30) -> Tuple
     return None, "; ".join(errors)
 
 
+def _parse_css_size_px(value: Optional[str]) -> Optional[float]:
+    if not value:
+        return None
+
+    match = re.match(r"^\s*([0-9]+(?:\.[0-9]+)?)\s*(px)?\s*$", value)
+    if not match:
+        return None
+    return float(match.group(1))
+
+
+def _extract_svg_intrinsic_size(svg_text: str) -> Tuple[Optional[float], Optional[float]]:
+    width_match = re.search(r'\bwidth\s*=\s*"([^"]+)"', svg_text, flags=re.IGNORECASE)
+    height_match = re.search(r'\bheight\s*=\s*"([^"]+)"', svg_text, flags=re.IGNORECASE)
+    viewbox_match = re.search(r'\bviewBox\s*=\s*"([^"]+)"', svg_text, flags=re.IGNORECASE)
+
+    width_px = _parse_css_size_px(width_match.group(1)) if width_match else None
+    height_px = _parse_css_size_px(height_match.group(1)) if height_match else None
+
+    if width_px and height_px:
+        return width_px, height_px
+
+    if viewbox_match:
+        parts = re.split(r"[\s,]+", viewbox_match.group(1).strip())
+        if len(parts) == 4:
+            try:
+                vb_width = float(parts[2])
+                vb_height = float(parts[3])
+                if vb_width > 0 and vb_height > 0:
+                    return vb_width, vb_height
+            except ValueError:
+                pass
+
+    return width_px, height_px
+
+
+def _choose_mermaid_display_width(svg_text: str) -> int:
+    intrinsic_width, intrinsic_height = _extract_svg_intrinsic_size(svg_text)
+
+    default_cap = 900
+    narrow_cap = 720
+    wide_cap = 1100
+    readability_floor = 420
+
+    if intrinsic_width and intrinsic_height and intrinsic_height > 0:
+        aspect_ratio = intrinsic_width / intrinsic_height
+        if aspect_ratio >= 2.2:
+            cap = wide_cap
+        elif aspect_ratio <= 0.9:
+            cap = narrow_cap
+        else:
+            cap = default_cap
+        return int(min(max(intrinsic_width, readability_floor), cap))
+
+    return default_cap
+
+
 def inline_mermaid_svgs(
     markdown_text: str,
     lecture_id: str,
+    output_dir: Path,
     warnings: List[str],
-    mermaid_cache: Dict[str, Optional[str]],
+    mermaid_cache: Dict[str, Optional[Tuple[str, int]]],
 ) -> str:
     pattern = re.compile(r"```mermaid[^\n]*\n(.*?)\n```", flags=re.DOTALL)
     diagram_counter = 0
@@ -296,20 +353,34 @@ def inline_mermaid_svgs(
 
         cache_key = hashlib.sha256(mermaid_code.encode("utf-8")).hexdigest()
         if cache_key in mermaid_cache:
-            svg_text = mermaid_cache[cache_key]
+            cached_item = mermaid_cache[cache_key]
+            svg_relative_path = cached_item[0] if cached_item else None
+            display_width = cached_item[1] if cached_item else 900
         else:
             svg_text, error = render_mermaid_to_svg(mermaid_code)
-            mermaid_cache[cache_key] = svg_text
             if error and svg_text is None:
                 warnings.append(f"[{lecture_id}] mermaid render failed at index {diagram_counter}: {error}")
+
+            if svg_text:
+                svg_relative = Path("files") / lecture_id / "img" / "lecture" / f"mermaid-{cache_key[:12]}.svg"
+                svg_output_path = output_dir / svg_relative
+                svg_output_path.parent.mkdir(parents=True, exist_ok=True)
+                svg_output_path.write_text(svg_text, encoding="utf-8")
+                svg_relative_path = str(svg_relative).replace("\\", "/")
+                display_width = _choose_mermaid_display_width(svg_text)
+            else:
+                svg_relative_path = None
+                display_width = 900
+
+            mermaid_cache[cache_key] = (svg_relative_path, display_width) if svg_relative_path else None
 
         if not mermaid_cache.get(cache_key):
             return match.group(0)
 
-        svg = mermaid_cache[cache_key] or ""
+        svg_relative_path = svg_relative_path or ""
         return (
-            "\n<div class=\"mermaid-diagram\">\n"
-            f"{svg}\n"
+            "\n<div class=\"mermaid-diagram\" style=\"text-align: center;\">\n"
+            f"<img src=\"{svg_relative_path}\" alt=\"Mermaid diagram {diagram_counter}\" width=\"{display_width}\" style=\"max-width: 100%; height: auto;\">\n"
             "</div>\n"
         )
 
@@ -585,7 +656,7 @@ def export_markdown_document(
     known_html: Set[str],
     known_pdf: Set[str],
     warnings: List[str],
-    mermaid_cache: Dict[str, Optional[str]],
+    mermaid_cache: Dict[str, Optional[Tuple[str, int]]],
 ) -> Path:
     markdown_text = source_path.read_text(encoding="utf-8")
     markdown_text, fm_title, fm_description = strip_front_matter(markdown_text)
@@ -603,6 +674,7 @@ def export_markdown_document(
     markdown_text = inline_mermaid_svgs(
         markdown_text=markdown_text,
         lecture_id=document_id,
+        output_dir=output_dir,
         warnings=warnings,
         mermaid_cache=mermaid_cache,
     )
@@ -826,7 +898,7 @@ def export_lectures(
     known_html, known_pdf = build_export_targets(known_html=known_html, known_pdf=known_pdf)
 
     warnings: List[str] = []
-    mermaid_cache: Dict[str, Optional[str]] = {}
+    mermaid_cache: Dict[str, Optional[Tuple[str, int]]] = {}
     exported_html = 0
     skipped_html = 0
 
@@ -918,7 +990,7 @@ def export_pages(
     output_dir.mkdir(parents=True, exist_ok=True)
     known_html, known_pdf = build_export_targets(known_html=known_html, known_pdf=known_pdf)
     warnings: List[str] = []
-    mermaid_cache: Dict[str, Optional[str]] = {}
+    mermaid_cache: Dict[str, Optional[Tuple[str, int]]] = {}
     exported = 0
     skipped = 0
 
@@ -989,7 +1061,7 @@ def export_config_materials(
 
     output_dir.mkdir(parents=True, exist_ok=True)
     warnings: List[str] = []
-    mermaid_cache: Dict[str, Optional[str]] = {}
+    mermaid_cache: Dict[str, Optional[Tuple[str, int]]] = {}
     exported = 0
     skipped = 0
 
@@ -1061,7 +1133,7 @@ def export_additional_linked_documents(
 
     output_dir.mkdir(parents=True, exist_ok=True)
     warnings: List[str] = []
-    mermaid_cache: Dict[str, Optional[str]] = {}
+    mermaid_cache: Dict[str, Optional[Tuple[str, int]]] = {}
     exported = 0
     skipped = 0
 
