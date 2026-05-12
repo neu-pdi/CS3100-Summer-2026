@@ -16,6 +16,7 @@ sidebar_position: 3
 
 **Option 2: Partial Credit**
 If you're unable to complete everything:
+
 - Submit a `REFLECTION.md` documenting what you completed, where you got stuck, and what you tried
 - A TA will review your submission and award credit for good-faith effort
 
@@ -44,22 +45,27 @@ By the end of this lab, you will be able to:
 **Clone the Lab Repository:** Clone your lab repository. The repository includes:
 
 **Core Device Classes** (`net.sceneitall.iot`):
+
 - `IoTDevice.java` — interface
 - `Light.java`, `DimmableLight.java`, `TunableWhiteLight.java` — the light hierarchy
 - `Fan.java` — a separate device type
 - `DeviceGenerator.java` — generates test devices for performance measurement
 
 **Part 1: Polymorphism** (`net.sceneitall.iot.labpoly.part1`):
+
 - `SmartHomeController.java` — controller class with method stubs
 - `SmartHomeControllerTest.java` — test file with starter tests
 
 **Part 2: Collections** (`net.sceneitall.iot.labpoly.part2`):
+
 - `CollectionsExercises.java` — where you will write code for Part 2
 
 **Part 3: Performance** (`net.sceneitall.iot.labpoly.part3`):
+
 - `PerformanceExercises.java` — where you will write code for Part 3
 
 **Stretch Goals** (`net.sceneitall.iot.labpoly.stretch`):
+
 - `CeilingFanWithLight.java` — composition example for Stretch Goal 2
 - `StretchExercises.java` — generic methods exercise for Stretch Goal 3
 
@@ -196,6 +202,7 @@ void identifyAllDevicesWorksWithEmptyController() {
 ```
 
 **Run your Part 1 tests** using VS Code's Test Explorer:
+
 1. Open the Testing sidebar (flask icon in the left sidebar, or `Cmd+Shift+P` → "Testing: Focus on Test Explorer View")
 2. Expand `SmartHomeControllerTest`
 3. Click the play button (▶) next to individual tests or the entire class
@@ -231,11 +238,13 @@ Since Parts 2 and 3 aren't implemented yet, running all tests will show failures
 | `assertNotSame(unexpected, actual, message)` | Check if two references point to different objects | `assertNotSame(device1, device2, "Should be different instances")` |
 
 **Best Practices:**
+
 - Always include a descriptive message as the last parameter—it helps when tests fail!
 - Put the expected value first, then the actual value: `assertEquals(expected, actual)`. This makes failure messages clearer.
 - Use the most specific assertion available (e.g., `assertNull()` instead of `assertEquals(null, obj)`)
 
 **Resources:**
+
 - [JUnit 5 User Guide - Assertions](https://junit.org/junit5/docs/current/user-guide/#writing-tests-assertions)
 - [JUnit 5 Assertions JavaDoc](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html)
 
@@ -361,11 +370,13 @@ We've provided a `main()` method in `CollectionsExercises.java` that demonstrate
 ```
 
 This will:
+
 - Print out what collections you created
 - Show you their contents
 - Give you commented-out code to uncomment as you implement each method
 
 **The Philosophy:** When you're learning a new library or exploring a design, a simple `main()` method lets you:
+
 - Quickly see what your data structures contain
 - Try operations and observe results immediately
 - Understand behavior before committing to a design
@@ -443,6 +454,7 @@ public static IoTDevice findInHashMap(HashMap<String, IoTDevice> deviceMap, Stri
 ### 3.3 Run the Performance Test
 
 The starter code includes a `runPerformanceComparison()` method that:
+
 1. Generates 10,000 devices using `DeviceGenerator`
 2. Times how long it takes to build each collection
 3. Performs 1,000 lookups and measures the time
@@ -467,6 +479,7 @@ Run the performance test:
 ### 3.4 Analyze the Results (Reflection)
 
 This is a reflection exercise—no additional code required! Answer these questions in your `REFLECTION.md`:
+
 1. Which was fastest to **build**? Which was fastest to **look up**?
 2. Why is HashMap lookup faster than ArrayList/LinkedList?
 3. For the build times: Were ArrayList and LinkedList similar? Why or why not?
@@ -510,6 +523,7 @@ The starter code includes a `CeilingFanWithLight` class that uses **composition*
 
 1. Read through `CeilingFanWithLight.java`
 2. Answer in `REFLECTION.md`:
+
    - Why doesn't `CeilingFanWithLight` extend both `Light` and `Fan`?
    - What's the advantage of the composition approach?
    - What's a disadvantage?
