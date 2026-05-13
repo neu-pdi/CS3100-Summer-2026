@@ -12,11 +12,14 @@ image: /img/lectures/web/l4.png
 
 Since the dawn of programming, software engineers have been looking for ways to make it easier to write large programs. One of the most important tools in the software engineer's toolbox has been the ability to *modularize* programs.
 
+:::info 
 Psychology sidebar: A common rule of thumb is that humans can only hold 7±2 items in their short-term memory ([Miller's Law](https://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two)). However, the "item" that we remember can be of variable size. For example, which is easier to remember:
 - A lock combination with 8 numbers in order (10, 20, 30, 40, 50, 60, 70, 80)
 - A lock combination with 8 numbers in random order (50, 30, 60, 20, 80, 10, 40, 70)
 
 The second is easier to remember because it is a *chunk* ("multiples of 10 from 10 to 80").
+
+:::
 
 When we write a program, our goal is to make it easy to understand. When we break that program down into smaller pieces (e.g. modules, classes, methods), our goal is to provide a sufficiently clear specification for each piece so that we can keep several of those pieces in our short-term memory at once in order to reason about a greater whole. When reading a program, we want to enable a developer to quickly understand the behavior of a method *without* having to read and understand the implementation of that method. The added benefit of this process is that a programmer can focus on designing and implementing one chunk at a time without thinking through the details of the other chunks.
 
@@ -28,11 +31,11 @@ Let us start with the smallest chunk there is: a method.
 
 A good method specification is one that a developer can understand quickly and easily. We desire the following consequences of a good specification:
 
-    1. *Generality*: Any implementation of that method that satisfies the specification should be correct
+1. *Generality*: Any implementation of that method that satisfies the specification should be correct
     
-    2. *Restrictiveness*: Any implementation that does not satisfy the specification is incorrect
+2. *Restrictiveness*: Any implementation that does not satisfy the specification is incorrect
     
-    3. *Clarity*: The specification is clear, umambiguous and easy to understand.
+3. *Clarity*: The specification is clear, umambiguous and easy to understand.
 
 ## 2.1 Restrictiveness
 
@@ -399,9 +402,9 @@ The consequence of this rule is a developer can understand all the capabilities 
 
 Looking at our above design, we see instances where this rule is broken:
 
-    * `Light` class defines a new `getBrightness` method.
-    * `DimmableLight` class defines a new `setBrightness` method.
-    * `TunableWhiteLight` class defines `getColorTemperature` and `setColorTemperature` methods. 
+* `Light` class defines a new `getBrightness` method.
+* `DimmableLight` class defines a new `setBrightness` method.
+* `TunableWhiteLight` class defines `getColorTemperature` and `setColorTemperature` methods. 
 
 We will address this after discussing the next rule.
 
@@ -411,9 +414,9 @@ Thermostats usually do not have on/off switches. They are "on" so long as they a
 
 This has two undesirable consequences:
 
-    * The `Thermostat` class has methods that do not belong there. So `Thermostat` class does not faithfully represent an actual thermostat. This is called a *representational gap* which we will revisit.
+* The `Thermostat` class has methods that do not belong there. So `Thermostat` class does not faithfully represent an actual thermostat. This is called a *representational gap* which we will revisit.
 
-    * If the `turnOn` or `turnOff` methods are modified in the `BaseIoTDevice` class, the `Thermostat` class also changes even though these methods are not relevant to it. In other words there is an unnecessary dependency.
+* If the `turnOn` or `turnOff` methods are modified in the `BaseIoTDevice` class, the `Thermostat` class also changes even though these methods are not relevant to it. In other words there is an unnecessary dependency.
 
 In order to address this, we need to distinguish between devices that are switchable and others that are not. In this way we can ensure that the `turnOn` and `turnOff` methods are only offered by the `Fan` and `Light`devices but not others. In order to do this, we must divide the `IoTDevice` interface into two parts. All devices are `IoTDevice` but not all are "switchable". 
 
@@ -513,17 +516,17 @@ classDiagram
 
 The salient features of this refactoring are:
 
-    * `IoTDevice` does not offer `turnOn` and `turnOff` methods. They are separated into another `Switchable` interface.
-    * `BaseIoTDevice` continues to contain code that is common to all IoTDevices. 
-    * `BaseSwitchableDevice` is a new class that contains code that is common to all switchable IoTDevices.
-    * `Light` is an interface that only specifies the methods that are applicable to all lights
-    * `NormalLight` is the implementation of a simple switchable light (this was the `Light` class in the previous design)
-    * `Fan` is a switchable IoTDevice
-    * `Thermostat` is merely a IoTDevice, not a switchable one. Hence it does not contain the `turnOn` and `turnOff` methods
-    * `DimmableLight` is an interface that specifies methods that apply only to dimmable lights
-    * `SimpleDimmableLight` class represents a dimmable light (this was the `DimmableLight` class in the previous design)
-    * `TunableLight` is an interface that specifies methods that apply only to lights whose color temperature can be modified
-    * `TunableWhiteLight` class represents a dimmable light whose color temperature can change (this existed in the previous design, but now does not define new public methods directly)
+* `IoTDevice` does not offer `turnOn` and `turnOff` methods. They are separated into another `Switchable` interface.
+* `BaseIoTDevice` continues to contain code that is common to all IoTDevices. 
+* `BaseSwitchableDevice` is a new class that contains code that is common to all switchable IoTDevices.
+* `Light` is an interface that only specifies the methods that are applicable to all lights
+* `NormalLight` is the implementation of a simple switchable light (this was the `Light` class in the previous design)
+* `Fan` is a switchable IoTDevice
+* `Thermostat` is merely a IoTDevice, not a switchable one. Hence it does not contain the `turnOn` and `turnOff` methods
+* `DimmableLight` is an interface that specifies methods that apply only to dimmable lights
+* `SimpleDimmableLight` class represents a dimmable light (this was the `DimmableLight` class in the previous design)
+* `TunableLight` is an interface that specifies methods that apply only to lights whose color temperature can be modified
+* `TunableWhiteLight` class represents a dimmable light whose color temperature can change (this existed in the previous design, but now does not define new public methods directly)
 
 # 5 Commonly Useful Specifications
 
@@ -635,8 +638,8 @@ It is also important that `compareTo` is consistent with `equals`: if `x.equals(
 
 The `Comparable` interface is not useful in two contexts:
 
-    1. A class has already been written to not implement the `Comparable` interface. It may be risky to modify the class after-the-fact.
-    2. There may be several viable ways to compare two objects of a class. For example, two books can be compared based on their titles, years of publication or even price. The `Book` class can implement `Comparable.compareTo` only once.
+1. A class has already been written to not implement the `Comparable` interface. It may be risky to modify the class after-the-fact.
+2. There may be several viable ways to compare two objects of a class. For example, two books can be compared based on their titles, years of publication or even price. The `Book` class can implement `Comparable.compareTo` only once.
 
 In these situations, the `Comparator` interface may be used to compare two objects of a class. Its implementation is outside the class whose objects are being compared. Several comparators can be written that compare two objects of the same class using different criteria. For example, given a `Book` class, we may write all of the following:
 
@@ -652,6 +655,6 @@ The contract of the `Comparator.compare` method is consistent with that in `Comp
 
 There are several existing methods and classes that use ordering provided by one of these ways. Some examples are:
 
-    * [`Collections.sort` using natural ordering](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#sort-java.util.List-)
-    * [`Collections.sort` using `Comparator`](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#sort-java.util.List-java.util.Comparator-)
-    * [`TreeSet`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html#TreeSet--)
+* [`Collections.sort` using natural ordering](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#sort-java.util.List-)
+* [`Collections.sort` using `Comparator`](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#sort-java.util.List-java.util.Comparator-)
+* [`TreeSet`](https://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html#TreeSet--)
