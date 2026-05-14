@@ -25,7 +25,7 @@ If you're unable to get everything working despite your best efforts:
 - Submit a `REFLECTION.md` that documents:
   - What steps you completed successfully
   - Where you got stuck and what error messages you encountered
-  - What resources you tried (documentation, office hours, Piazza, etc.)
+  - What resources you tried (documentation, office hours, discussion forum, etc.)
   - What troubleshooting steps you attempted
 - You'll see 0/2 in Pawtograder after submitting your lab if everything is not working. A TA will review your reflection and give you credit if you made a good faith effort to complete the lab. A TA is also likely to reach out to you to insist that you meet with them in order to get your environment working.
 
@@ -144,108 +144,10 @@ Many students experience authentication problems with SAML SSO when using HTTPS 
 
 > 💡 **Why SSH keys?** SSH keys provide a secure, persistent way to authenticate with GitHub without repeatedly entering credentials or dealing with SAML SSO prompts. Once configured, Git operations work seamlessly.
 
-#### Check for Existing SSH Keys
+Please visit the [Github page for SSH keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/checking-for-existing-ssh-keys). Please go through all 4 steps: *check*, *generate*, *add* and *check* (the link starts with the first of these steps).
 
-Before creating new keys, check if you already have SSH keys configured:
+**Ensure that you are reading and following the directions for your operating system: they are different for Windows, Mac and Linux!**
 
-**macOS/Linux:**
-```bash
-ls -la ~/.ssh
-```
-
-**Windows (PowerShell):**
-```powershell
-ls ~\.ssh
-```
-
-Look for files named `id_rsa.pub`, `id_ed25519.pub`, or `id_ecdsa.pub`. If you see these files, you already have SSH keys and can skip to [Add SSH Key to GitHub](#add-ssh-key-to-github).
-
-#### Generate a New SSH Key
-
-If you don't have SSH keys or want to create new ones for this course:
-
-**macOS:**
-1. Open Terminal (⌘+Space, type "Terminal")
-2. Generate the key (replace with your GitHub email):
-   ```bash
-   ssh-keygen -t ed25519 -C "your-github-email@example.com"
-   ```
-3. When prompted "Enter a file in which to save the key," press **Enter** to accept the default location (`~/.ssh/id_ed25519`)
-4. When prompted for a passphrase, you can either:
-   - Press **Enter** twice to create a key without a passphrase (easier, but less secure)
-   - Type a secure passphrase (you'll need to enter it when using the key)
-
-5. Start the SSH agent and add your key:
-   ```bash
-   eval "$(ssh-agent -s)"
-   ssh-add ~/.ssh/id_ed25519
-   ```
-
-6. Copy your public key to clipboard:
-   ```bash
-   pbcopy < ~/.ssh/id_ed25519.pub
-   ```
-
-**Windows:**
-1. Open Git Bash (or PowerShell)
-2. Generate the key (replace with your GitHub email):
-   ```bash
-   ssh-keygen -t ed25519 -C "your-github-email@example.com"
-   ```
-3. When prompted "Enter a file in which to save the key," press **Enter** to accept the default location (`C:\Users\YourName\.ssh\id_ed25519`)
-4. When prompted for a passphrase, you can either:
-   - Press **Enter** twice to create a key without a passphrase (easier, but less secure)
-   - Type a secure passphrase (you'll need to enter it when using the key)
-
-5. Start the SSH agent (in PowerShell as Administrator):
-   ```powershell
-   Get-Service ssh-agent | Set-Service -StartupType Automatic
-   Start-Service ssh-agent
-   ```
-
-6. Add your key to the SSH agent (Git Bash):
-   ```bash
-   ssh-add ~/.ssh/id_ed25519
-   ```
-
-7. Copy your public key to clipboard (PowerShell):
-   ```powershell
-   Get-Content ~\.ssh\id_ed25519.pub | Set-Clipboard
-   ```
-   Or using Git Bash:
-   ```bash
-   clip < ~/.ssh/id_ed25519.pub
-   ```
-
-> ⚠️ **Important:** Only share your **public key** (the `.pub` file). Never share your private key (the file without `.pub`)!
-
-#### Add SSH Key to GitHub
-
-Now add your SSH public key to your GitHub account:
-
-1. Go to [GitHub SSH Settings](https://github.com/settings/keys)
-2. Click **New SSH key** (green button in top-right)
-3. Add a descriptive title (e.g., "My CS3100 Laptop" or "MacBook Pro")
-4. Paste your public key into the "Key" field (it should start with `ssh-ed25519` and end with your email)
-5. Click **Add SSH key**
-6. If prompted, confirm with your GitHub password
-
-#### Test Your SSH Connection
-
-Verify that SSH is working:
-
-```bash
-ssh -T git@github.com
-```
-
-You should see a message like:
-```
-Hi username! You've successfully authenticated, but GitHub does not provide shell access.
-```
-
-If you see this message, **SSH is configured correctly!** You can now clone repositories using SSH URLs (which start with `git@github.com:` instead of `https://`).
-
-> 🎉 **Success!** You won't need to deal with SAML SSO authentication issues when using SSH.
 
 ### Clone the Lab Repository
 
@@ -267,7 +169,7 @@ Now choose your cloning method:
 3. Type "Git: Clone" and select it
 4. Select **Clone from GitHub**
 5. If prompted, authorize VS Code to access GitHub (see above)
-6. In the search box, type `neu-cs3100/sp26-lab1-` and select your repository (it will have your GitHub username at the end)
+6. In the search box, type `neu-cs3100/su26-lab1-` and select your repository (it will have your GitHub username at the end)
 7. Choose a folder on your computer to clone into (we would suggest making a new CS3100 folder to place all of your repositories in)
 8. When prompted "Would you like to open the cloned repository?", click **Open**
 
@@ -276,7 +178,7 @@ Now choose your cloning method:
 1. From Pawtograder, click on your repository link to open it on GitHub
 2. Click the green **Code** button on GitHub
 3. Select the **SSH** tab (you must have completed the [SSH setup](#alternative-set-up-ssh-keys-recommended-to-avoid-saml-issues) first)
-4. Copy the SSH URL (it should look like `git@github.com:neu-cs3100/sp26-lab1-<your-username>.git`)
+4. Copy the SSH URL (it should look like `git@github.com:neu-cs3100/su26-lab1-<your-username>.git`)
 5. In VS Code, open the Command Palette (⌘+Shift+P on Mac, Ctrl+Shift+P on Windows/Linux)
 6. Type "Git: Clone" and select it
 7. Paste the SSH URL when prompted
@@ -302,12 +204,7 @@ After installing extensions, VS Code will automatically detect the Gradle projec
 
 ### Disable AI Features
 
-For the first several assignments in this course, you must complete your work **without AI assistance** (see the [AI Policy in the syllabus](../syllabus#artificial-intelligence) for details). This isn't because AI tools aren't useful — they absolutely are! But unlike a calculator that always gives correct answers, AI can and does produce incorrect, insecure, or subtly buggy code. To use AI effectively, you need two things:
-
-1. **The ability to review what it produces** — you can only catch AI mistakes if you understand the code well enough to have written it yourself
-2. **The knowledge of what to ask** — effective prompting requires understanding the problem space and knowing what's possible
-
-> 🎯 **The goal**: The early assignments build these foundations so you can use AI as a *force multiplier* rather than a crutch.
+For the first several assignments in this course, you must complete your work **without AI assistance** (see the [AI Policy in the syllabus](../syllabus#artificial-intelligence) for details). This isn't because AI tools aren't useful. We will ease into AI usage, carefully balancing the need to learn how to use AI with the need to learn how to do ourselves what we may (later) ask AI to do.
 
 To disable AI features in VS Code:
 
@@ -338,16 +235,16 @@ Before we compile, let's understand what we're working with.
 
 When you write Java code, you need to **compile** it (translate human-readable `.java` files into machine-executable `.class` files). But real projects need much more than just compilation:
 
-- **Dependency management**: Your project uses external libraries (like JUnit for testing). Someone needs to download those libraries and make them available to your code.
+- **Dependency management**: Your project uses external libraries (like JUnit for testing). We need to download and maintain them and have our project use them
 - **Testing**: Running tests, generating reports, and failing the build if tests don't pass.
-- **Code quality**: Running linters, formatters, and static analysis tools.
+- **Code quality**: Running style checkers.
 - **Packaging**: Bundling your code into a distributable format (like a `.jar` file).
 
 A **build system** automates all of this. You describe *what* you want (your dependencies, your source files, your tests), and the build system figures out *how* to make it happen.
 
 #### Gradle: Our Build System
 
-**Gradle** is one of the most popular build systems for Java (along with Maven and Ant). It's used by major projects including Android apps, Spring applications, and... this course!
+**Gradle** is one of the most popular build systems for Java (along with Maven and Ant).
 
 Key Gradle files in this project:
 - **`build.gradle`**: The main configuration file. Lists dependencies, plugins, and build settings.
@@ -501,21 +398,6 @@ Some tests are still failing! The `TunableWhiteLight` class is missing the imple
 4. Run the tests to verify: `./gradlew test`
 
 > 🛠️ **VS Code tip:** Look at the constructor for an example of validation. Use **F12** on `MIN_COLOR_TEMP` to jump to where the constants are defined. The existing constructor shows exactly how to validate and throw an exception!
-
-### Task 4: Add a New Test ✅
-
-All tests should pass now. Let's add one more test!
-
-Add a test to verify that `DimmableLight` handles invalid brightness values correctly.
-
-1. Open `src/test/java/net/sceneitall/iot/LightTest.java`
-2. Use **⌘+G** (Mac) or **Ctrl+G** (Windows) to "Go to Line" — jump to around line 104 where the `TODO` comment is
-3. Add a test that verifies:
-   - Setting brightness to -1 throws `IllegalArgumentException`
-   - Setting brightness to 101 throws `IllegalArgumentException`
-4. Run your new test: `./gradlew test`
-
-> 🛠️ **VS Code tip:** Look at the existing `setSpeedRejectsInvalid` test in the Fan tests section for an example of how to use `assertThrows()`. Use **⌘+F** (Mac) or **Ctrl+F** (Windows) to search for "assertThrows" to find examples in the file.
 
 ## Part 6: Commit and Push
 
