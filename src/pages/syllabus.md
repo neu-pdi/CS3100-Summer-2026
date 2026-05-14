@@ -30,7 +30,7 @@ Students complete individual programming assignments that build into a larger pr
 
 The course schedule can be found in the calendar below. We will make every attempt to stick with this schedule and update the calendar if it changes.
 
-<iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FNew_York&showPrint=0&src=MDRzNTVqZHBzNzU0bTdwZ2QxcHZnMnY2MjhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ef6c00" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+<iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FNew_York&showPrint=0&src=MDRzNTVqZHBzNzU0bTdwZ2QxcHZnMnY2MjhAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23ef6c00" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 
 
 ## Grading
@@ -41,12 +41,12 @@ Students can earn up to 1000 points. Your final grade is based on both the total
 |----------|--------|------------|
 | Individual Assignments (A1-A4) | 400      | 40%      |
 | Group Assignments (GA1-GA2)    | 200      | 20%      |
-| Labs and Participation [$^†$]    | 100      | 10%      |
+| Labs and Participation †  | 100      | 10%      |
 | Exam 1                         | 150      | 15%      |
 | Exam 2                         | 150      | 15%      |
 | **Total**                      | **1000** | **100%** |
 
-[$^†$]: Each instructor will determine how participation is measured in their section(s). 
+† : Each instructor will determine how participation is measured in their section(s). 
 
 ### Assignment Point Distribution
 Detailed rubrics will be published with each assignment.
