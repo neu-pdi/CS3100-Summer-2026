@@ -12,6 +12,7 @@ In this assignment, you'll expand an existing CookYourBooks domain model by impl
 **The core challenge is designing how domain objects and the `ConversionRegistry` service work together** to enable recipe transformations. The `ConversionRegistry` intelligently selects conversion rules based on priority (house > recipe > standard) and specificity (ingredient-specific > generic).
 
 You'll implement the conversion service and the `Recipe` and `Instruction` domain classes. **Critically, you must design the API for recipe transformations yourself:**
+
 - Should `Recipe` have additional transformation methods? If so, what should their signatures and specifications be?
 - How do transformation operations maintain loose coupling with the service layer?
 
@@ -104,7 +105,7 @@ Below is a table of the provided interfaces, classes, and their purposes in the 
 
 ::: info Interesting Design Decisions in Living Codebases
 
-While not intended as a learning opportunity, we do sometimes inherit codebases that have less-than-ideal design decisions. This codebase is no exception. One of them is having an abstract class without an interface for `Ingredient`. In lecture, we learned each object should inherit all of its public methods from some interface somewhere. Keep in mind as we continue in the course, that even if a codebase we inherit does not live up to our design principles, that does not give us reason to forsake those same principles whereever we can apply them.
+While not intended as a learning opportunity, we do sometimes inherit codebases that have less-than-ideal design decisions. This codebase is no exception. One of them is having an abstract class without an interface for `Ingredient`. In lecture, we learned each object should inherit all of its public methods from some interface somewhere. Keep in mind as we continue in the course, that even if a codebase we inherit does not live up to our design principles, that does not give us reason to forsake those same principles wherever we can apply them.
 :::
 
 ### Design Task: Transforming Recipes
