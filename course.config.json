@@ -519,10 +519,11 @@
     },
     {
       "id": "lab4",
-      "title": "Lab 4: Changeability",
+      "title": "Lab 4: Spec and Equality",
       "dates": [
         "2026-05-18"
       ],
+      "assignedTime": "8:00",
       "sections": [
         "L01",
         "L02",
@@ -530,7 +531,7 @@
         "L04",
         "L05"
       ],
-      "url": "/labs/lab4-changeability"
+      "url": "/labs/lab-java-safari-medicine"
     },
     {
       "id": "lab5",
@@ -611,6 +612,7 @@
       "title": "Assignment 2: Unit Conversion, Recipe and Instruction Classes",
       "type": "homework",
       "assignedDate": "2026-05-15",
+      "assignedTime": "18:00",
       "dueDate": "2026-05-22",
       "dueTime": "20:59",
       "status": "published",
