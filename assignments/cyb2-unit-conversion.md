@@ -223,7 +223,7 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
 
 **Phase 1**: Complete the Foundation Classes.
 
-- Implement the `IngredientRef` record, which is mostly complete but missing a couple of key pieces. This is a `record`, which means it comes with certain methods by default as mentioned in [L5: Functional Programming and Readability](/lecture-notes/l5-fp-readability.md).
+- Implement the `IngredientRef` record, which is mostly complete but missing a single piece, identified as a stub. This is a `record`, which means it comes with certain methods by default as mentioned in [L5: Functional Programming and Readability](/lecture-notes/l5-fp-readability.md).
 - Implement the `Instruction` and `Recipe` classes, including their `equals()` and `hashCode()` methods. **Wait to implement `scale()`, `scaleToTarget()`, and `convert()`** until later steps.
   - For `Instruction`, two instructions are considered equal if they have the same number of steps, same text, and reference the same ingredients.
   - For `Recipe`, implement the basic getters, `equals()`, and`hashCode()`. Two recipes are considered equal if the have the same title, servings, ingredients  (in order), and conversion rules (in order).
@@ -237,7 +237,7 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
 
 **Phase 3**: Plan out how transformations will work. Specifically go through the following steps in your plan.
 
-- Review the required transformation types
+- Review the required transformation types.
 - Decide where will your transformation methods go and what their method signatures will be.
 - Consider what helper methods you might need to implement those transformation methods.
 - Now go ahead and implement `convert()` in `ConversionRule` with your design in mind.
@@ -247,7 +247,7 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
 **Phase 5**: Implement and test conversion with `LayeredConversionRegistry`.
 
 - We suggest starting with building the collection of rules first, then work on the `convert()` methods. Keep in mind the priority ordering mentioned in [Unit Conversion](#unit-conversion)
-- Use the `ConversionRegistry` interface when testing your implementation. Make sure your tests cover the specification requirements for conversions from [Unit Conversion](#unit-conversion) We have you some to start but you **must** write your own.
+- Use the `ConversionRegistry` interface when testing your implementation. Make sure your tests cover the specification requirements for conversions from [Unit Conversion](#unit-conversion). We gave you some tests to start but you **must** write your own.
 - Run your tests for the registry with `./gradlew test --tests ConversionRegistryTest`.
 
 **Phase 6**: Implement `scaleToTarget` in `Recipe` and test the method.
