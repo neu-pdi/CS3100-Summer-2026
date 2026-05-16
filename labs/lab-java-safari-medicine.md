@@ -19,7 +19,7 @@ A medicine is represented by the `Medicine` interface. This interface should con
  
 # 3 What to do: Part 1
  
-* Create the above interface, and document its specifications as detailed above.
+* Create the `Medicine` interface, and document its specifications as detailed above.
 
 * Design JUnit tests that verify these specifications for two implementations: `Pill` and `Syrup`.
 
