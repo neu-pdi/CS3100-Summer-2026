@@ -138,18 +138,20 @@ Your implementation must support three types of recipe transformations (defined 
 
 2. **Scale to ingredient target**: Scale a recipe as defined above, but choosing a scaling factor such that a specific ingredient reaches a target amount.
 
-   For example, say a recipe has "2 cups flour". Scaling this recipe to "500g flour" requires:
+For example, say a recipe has "2 cups flour". Scaling this recipe to "500g flour" requires:
 
-     - Converting the ingredient's current quantity (2 cups) to the target unit (grams) using a density conversion rule: 2 cups × 125 g/cup = 250g
-     - Calculating the scale factor: 500g / 250g = 2.0
-     - Scaling the entire recipe by that factor
+  - Converting the ingredient's current quantity (2 cups
+to the target unit (grams) using a density conversion rule: 2 cups × 125 g/cup = 250g
+  - Calculating the scale factor: 500g / 250g = 2.0
+  - Scaling the entire recipe by that factor
      
-   Some additional requirements follow:
+Some additional requirements follow:
 
-     - Notice the target ingredient ends up in the target unit (grams in the example above). Other ingredients that can be converted to the target unit should also be converted to the target unit as well.
-       Continuing the example, if the recipe has "1 cup white sugar", then it must also be converted to "250g white sugar" when scaling the recipe to "500g flour".
-     - Scaling must handle cross-dimension conversions (cups ↔ grams) when such conversions exist. If such conversions do not exist, the conversion is not performed, but the scaling must still be performed.
-     - Scaling must use recipe-specific conversion rules at `RECIPE` priority.
+  - Notice the target ingredient ends up in the target unit (grams in the example above). Other ingredients that can be converted to the target unit should also be converted to the target unit as well.
+
+  Continuing the example, if the recipe has "1 cup white sugar", then it must also be converted to "250g white sugar" when scaling the recipe to "500g flour".
+  - Scaling must handle cross-dimension conversions (cups ↔ grams) when such conversions exist. If such conversions do not exist, the conversion is not performed, but the scaling must still be performed.
+  - Scaling must use recipe-specific conversion rules at `RECIPE` priority.
 
 3. **Convert to unit**: Convert all `MeasuredIngredient` quantities to a target unit. `VagueIngredient`s remain unchanged. Servings are never converted.
 
