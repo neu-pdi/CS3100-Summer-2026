@@ -12,6 +12,7 @@ In this assignment, you'll expand an existing CookYourBooks domain model by impl
 **The core challenge is designing how domain objects and the `ConversionRegistry` service work together** to enable recipe transformations. The `ConversionRegistry` intelligently selects conversion rules based on priority (house > recipe > standard) and specificity (ingredient-specific > generic).
 
 You'll implement the conversion service and the `Recipe` and `Instruction` domain classes. **Critically, you must design the API for recipe transformations yourself:**
+
 - Should `Recipe` have additional transformation methods? If so, what should their signatures and specifications be?
 - How do transformation operations maintain loose coupling with the service layer?
 
@@ -91,16 +92,21 @@ Below is a table of the provided interfaces, classes, and their purposes in the 
 
 | Provided                  | Purpose                                                 | Example |
 | ---                       | ---                                                     | --- |
-| `Ingredient.java`         | Interface representing a single ingredient in a recipe  |     |
+| `Ingredient.java`         | Abstract class representing a single ingredient in a recipe  |     |
 | `MeasuredIngredient.java` | Represents an ingredient with a precise quantity       | "2.5 cups flour", "100 grams sugar", "3 whole eggs" |
 | `VagueIngredient.java`    | Represents an ingredient without precise quantity        | "salt to taste", "a pinch of pepper", "water as needed" |
-| `Unit.java`               | Interface representing a unit of measurement            | "grams", "cups", "pinch" |
+| `Unit.java`               | Enumeration listing known units of measurement            | "grams", "cups", "pinch" |
 | `UnitSystem.java`         | An enum representing the unit system used for a quantity | IMPERIAL", "METRIC", "HOUSE" |
 | `UnitDimension.java`      | An enum representing what the unit represents | "WEIGHT", "DIMENSION". "COUNT", "OTHER"  |
-| `Quantity.java`           | Interface representing a quantity, coupled with a unit | |
+| `Quantity.java`           | Abstract class representing a quantity, coupled with a unit | |
 | `ExactQuantity.java`      | Represents a single precise amount                     | "2.5 cups", "100 grams" |
 | `FractionalQuantity.java` | Represents an amount in fractions                       | "1/2 cup", "2 1/3 tablespoons" |
 | `RangeQuantity.java`      | Represents a range of amounts                           | "2-3 cups", "100-150 grams" |
+
+::: info Interesting Design Decisions in Living Codebases
+
+While not intended as a learning opportunity, we do sometimes inherit codebases that have less-than-ideal design decisions. This codebase is no exception. One of them is having an abstract class without an interface for `Ingredient`. In lecture, we learned each object should inherit all of its public methods from some interface somewhere. Keep in mind as we continue in the course, that even if a codebase we inherit does not live up to our design principles, that does not give us reason to forsake those same principles wherever we can apply them.
+:::
 
 ### Design Task: Transforming Recipes
 
@@ -147,11 +153,11 @@ to the target unit (grams) using a density conversion rule: 2 cups × 125 g/cup 
      
 Some additional requirements follow:
 
-  - Notice the target ingredient ends up in the target unit (grams in the example above). Other ingredients that can be converted to the target unit should also be converted to the target unit as well.
-
-  Continuing the example, if the recipe has "1 cup white sugar", then it must also be converted to "250g white sugar" when scaling the recipe to "500g flour".
-  - Scaling must handle cross-dimension conversions (cups ↔ grams) when such conversions exist. If such conversions do not exist, the conversion is not performed, but the scaling must still be performed.
-  - Scaling must use recipe-specific conversion rules at `RECIPE` priority.
+     - Notice the target ingredient ends up in the target unit (grams in the example above). Other ingredients that can be converted to the target unit should also be converted to the target unit as well.
+       Continuing the example, if the recipe has "1 cup white sugar", then it must also be converted to "250g white sugar" when scaling the recipe to "500g flour".
+     - Scaling must handle cross-dimension conversions (cups ↔ grams) when such conversions exist. If such conversions do not exist, the conversion is not performed, but the scaling must still be performed.
+       Continuing the example, if the recipe has "2 whole eggs" but there is no conversion from whole to grams, then the recipe is scaled to "4 whole eggs".
+     - Scaling must use recipe-specific conversion rules at `RECIPE` priority.
 
 3. **Convert to unit**: Convert all `MeasuredIngredient` quantities to a target unit. `VagueIngredient`s remain unchanged. Servings are never converted.
 
@@ -187,9 +193,9 @@ This section outlines at a high-level what your design is required to do. Failur
 
 **What you MUST do in your design:**
 
-- **Immutability:** All domain objects (`Recipe`, `Instruction`, `Quantity` subclasses) and the `ConversionRegistry` must be immutable. Transformation methods must return **new** objects.
-- **Information hiding:** Internal representation of any class should not be exposed through the API or visible to the code outside of that class
-- **Defensive copying:** Getters returning collections must return unmodifiable views or copies
+- **Immutability:** All domain objects (`Recipe`, `Instruction`, `Quantity` subclasses) and the `ConversionRegistry` must be immutable. Transformation methods must return **new** objects instead.
+- **Information hiding:** Internal representation of any class should not be exposed through the API or visible to the code outside of that class.
+- **Defensive copying:** Getters returning collections must return unmodifiable views or copies.
 - **Null safety:** Use `@NonNull` and `@Nullable` annotations from JSpecify to document nullability (we provide package-level default NullMarked annotation). You do **not** need to add runtime null checks for `@NonNull` parameters—the annotations serve as documentation and enable static analysis tools.
 - **Documentation:** Javadoc for all public classes, methods, constructors with `@param`, `@return`, `@throws` tags. Use good specifications that demonstrate restrictiveness, generality, and clarity.
 
@@ -211,7 +217,7 @@ This section outlines at a high-level what your design is required to do. Failur
 
 ### Implementation Details
 
-**Read the handout code!** The starter code includes complete Javadoc and method signatures for all classes. The specifications below provide high-level context, but **you should read the source files** for detailed contracts, preconditions, and postconditions. As software engineers, we do spend more time reading code and understanding it than writing it. Reading code and deciding on a concrete plan saves us a lot of time when writing code~
+**Read the handout code!** The starter code includes complete Javadoc and method signatures for all classes. The specifications below provide high-level context, but **you should read the source files** for detailed contracts, preconditions, and postconditions. As software engineers, we do spend more time reading code and understanding it than writing it. Reading code and deciding on a concrete plan saves us a lot of time when writing code.
 
 #### Implementation Order
 
@@ -219,8 +225,8 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
 
 **Phase 1**: Complete the Foundation Classes.
 
-- Implement the `IngredientRef` record, which is mostly complete but missing a couple of key pieces.
-- Implement the `Instruction` and `Recipe` classes, including their `equals()` and `hashCode()` methods.
+- Implement the `IngredientRef` record, which is mostly complete but missing a single piece, identified as a stub. This is a `record`, which means it comes with certain methods by default as mentioned in [L5: Functional Programming and Readability](/lecture-notes/l5-fp-readability.md).
+- Implement the `Instruction` and `Recipe` classes, including their `equals()` and `hashCode()` methods. **Wait to implement `scale()`, `scaleToTarget()`, and `convert()`** until later steps.
   - For `Instruction`, two instructions are considered equal if they have the same number of steps, same text, and reference the same ingredients.
   - For `Recipe`, implement the basic getters, `equals()`, and`hashCode()`. Two recipes are considered equal if the have the same title, servings, ingredients  (in order), and conversion rules (in order).
     - **Hint**: the `Ingredient` and `Quantity` hierarchies we gave you already implement `equals()` and `hashCode()`. Furthermore, the `ConversionRule` record **automatically generates** the correct `equals()` and `hashCode()`. How can you depend on these methods to implement the required `equals()` and `hashCode()` methods?
@@ -233,7 +239,7 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
 
 **Phase 3**: Plan out how transformations will work. Specifically go through the following steps in your plan.
 
-- Review the required transformation types
+- Review the required transformation types.
 - Decide where will your transformation methods go and what their method signatures will be.
 - Consider what helper methods you might need to implement those transformation methods.
 - Now go ahead and implement `convert()` in `ConversionRule` with your design in mind.
@@ -243,8 +249,8 @@ The starter code provides stubs for all classes that compile but throw `Unsuppor
 **Phase 5**: Implement and test conversion with `LayeredConversionRegistry`.
 
 - We suggest starting with building the collection of rules first, then work on the `convert()` methods. Keep in mind the priority ordering mentioned in [Unit Conversion](#unit-conversion)
-- Use the `ConversionRegistry` interface when testing your implementation. Make sure your tests cover the specification requirements for conversions from [Unit Conversion](#unit-conversion) We have you some to start but you **must** write your own.
-- Run your tests with `./gradlew test --tests ConversionRegistryTest`.
+- Use the `ConversionRegistry` interface when testing your implementation. Make sure your tests cover the specification requirements for conversions from [Unit Conversion](#unit-conversion). We gave you some tests to start but you **must** write your own.
+- Run your tests for the registry with `./gradlew test --tests ConversionRegistryTest`.
 
 **Phase 6**: Implement `scaleToTarget` in `Recipe` and test the method.
 
