@@ -37,11 +37,11 @@ A medicine is represented by the `Medicine` interface. This interface should con
 
 Due to limitations in manufacturing tolerances, either form of medicine is not perfectly made. Doctors have determined that if the medicine has an active ingredient weight that is within 2mg of a concentration, then the medicine can be safely taken if that concentration is prescribed. For example, medicine with 11mg or 8mg of active ingredient can be safely taken by a patient who is prescribed a low dose of that medicine.
 
-Override the `equals` method(s) so that two medicines whose active ingredient weight is within 2mg of each other are considered equal. Write tests for it. Don't forget `hashCode`! 
+Override the `equals` method(s) so that two medicines whose active ingredient weight is within 2mg of each other are considered equal. Note that this definition should apply to pills and syrups: a pill can be equal to a syrup! Write tests for it. Don't forget `hashCode`! 
  
 # 4 Question to ponder and discuss: Part 1
  
-Is the above notion of equality _mathematically sound_? That is, does the above definition of equality make mathematical sense to you? How would you test the mathematical soundness of your equality implementation? Discuss with the person next to you, and write it in REFLECTION.md.
+Is the above notion of equality _mathematically sound_? Remember that a mathematically sound definition is reflexive, symmetric and transitive. How would you test the mathematical soundness of your equality implementation? Discuss with the person next to you, and write it in REFLECTION.md.
 
 If you think that the above notion of equality is mathematically sound, include test(s) in your reflection that verify its mathematical soundness. If you think it is not mathematically sound, include at least one test in your reflection that should pass, but does not on your implementation.
 
