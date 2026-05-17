@@ -20,20 +20,17 @@ A medicine is represented by the `Medicine` interface. This interface should con
 # 3 What to do: Part 1
  
 1. Create the `Medicine` interface, and document its specifications as detailed above.
-
 2. Design JUnit tests that verify these specifications for two implementations: `Pill` and `Syrup`.
+3. Implement the `Medicine` interface in a `Pill` class. Leave all the methods blank for now, but document them properly. The specifications for this implementation (beyond what the interface specifies) are:
 
-3. Implement the `Medicine` interface in a `Pill` class. Leave all the methods blank for now, but document them properly. The specifications for this implementation (beyond what the interface specifies) are: 
-
-   * This class represents medicine in pill form.
-   * Its only constructor takes the (integral) weight of its active ingredient in mg as its only parameter. The constructor should throw an `IllegalArgumentException` if a negative weight is passed. 
-   * For each method to be implemented in the `Pill` class: design and write all JUnit tests to verify its specification, then complete the implementation and run the tests. Proceed in this "write tests -> implement method -> run tests" to complete the class. Follow the directions in Lab 1 to place the test files correctly in your project. 
+      * This class represents medicine in pill form.
+      * Its only constructor takes the (integral) weight of its active ingredient in mg as its only parameter. The constructor should throw an `IllegalArgumentException` if a negative weight is passed. 
+      * For each method to be implemented in the `Pill` class: design and write all JUnit tests to verify its specification, then complete the implementation and run the tests. Proceed in this "write tests -> implement method -> run tests" to complete the class. Follow the directions in Lab 1 to place the test files correctly in your project. 
 
 4. Implement the `Medicine` interface in a `Syrup` class. Leave all the methods blank for now, but document them properly. The specifications for this implementation (beyond what the interface specifies) are: 
-
-   * This class represents medicine in syrup form. It has a concentration in mg/ml and dosage in ml.
-   * Its only constructor takes the (integral) concentration in mg/ml and dosage in ml as its only parameters. The constructor should throw an `IllegalArgumentException` if a negative concentration or dosage is passed. 
-   * For each method to be implemented in the `Syrup` class: design and write all JUnit tests to verify its specification, then complete the implementation and run the tests. Proceed in this "write tests -> implement method -> run tests" pattern to complete the class. Follow the directions in Lab 1 to place the test files correctly in your project. 
+      * This class represents medicine in syrup form. It has a concentration in mg/ml and dosage in ml.
+      * Its only constructor takes the (integral) concentration in mg/ml and dosage in ml as its only parameters. The constructor should throw an `IllegalArgumentException` if a negative concentration or dosage is passed. 
+      * For each method to be implemented in the `Syrup` class: design and write all JUnit tests to verify its specification, then complete the implementation and run the tests. Proceed in this "write tests -> implement method -> run tests" pattern to complete the class. Follow the directions in Lab 1 to place the test files correctly in your project. 
 
 Due to limitations in manufacturing tolerances, either form of medicine is not perfectly made. Doctors have determined that if the medicine has an active ingredient weight that is within 2mg of a concentration, then the medicine can be safely taken if that concentration is prescribed. For example, medicine with 11mg or 8mg of active ingredient can be safely taken by a patient who is prescribed a low dose of that medicine.
 
