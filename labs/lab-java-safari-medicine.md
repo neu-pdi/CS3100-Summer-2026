@@ -19,25 +19,21 @@ A medicine is represented by the `Medicine` interface. This interface should con
  
 # 3 What to do: Part 1
  
-* Create the `Medicine` interface, and document its specifications as detailed above.
+1. Create the `Medicine` interface, and document its specifications as detailed above.
 
-* Design JUnit tests that verify these specifications for two implementations: `Pill` and `Syrup`.
+2. Design JUnit tests that verify these specifications for two implementations: `Pill` and `Syrup`.
 
-* Implement the `Medicine` interface in a `Pill` class. Leave all the methods blank for now, but document them properly. The specifications for this implementation (beyond what the interface specifies) are: 
+3. Implement the `Medicine` interface in a `Pill` class. Leave all the methods blank for now, but document them properly. The specifications for this implementation (beyond what the interface specifies) are: 
 
    * This class represents medicine in pill form.
-
    * Its only constructor takes the (integral) weight of its active ingredient in mg as its only parameter. The constructor should throw an `IllegalArgumentException` if a negative weight is passed. 
-
    * For each method to be implemented in the `Pill` class: design and write all JUnit tests to verify its specification, then complete the implementation and run the tests. Proceed in this "write tests -> implement method -> run tests" to complete the class. Follow the directions in Lab 1 to place the test files correctly in your project. 
 
-* Implement the `Medicine` interface in a `Syrup` class. Leave all the methods blank for now, but document them properly. The specifications for this implementation (beyond what the interface specifies) are: 
+4. Implement the `Medicine` interface in a `Syrup` class. Leave all the methods blank for now, but document them properly. The specifications for this implementation (beyond what the interface specifies) are: 
 
    * This class represents medicine in syrup form. It has a concentration in mg/ml and dosage in ml.
-
    * Its only constructor takes the (integral) concentration in mg/ml and dosage in ml as its only parameters. The constructor should throw an `IllegalArgumentException` if a negative concentration or dosage is passed. 
-
-   * For each method to be implemented in the `Syrup` class: design and write all JUnit tests to verify its specification, then complete the implementation and run the tests. Proceed in this "write tests -> implement method -> run tests" to complete the class. Follow the directions in Lab 1 to place the test files correctly in your project. 
+   * For each method to be implemented in the `Syrup` class: design and write all JUnit tests to verify its specification, then complete the implementation and run the tests. Proceed in this "write tests -> implement method -> run tests" pattern to complete the class. Follow the directions in Lab 1 to place the test files correctly in your project. 
 
 Due to limitations in manufacturing tolerances, either form of medicine is not perfectly made. Doctors have determined that if the medicine has an active ingredient weight that is within 2mg of a concentration, then the medicine can be safely taken if that concentration is prescribed. For example, medicine with 11mg or 8mg of active ingredient can be safely taken by a patient who is prescribed a low dose of that medicine.
 
@@ -45,7 +41,7 @@ Override the `equals` method(s) so that two medicines whose active ingredient we
  
 # 4 Question to ponder and discuss: Part 1
  
-Is the above notion of equality mathematically sound? How would you test the mathematical soundness of your equality implementation? Discuss with the person next to you, and write it in REFLECTION.md.
+Is the above notion of equality _mathematically sound_? That is, does the above definition of equality make mathematical sense to you? How would you test the mathematical soundness of your equality implementation? Discuss with the person next to you, and write it in REFLECTION.md.
 
 If you think that the above notion of equality is mathematically sound, include test(s) in your reflection that verify its mathematical soundness. If you think it is not mathematically sound, include at least one test in your reflection that should pass, but does not on your implementation.
 
@@ -53,7 +49,7 @@ If you think that the above notion of equality is mathematically sound, include 
  
 Comment out your earlier implementation of equality and hash code, and replace with a new one: two medicines are the same if they have the same safe concentration, or they are both within the range of the same concentration (e.g. they are both between "Low" and "Medium" but are not safe for either). Write tests for this new implementation (preserve your earlier code and tests in comments).
 
-**Do not submit to the submission server yet!** 
+**Do not submit to Pawtograder yet!**
 
 # 6 Question to ponder and discuss: Part 2
  
@@ -65,4 +61,4 @@ Discuss the following points with the person next to you, and include your answe
 
    3. Which notion of equality seems more "natural" and why? Does this exercise provide any general insights about determining equality among objects that involves floating-point values?
  
-**Fix the style, and submit on the submission server.**
+**Fix the style and check with `./gradlew checkstyleMain` and `./gradlew checkstyleTest`, and submit on Pawtograder. Make sure you pass the autograder tests!**
