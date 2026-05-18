@@ -18,6 +18,8 @@ A medicine is represented by the `Medicine` interface. This interface should con
 
  
 # 3 What to do: Part 1
+
+Put all your code and tests in the `medicine` package.
  
 1. Create the `Medicine` interface, and document its specifications as detailed above.
 2. Design JUnit tests that verify these specifications for two implementations: `Pill` and `Syrup`.
