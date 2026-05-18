@@ -59,6 +59,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Show what would upload without uploading")
     parser.add_argument("--verbose", action="store_true", help="Print per-file progress while uploading")
     parser.add_argument("--timeout", type=int, default=60, help="HTTP timeout seconds")
+    parser.add_argument(
+        "--skip-slide-pdfs",
+        action="store_true",
+        help="Do not upload slide PDFs; preserve the existing slide PDFs on Canvas and re-link them in lecture modules.",
+    )
     return parser.parse_args()
 
 
@@ -242,6 +247,44 @@ def build_uploaded_file_url_map(uploaded_records: List[Dict]) -> Dict[str, str]:
         if rel and url:
             mapping[rel] = url
     return mapping
+
+
+def fetch_existing_slide_pdf_urls(
+    api_base: str,
+    token: str,
+    course_id: str,
+    lecture_ids: List[str],
+    timeout: int,
+    verbose: bool,
+) -> Dict[str, str]:
+    """For each lecture_id, look up <lecture_id>.pdf already on Canvas and return rel -> url."""
+    result: Dict[str, str] = {}
+    for lecture_id in lecture_ids:
+        filename = f"{lecture_id}.pdf"
+        url = f"{api_base}/courses/{course_id}/files"
+        response = canvas_request("GET", url, token, timeout, params={"search_term": filename})
+        if response.status_code >= 400:
+            print(f"  Could not look up existing slide PDF {filename}: {response.status_code} {response.text}")
+            continue
+        try:
+            files = response.json()
+        except ValueError:
+            files = []
+        if not isinstance(files, list):
+            files = []
+        match_url: Optional[str] = None
+        for f in files:
+            display = f.get("display_name") or f.get("filename") or ""
+            if display == filename:
+                match_url = f.get("url")
+                break
+        if match_url:
+            result[filename] = match_url
+            if verbose:
+                print(f"  Preserved existing slide PDF on Canvas: {filename}")
+        else:
+            print(f"  No existing slide PDF found on Canvas for {filename} — module will have no Slides link.")
+    return result
 
 
 def rewrite_file_links_for_canvas(html_text: str, file_url_map: Dict[str, str]) -> str:
@@ -1275,14 +1318,23 @@ def main() -> int:
         "assignmentsAndLabs": {"created": 0, "updated": 0, "dryRunSkipped": 0, "failed": []},
     }
 
+    slide_pdf_rel_paths = {f"{lecture['lectureId']}.pdf" for lecture in lecture_metadata}
+
     print(f"Preparing to process {len(files_to_upload)} file(s) from {build_dir}")
     if args.dry_run:
         print("Dry-run mode: no upload requests will be sent.")
+    if args.skip_slide_pdfs:
+        print("--skip-slide-pdfs: slide PDFs will not be uploaded; existing slide PDFs on Canvas will be preserved.")
 
     for index, file_path in enumerate(files_to_upload, start=1):
         rel_path = file_path.relative_to(build_dir)
         canvas_folder = relative_canvas_folder(args.target_root_folder, rel_path)
         rel_display = rel_path.as_posix()
+
+        if args.skip_slide_pdfs and rel_display in slide_pdf_rel_paths:
+            if args.verbose:
+                print(f"[{index}/{len(files_to_upload)}] Skipping slide PDF (--skip-slide-pdfs): {rel_display}")
+            continue
 
         if args.verbose:
             print(f"[{index}/{len(files_to_upload)}] Uploading {rel_display} to folder {canvas_folder}")
@@ -1325,6 +1377,19 @@ def main() -> int:
                 print(f"[{index}/{len(files_to_upload)}] Done with {rel_display}; moving to next file")
 
     file_url_map = build_uploaded_file_url_map(summary["uploaded"])
+
+    if args.skip_slide_pdfs and not args.dry_run:
+        print("Looking up existing slide PDFs on Canvas to preserve module links...")
+        existing_slide_urls = fetch_existing_slide_pdf_urls(
+            api_base=api_base,
+            token=token,
+            course_id=course_id,
+            lecture_ids=[lecture["lectureId"] for lecture in lecture_metadata],
+            timeout=args.timeout,
+            verbose=args.verbose,
+        )
+        file_url_map.update(existing_slide_urls)
+
     lecture_pages: Dict[str, Dict[str, str]] = {}
     unresolved_internal_links: List[Dict[str, str]] = []
 
