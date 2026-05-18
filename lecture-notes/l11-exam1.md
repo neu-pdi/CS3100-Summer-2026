@@ -5,3 +5,5 @@ title: Exam 1
 ---
 
 ## Placeholder for Exam 1 (60 minutes)
+
+[Practice Exam](/code/lectures/l11-exam1/practice.pdf)
