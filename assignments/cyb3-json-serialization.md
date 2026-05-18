@@ -3,10 +3,6 @@ title: 'Assignment 3: Domain Extensions and JSON Persistence'
 sidebar_position: 4
 ---
 
-## Update log
-- 2/8/2026: Note error in handout test `MarkdownExporterTest.java` line 57: `assertTrue(markdown.contains("- 2 cup flour"));` should be `assertTrue(markdown.contains("- 2 cups flour"));`
-
----
 
 ## Overview
 
