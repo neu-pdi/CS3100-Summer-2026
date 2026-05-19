@@ -76,10 +76,6 @@ import PollSlide from '@site/src/components/PollSlide';
 </p>
 
 <aside className="notes">
-**Context from earlier lectures:**
-- L4: Specifications—same principles apply to AI prompts
-- L7-L8: Design for change—AI helps explore design alternatives
-- L9: Requirements—stakeholder engagement parallels AI context management
 
 **Key theme:** AI is a powerful tool, but like any tool, its effectiveness depends on how you use it. Today we'll learn the skills to use it well.
 
@@ -112,8 +108,7 @@ This topic is **unlike anything we've covered so far**:
 </p>
 
 <ul style={{fontSize: '0.8em'}}>
-  <li><strong>Lab 6 (Monday):</strong> Hands-on practice + surveys that will shape future lectures and workshops</li>
-  <li><strong>Tuesday evening:</strong> <a href="https://www.khoury.northeastern.edu/event/ai-at-khoury-college-an-undergraduate-student-and-faculty-conversation/">Panel discussion with Prof. Bell and Associate Dean Christo Wilson on AI in the curriculum</a> (6:00-7:30pm in WVH 102, organized by UG Advisory Committee, registration required)</li>
+  <li><strong>Lab:</strong> Hands-on practice + surveys that will shape future lectures and workshops</li>
   <li><strong>Rest of semester:</strong> AI will be woven throughout our remaining lectures and assignments—this conversation continues</li>
 </ul>
 
@@ -134,17 +129,11 @@ This is an exciting moment to be learning together.
 - The 6-step workflow from research
 - Your own critical thinking skills
 
-**Lab 6 preview:**
+**Lab preview:**
 - Required surveys on AI usage and concerns
 - Survey results will directly influence future content
 - Hands-on practice with AI coding assistants
 - This is formative—we're building this curriculum together
-
-**Tuesday fireside chat:**
-- UG Advisory Committee organized this
-- Prof Bell and Associate Dean Christo Wilson
-- Broader conversation about AI in CS education
-- Encourage students to attend and bring questions
 
 **Rest of semester:**
 - AI isn't a one-lecture topic—it's now part of the fabric of software engineering
@@ -195,40 +184,6 @@ After this lecture, you will be able to:
 → **Transition:** Let's start with what AI coding assistants actually are...
 </aside>
 
-</Slide>
-
-{/* ============================================ */}
-{/* INTRODUCATORY POLL */}
-{/* ============================================ */}
-
-<Slide>
-## Poll: How would you supervise a SWE intern?
-
-Imagine you have graduated and have a full-time software engineering position
-and are asked to supervise an intern on their first co-op. How would you guide
-them and evaluate their work?
-
-<PollSlide
-/>
-
-<aside className="notes">
-**Poll administration**
-- Use PollEV with open-ended answers Or
-- Think-pair-share
-
-**Poll discussion**
-- Discuss student answers
-- Remark that nobody answered that you should give them no guidance And
-  uncritically accept their work
-
-**Transition [to rest of lecture]**
-- Can you guess why I asked you this?
-- Working with an AI coding assistant is like supervising an intern.
-- Let's see what the best practices are.
-
-**Transition to next slide**
-- First, let's review what LLMs are...
-</aside>
 </Slide>
 
 
@@ -384,17 +339,6 @@ Pricing is usually per million tokens (input and output priced separately). Fast
 {/* ARC 1: WHAT ARE AI CODING ASSISTANTS? */}
 {/* ============================================ */}
 
-<Slide>
-
-## Poll: AI Coding Experience
-
-Have you used an AI coding assistant before? (GitHub Copilot, Cursor, ChatGPT for code, etc.)
-
-<PollSlide
-  choices={["Yes, regularly", "Yes, occasionally", "Tried it once or twice", "Never"]}
-/>
-
-</Slide>
 
 <Slide>
 
@@ -597,7 +541,11 @@ Think of it as a very well-read junior developer who has seen millions of codeba
 
 ## AI Assists Throughout the Software Development Lifecycle
 
-![Software development lifecycle diagram showing five phases (Requirements, Design, Implementation, Validation, Operations) with specific tasks in each phase and exit conditions below](/img/software-design-process-fall-2025.png)
+<Img
+  src="/img/software-design-process-fall-2025.png"
+  prompt="Software development lifecycle diagram showing five phases (Requirements, Design, Implementation, Validation, Operations) with specific tasks in each phase and exit conditions below"
+  alt="Software development lifecycle diagram"
+/>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
 AI can assist at every phase—but human judgment drives every decision.
@@ -790,11 +738,11 @@ Based on <a href="https://arxiv.org/abs/2506.00202">research on Developer-AI col
 
 | Myth | Example | Reality |
 |------|---------|---------|
-| **Persona prompts improve output** | "You are a brilliant 10x engineer who..." | Models don't roleplay better code. Context and specificity matter, not flattery. |
-| **Politeness affects performance** | "Please" and "Thank you" | Doesn't affect the model—but polite, humble communication is a good habit for talking to humans! |
-| **Threats or stakes help** | "I'll lose my job if you get this wrong" | The model has no concept of your job. Just describe what you actually need. |
-| **More instructions = better** | 500-word system prompts | Often WORSE. Key details get lost. Be concise and specific. |
-| **Magic phrases always work** | "Think step by step" everywhere | Useful for reasoning, but tools have built this in better. See: Plan Mode. |
+| **Persona prompts improve output** | "You are a brilliant 10x engineer who..." | Does not affect the model. |
+| **Politeness affects performance** | "Please", "Thank you" | Does not affect the model! |
+| **Threats or stakes help** | "I'll lose my job if you get this wrong" | The model has no concept of your job. |
+| **More instructions = better** | 500-word system prompts | Often WORSE. Be concise and specific. |
+| **Magic phrases always work** | "Think step by step" | Useful for reasoning. See: Plan Mode. |
 
 </div>
 
@@ -1122,22 +1070,6 @@ AI can help you <strong>generate</strong> for any task. But don't rely on AI to 
 
 </Slide>
 
-<Slide>
-
-## Poll: Evaluating AI Output
-
-If AI generates a sorting algorithm and you don't know any sorting algorithms, how would you verify it's correct?
-
-<PollSlide
-  choices={[
-    "Run it on a bunch of test cases",
-    "Skim the code",
-    "I couldn't verify it properly",
-    "Trust it if it compiles"
-  ]}
-/>
-
-</Slide>
 
 <Slide>
 
@@ -1435,23 +1367,19 @@ This isn't a magic formula—it's showing what effective prompts have in common:
 
 <div style={{fontSize: '0.7em', backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
-```
-We are designing a new Java project called "SceneItAll". Our first step is
-to enumerate some key requirements and explore domain model alternatives.
 
-SceneItAll is an IoT/smarthome control app with the following domain concepts:
-- Lights (can be switched, dimmable, or RGBW tunable)
-- Fans (on/off and speeds 1-4)
-- Shades (open/closed by 1-100%)
-- Areas (group devices by physical area, can be nested)
-- Scenes (define preset conditions for devices, with cascading AreaScenes)
+> We are designing a new Java project called "SceneItAll". Our first step is to enumerate some key requirements and explore domain model alternatives.
 
-Our domain model should emphasize "design for change" so that we can defer
-decisions and get an MVP up soon for user feedback.
+> SceneItAll is an IoT/smarthome control app with the following domain concepts:
+> - Lights (can be switched, dimmable, or RGBW tunable)
+> - Fans (on/off and speeds 1-4)
+> - Shades (open/closed by 1-100%)
+> - Areas (group devices by physical area, can be nested)
+> - Scenes (define preset conditions for devices, with cascading AreaScenes)
 
-Generate a MODEL.md file with several design alternatives expressed as
-mermaid class diagrams, including pros/cons for each.
-```
+>Our domain model should emphasize "design for change" so that we can defer decisions and get an MVP up soon for user feedback.
+
+> Generate a MODEL.md file with several design alternatives expressed as mermaid class diagrams, including pros/cons for each.
 
 </div>
 
@@ -1719,9 +1647,6 @@ The spec-writing skills from L4 directly apply to writing effective prompts. Amb
 - Your expertise determines AI's usefulness
 
 **Connections to prior lectures:**
-- L4 Specs: Same principles for prompts
-- L7-L8 Design: AI helps explore alternatives
-- L9 Requirements: Context management parallels stakeholder engagement
 
 **Looking ahead:**
 - Assignment 4 will use AI assistance
@@ -1739,7 +1664,7 @@ The spec-writing skills from L4 directly apply to writing effective prompts. Amb
 
 <ul style={{fontSize: '0.9em'}}>
   <li>Set up GitHub Copilot if you haven't already (free with GitHub Education)</li>
-  <li>Lab 6: AI Coding Agents, HW3: CYB with AI</li>
+  <li>Lab: AI Coding Agents</li>
 </ul>
 
 <p style={{marginTop: '1.5em', fontSize: '0.9em'}}><strong>Recommended reading:</strong></p>
