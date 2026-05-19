@@ -18,7 +18,7 @@
 ## Questions
 
 ### Question 1
-In a codebase, the interface `Duration` represents a duration in time. It is implemented by the `HMSDuration` class that represent a duration in hours, minutes and seconds. In his code that extensively uses time durations, Alex uses `Duration` as the type of any fields, arguments and local variables, even though there is only one implementation of it. Is this a good choice?
+In a codebase, the interface `Duration` represents a duration in time. It is implemented by the `HMSDuration` class that represents a duration in hours, minutes and seconds. In his code that extensively uses time durations, Alex uses `Duration` as the type of any fields, arguments and local variables, even though there is only one implementation of it. Is this a good choice?
 
 - a) No, because using `HMSDuration` would make the code more easily understandable.
 - b) Yes, because a fellow developer will find it easier to read the shorter interface than the longer implementation
@@ -120,7 +120,7 @@ public class CountingNotifier extends Notifier {
 }
 ```
 
-Suppose you create a new object: `Notifier notifier = new CountingNotifier(); `. If you call `notifier.notifyGroup(threeUsers)` where `threeUsers` is a list of 3 users, what will `sent` be?
+Suppose you create a new object: `Notifier notifier = new CountingNotifier(); `. If you then immediately call `notifier.notifyGroup(threeUsers)` where `threeUsers` is a list of 3 users, what will `sent` be?
 
 - a) 3
 - b) Impossible to say without more details
@@ -268,7 +268,7 @@ When is a named method preferable to a lambda expression?
 ---
 
 ### Question 14
-What does implementing the `Comparable` interface enable?
+If a class implements the `Comparable` interface, which operations does that allow on objects of this class?
 
 - a) Natural ordering of objects, enabling use with sorting algorithms and sorted collections like `TreeSet`
 - b) Comparing objects for equality
@@ -325,7 +325,7 @@ What is printed?
 When pushing commits from their local Git repo to a remote repo on Github, Alex encounters a message from Github that the push has not succeeded and asks Alex to pull first. What does this mean?
 
 - a) The local repo is corrupted, and the remote repo no longer accepts pushes from it
-- b) The remote repo contains code that is not present in the local repo, so pushing would overwrite it
+- b) The remote repo contains changes that is not present in the local repo, so pushing would overwrite it
 - c) This is a friendly reminder to periodically pull from the remote repo: attempting to push again should succeed
 - d) Github mandates that a push can only immediately follow a pull
 
