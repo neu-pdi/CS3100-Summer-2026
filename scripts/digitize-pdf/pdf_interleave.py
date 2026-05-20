@@ -4,15 +4,23 @@ PDF Page Interleaver
 Inserts all pages from a second PDF after every page of the first PDF.
 """
 
+import importlib
+import subprocess
 import sys
 from pathlib import Path
 
-try:
-    import fitz  # PyMuPDF
-except ImportError:
-    print("Missing dependency. Install with:")
-    print("  pip install pymupdf")
-    sys.exit(1)
+
+def ensure_dependencies():
+    """Install and import required third-party dependencies if missing."""
+    try:
+        importlib.import_module("fitz")
+    except ImportError:
+        print("Installing missing dependency: PyMuPDF")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "pymupdf"])
+
+
+ensure_dependencies()
+import fitz  # noqa: E402  (must come after ensure_dependencies)
 
 
 def interleave_pdfs(main_pdf_path, insert_pdf_path, output_path=None, start_page=1):
