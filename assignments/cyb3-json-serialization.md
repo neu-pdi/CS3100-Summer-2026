@@ -250,13 +250,13 @@ IDs are auto-generated as UUIDs (universally unique identifiers) when `null` is 
 
 ### Collection Class Design
 
-Each collection type must have a named implementation class with a Builder:
+Each collection type must have a named implementation class:
 
-| Interface | Implementation Class | How to create a Builder |
-|---|---|---|
-| `Cookbook` | `CookbookImpl` | `CookbookImpl.builder()` |
-| `PersonalCollection` | `PersonalCollectionImpl` | `PersonalCollectionImpl.builder()` |
-| `WebCollection` | `WebCollectionImpl` | `WebCollectionImpl.builder()` |
+| Interface | Implementation Class |
+|---|---|
+| `Cookbook` | `CookbookImpl` |
+| `PersonalCollection` | `PersonalCollectionImpl` |
+| `WebCollection` | `WebCollectionImpl` |
 
 Furthermore, each class has different optional data it can hold onto:
 
