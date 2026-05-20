@@ -9,10 +9,9 @@ sidebar_position: 4
 In this assignment, you'll expand the CookYourBooks application in two major directions: **domain modeling** and **persistence architecture**. You will:
 
 - Model the different sources recipes can come from (published cookbooks, personal collections, websites) and a user's library that organizes them
-- Implement JSON file storage so the application can save and load collections between sessions
 - Export recipes and collections to Markdown
 
-This assignment emphasizes **separating concerns** between your core domain logic and external concerns like storage and file formats. By defining clear **repository interfaces** (what your application needs) and **concrete implementations** (how those needs are fulfilled), you create a system that's easier to test, maintain, and extend.
+This assignment emphasizes **separating concerns** between your core domain logic and external concerns like storage and file formats. 
 
 **Due:** Thursday, May 28, 2026 at 9:00 PM Boston Time
 
@@ -41,9 +40,7 @@ This assignment has more moving parts than previous ones. Here's a pacing strate
 
 By completing this assignment, you will demonstrate proficiency in:
 
-- **Separating concerns** by defining interfaces for persistence and implementing them independently
-  ([L16: Design for Testability](/lecture-notes/l16-testability))
-- **Designing repository interfaces** that abstract persistence concerns from domain logic
+- **Separating concerns** by defining interfaces and implementing them independently
 - **Writing comprehensive tests** that validate behavior and detect faults in complex systems
 
 ---
@@ -64,7 +61,7 @@ Your challenge is to implement concrete classes that fulfill interface contracts
 
 This assignment expands the model to hold collections of recipes and enable persistence by saving recipes and collections to Markdown files.
 
-The diagram below shows the complete architecture. Blue dashed classes are provided interfaces; yellow classes are what you implement. We will start including these diagrams when relevant as our codebase increases in size and complecity.
+The diagram below shows the complete architecture. Blue dashed classes are provided interfaces; yellow classes are what you implement. We will start including these diagrams when relevant as our codebase increases in size and complexity.
 
 ```mermaid
 classDiagram
@@ -186,21 +183,13 @@ src/
 │   │   ├── WebCollectionImpl.java         (YOU COMPLETE)
 │   │   ├── UserLibraryImpl.java           (YOU COMPLETE)
 │   │   └── ... (A1/A2 classes, provided)
-│   ├── repository/
-│   │   ├── RecipeRepository.java          (PROVIDED - interface)
-│   │   ├── RecipeCollectionRepository.java (PROVIDED - interface)
-│   │   └── RepositoryException.java       (PROVIDED)
 │   └── adapters/
-│       ├── JsonRecipeRepository.java      (YOU COMPLETE)
-│       ├── JsonRecipeCollectionRepository.java (YOU COMPLETE)
 │       └── MarkdownExporter.java          (YOU COMPLETE)
 └── test/java/app/cookyourbooks/
     ├── model/
     │   ├── RecipeCollectionTest.java      (YOU EXPAND)
     │   └── UserLibraryTest.java           (YOU EXPAND)
     └── adapters/
-        ├── JsonRecipeRepositoryTest.java  (PROVIDED - reference tests)
-        ├── JsonRecipeCollectionRepositoryTest.java (YOU EXPAND)
         └── MarkdownExporterTest.java      (YOU EXPAND)
 ```
 
@@ -214,7 +203,6 @@ src/
 | `WebCollection.java` | Interface for web-sourced collections |
 | `SourceType.java` | Enum with `PUBLISHED_BOOK`, `PERSONAL`, `WEBSITE` |
 | `UserLibrary.java` | Interface for user's recipe library |
-| `RepositoryException.java` | Unchecked exception for persistence failures |
 | `Recipe.java` (updated) | Now includes `id` field with auto-generation |
 | **`CookbookImpl.java`** | **Complete reference implementation—study this first** |
 
@@ -222,47 +210,22 @@ src/
 
 | File | Description |
 |---|---|
-| **`JsonRecipeRepositoryTest.java`** | **Comprehensive tests—use as a reference for testing patterns** |
 | `RecipeCollectionTest.java` | Starter test file (you expand) |
 | `UserLibraryTest.java` | Starter test file (you expand) |
 | `MarkdownExporterTest.java` | Starter test file (you expand) |
 
 ### AI Policy for This Assignment
 
-**You may (and should!) use tools like GitHub Copilot or Cursor throughout this assignment.**
+**AI coding assistants (such as GitHub Copilot, ChatGPT, Claude, etc.) should NOT be used for this assignment.**
 
-We specifically recommend **IDE-integrated assistants** over alternatives:
+This assignment focuses on learning from sample code, working with a new package, and understanding how to test against file formats. You may:
+- Use official Java documentation
+- Consult your textbook and course materials
+- Ask questions in office hours or on the course discussion board
+- Discuss high-level approaches with classmates (but write your own code)
 
-- **Not Claude Code or similar agentic tools.** These work autonomously with minimal human oversight. Our course values keeping you at the center of the development process—you should be reviewing, understanding, and directing every change.
-- **Not ChatGPT, Claude.ai, or other web interfaces.** Manually copying code between a browser and your IDE loses your codebase context and wastes cognitive effort on mechanics rather than design.
-
-The goal is **AI as a collaborative partner**, not as a replacement for thinking. Simply copy-pasting the assignment into an AI and submitting its output typically results in poor design that loses manual grading points, and leaves you unable to complete future assignments.
-
-**Document your AI usage** in the [Reflection](#reflection) section.
-
-#### Setup: Re-Enable AI Features
-
-In Lab 1 you disabled AI features to build foundational skills. Now turn them back on:
-
-1. Open VS Code Settings (`⌘+,` on Mac, `Ctrl+,` on Windows/Linux)
-2. Search for `chat.disableAIFeatures`
-3. **Uncheck** the box
-
-Or use this link: [vscode://settings/chat.disableAIFeatures](vscode://settings/chat.disableAIFeatures)
-
-:::danger AI Resource Consumption — Use "Auto" Mode Only
-
-**Do not manually select expensive AI models** (like Claude Opus, GPT-4, or other premium models) for coursework in this class. The course provides access to AI tools through Cursor, but resources are shared and limited.
-
-**Always use "Auto" mode** in Cursor, which selects an appropriate model for your task. Auto mode balances capability with cost and is sufficient for all coursework in this class. Manually selecting premium models:
-- Consumes shared resources faster, potentially affecting availability for everyone
-- Provides no meaningful benefit for the tasks in this course
-- May result in you being asked to pay out of pocket if you exhaust shared quotas
-
-The default models are capable of helping with parsing, test generation, debugging, and all other tasks in this assignment. If you find yourself thinking "maybe a smarter model would help" — that's usually a sign to step back and think through the problem yourself, not to reach for a more expensive model.
-
-:::
-
+As always, planning your design and writing tests before diving into implementation allows you to check understanding, catch bugs during development,
+and saves overall time in the long run.
 ---
 
 ## Design Task
@@ -363,7 +326,7 @@ Refer to the Javadoc on `RecipeCollection` for the full method-level specificati
 
 Before diving into implementation, read the Javadoc on `UserLibraryImpl`. Each method you need to complete is documented with its full behavioral specification.
 
-**Persistence note:** `UserLibrary` is an in-memory convenience wrapper. For now, the only way to guarantee persistence is to export it to Markdown using the `MarkdownExporter`. Later in the project, you will enable true persistence by parsing files containing recipes and collections as well.
+**Persistence note:** `UserLibrary` is an in-memory convenience wrapper. For now, the only way to guarantee persistence is to export it to Markdown using the `MarkdownExporter`. Later in the project, you will enable true persistence by parsing files containing recipes and collections.
 
 ---
 
@@ -499,7 +462,7 @@ _Exported from CookYourBooks, learn more at https://www.cookyourbooks.app_
 
 ### Testing Requirements
 
-Testing follows the same model as Assignments 1 and 2.
+Testing follows the same model as Assignment 2.
 
 - Write tests for all components you implement
 - **Tests must be written to the interface, not your implementation**
@@ -512,7 +475,7 @@ Testing follows the same model as Assignments 1 and 2.
 |---|---|
 | `model/RecipeCollectionTest.java` | Construction, immutable transformations, equals/hashCode |
 | `model/UserLibraryTest.java` | Library operations, search across collections |
-| `adapters/MarkdownExporterTest.java` | Recipe format correctness; collection round-trip properties |
+| `adapters/MarkdownExporterTest.java` | Recipe format correctness |
 
 **Testing guidance:**
 
@@ -582,13 +545,13 @@ See `REFLECTION.md` for the full question prompts and grading rubric.
 | `MarkdownExporter` (`exportCollection` format) | 4 |
 | `MarkdownExporter` (`exportToFile` file I/O) | 4 |
 
-#### Test Suite Quality (36-12 points)
+#### Test Suite Quality (36 points)
 
 | Test File | Points | Notes |
 |---|---|---|
-| `RecipeCollectionTest.java` | 10 | Key focus: your collection implementations |
-| `UserLibraryTest.java` | 4 | Test the search methods you implement |
-| `MarkdownExporterTest.java` | 10 | Main challenge: Identifying all the needed cases for testing |
+| `RecipeCollectionTest.java` | 14 | Key focus: your collection implementations |
+| `UserLibraryTest.java` | 8 | Test the search methods you implement |
+| `MarkdownExporterTest.java` | 14 | Main challenge: Identifying all the needed cases for testing |
 
 ### Manual Grading (Subtractive, max −30 points)
 
