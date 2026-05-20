@@ -533,7 +533,7 @@ See `REFLECTION.md` for the full question prompts and grading rubric.
 
 ### Automated Grading (76 points)
 
-#### Implementation Correctness (40-14 points)
+#### Implementation Correctness (40 points)
 
 | Component | Points |
 |---|---|
