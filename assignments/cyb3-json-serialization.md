@@ -1,5 +1,5 @@
 ---
-title: 'Assignment 3: Domain Extensions and JSON Persistence'
+title: 'Assignment 3: Domain Extensions and File Exporting'
 sidebar_position: 4
 ---
 
@@ -197,7 +197,7 @@ src/
 
 | File | Description |
 |---|---|
-| `RecipeCollection.java` | Base interface for all collections (with Jackson annotations) |
+| `RecipeCollection.java` | Base interface for all collections |
 | `Cookbook.java` | Interface for published cookbooks |
 | `PersonalCollection.java` | Interface for personal collections |
 | `WebCollection.java` | Interface for web-sourced collections |
@@ -260,11 +260,9 @@ Each collection type must have a named implementation class with a Builder:
 
 Furthermore, each class has different optional data it can hold onto:
 
-**Your primary design task** is deciding how to structure `PersonalCollectionImpl` and `WebCollectionImpl`. Study `CookbookImpl` carefully—it is a complete reference that shows the immutability pattern, Builder construction, and Jackson annotations you must follow. Then decide:
+**Your primary design task** is deciding how to structure `PersonalCollectionImpl` and `WebCollectionImpl`. Study `CookbookImpl` carefully—it is a complete reference that shows the immutability pattern you must follow. Then decide:
 
 - How to store optional fields (`Optional<String>` as the field type, or nullable with conversion in the getter?)
-- How to handle blank string normalization for optional String fields (blank → `Optional.empty()`)
-- Where validation logic lives (builder vs. constructor)
 
 Document your approach and rationale in `REFLECTION.md`.
 
@@ -523,7 +521,7 @@ Complete the **6 reflection questions** in `REFLECTION.md`. Each question is wor
 3. **Modularity** — ???
 4. **Selecting tasks for AI Effectiveness** — Some tasks here have very low complexity. Which tasks would you have AI assist you with and how? What about those specific tasks would make an AI assistant valuable or beneficial?
 5. **AI for Understanding Code** — In the future, you will have explicit permission to use an AI-assistant on an assignment. Given your experiences with jumping into unknown code, what are some prompts you would (or maybe have) used to understand this given starter code?
-6. **AI Iteration** — Describe a specific case where AI-generated code needed refinement.
+6. **Unknown** — ???
 
 See `REFLECTION.md` for the full question prompts and grading rubric.
 
