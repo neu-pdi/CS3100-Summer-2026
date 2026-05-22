@@ -230,7 +230,7 @@ and saves overall time in the long run.
 
 ## Design Task
 
-Before writing implementation code, you need to make and document the following design decisions. Your choices here affect your entire codebase—think first, then use AI to explore tradeoffs or validate your approach.
+Before writing implementation code, you need to make and document the following design decisions. Your choices here affect your entire codebase—think first, then implement.
 
 ### Recipe ID Field
 
@@ -487,6 +487,8 @@ Several methods have unspecified ordering: `findAll()`, `findAllByTitle()`, `Use
 Below is an example of a test that assumes an order and another that does not assume order (or is order-independent).
 
 ```java
+//OBJECTIVE: verify that there is a recipe for Chocolate Cake in the repository
+
 // BAD: assumes specific order
 List<Recipe> results = repository.findAll();
 assertEquals("Chocolate Cake", results.get(0).getTitle());
