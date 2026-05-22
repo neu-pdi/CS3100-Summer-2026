@@ -185,6 +185,8 @@ src/
 │   │   └── ... (A1/A2 classes, provided)
 │   └── adapters/
 │       └── MarkdownExporter.java          (YOU COMPLETE)
+│   └── repository/
+│       └── RepositoryException.java       (PROVIDED - class)
 └── test/java/app/cookyourbooks/
     ├── model/
     │   ├── RecipeCollectionTest.java      (YOU EXPAND)
@@ -205,6 +207,7 @@ src/
 | `UserLibrary.java` | Interface for user's recipe library |
 | `Recipe.java` (updated) | Now includes `id` field with auto-generation |
 | **`CookbookImpl.java`** | **Complete reference implementation—study this first** |
+| `RepositoryException.java` | Unchecked exception for persistence failures |
 
 **Test files:**
 
@@ -219,9 +222,10 @@ src/
 **AI coding assistants (such as GitHub Copilot, ChatGPT, Claude, etc.) should NOT be used for this assignment.**
 
 This assignment focuses on learning from sample code, working with a new package, and understanding how to test against file formats. You may:
-- Use official Java documentation
-- Consult your textbook and course materials
-- Ask questions in office hours or on the course discussion board
+
+- Use official Java documentation (especially for the `Files` and `Paths` classes used later in the assignment)
+- Consult any textbook and course materials
+- Ask questions in office hours or on the course discussion board (especially if something seems unclear)
 - Discuss high-level approaches with classmates (but write your own code)
 
 As always, planning your design and writing tests before diving into implementation allows you to check understanding, catch bugs during development,
@@ -230,7 +234,7 @@ and saves overall time in the long run.
 
 ## Design Task
 
-Before writing implementation code, you need to make and document the following design decisions. Your choices here affect your entire codebase—think first, then implement.
+Before writing implementation code, you need to make and document the following design decisions. Your choices here affect your entire codebase—think first, consider possible tradeoffs (i.e. pros vs. cons of your choices), then implement.
 
 ### Recipe ID Field
 
@@ -260,9 +264,32 @@ Each collection type must have a named implementation class:
 
 Furthermore, each class has different optional data it can hold onto:
 
-**Your primary design task** is deciding how to structure `PersonalCollectionImpl` and `WebCollectionImpl`. Study `CookbookImpl` carefully—it is a complete reference that shows the immutability pattern you must follow. Then decide:
+| Interface | Required Data | Optional Data |
+|---|---|---|
+| `Cookbook` | title | author, ISBN, publisher, publication year |
+| `PersonalCollection` | title | description, notes |
+| `WebCollection` | title, source URL | date accessed, site name |
 
-- How to store optional fields (`Optional<String>` as the field type, or nullable with conversion in the getter?)
+The constructors take in the following data:
+
+- an `id`.
+- the required `title`.
+- a `List` of `Recipe`s
+- the type-specific data as mentioned in the table above.
+
+The constructors must also have the following behaviors:
+
+- If any required item is missing, the constructor **must** throw an `IllegalArgumentException`.
+- If the list of recipes contains at least 2 recipes with the same ID, the constructor **must** throw an `IllegalArgumentException`.
+- If the `id` is missing, the constructor **must** create a UUID. (See `CookbookImpl` for how this is done).
+
+**Your primary design task** is deciding how to structure `PersonalCollectionImpl` and `WebCollectionImpl`. Study `CookbookImpl` carefully—it is a complete reference that shows the immutability pattern you must follow. Then decide how to store optional fields (`Optional<String>` as the field type, or nullable with conversion in the getter?)
+
+**Note on Optional Fields**: All optional fields in collection interfaces return `Optional<T>` to clearly signal when a value is not specified. This includes both `String` fields (e.g., `Cookbook.getAuthor()` returns `Optional<String>`) and non-`String` fields (e.g., `Cookbook.getPublicationYear()` returns `OptionalInt`, `WebCollection.getDateAccessed()` returns `Optional<LocalDate>`). Using `Optional` consistently provides type safety and forces explicit handling of missing values.
+
+You can create an `Optional` object that is empty using `Optional.empty()`. You can also create an `Optional` object for an existing value using `Optional.of(T value)` or `Optional.ofNullable(T value)`. See the [`Optional` class Java documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html) for more information as well as `CookbookImpl` for example usage.
+
+**Blank String Handling for WebCollection**: The `siteName` field follows the same blank string normalization as other optional String fields—blank strings (empty or whitespace-only) are treated as absent and `getSiteName()` must return `Optional.empty()`.
 
 Document your approach and rationale in `REFLECTION.md`.
 
@@ -276,11 +303,40 @@ Regardless of the structural decisions you make, all implementations must satisf
 - **Null safety.** Use `@NonNull` / `@Nullable` from JSpecify. NullAway enforces this statically—you do not need runtime null checks for parameters.
 - **Documentation.** Javadoc on all public classes and methods, including design decisions.
 
+### Files and Paths
+
+The `MarkdownExporter` exposes two methods to write to actual files on your file system.
+
+#### Path
+
+The `Path` type represents a path in your file system. Example paths include:
+
+- `src/main/java/adapters/MarkdownExporter.java` on Mac and Unix Systems
+- `src\main\java\adapters\MarkdownExporter.java` on Windows systems
+- `README.md` on both
+
+The `Path` type abstracts away the underlying file system used by an operating system, allowing programs to refer to specific files easily.
+
+For more information and methods you can use on `Path`, see the [`Path` documentation from Java 21](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/file/Path.html).
+
+#### Files
+
+The `Files` class exposes **static** methods to make reading from files more convenient. Most of the methods will take in a `Path`, avoiding the use of different `InputStream` types we do not need to use. Read about all of these methods in the [`Files` documentaton from Java 21](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/file/Files.html). Here are some methods we recommend taking a look at the following for this assignment, but you are free to use others
+
+- `boolean exists(Path path, LinkOptions... options)` :: does the file referred to by path exist?
+- `String readString(Path path) throws IOException` :: put the contents of the file referred to by path in a single String
+- `void writeString(Path path, CharSequence csq, OpenOptions... options) throws IOException` :: write the contents of csq into the file referred to by Path. Note that **String** is a `CharSequence`!
+
+**A note on argument types annotated with ...**: In `exists` and `writeString`, the last argument is annotated with `...`. In Java, we call those parameters `varargs`, or variable arguments. This means we can supply 0 or more arguments of the specified type. In this case, if we don't have any options to give to those methods, we can simply **ignore the parameter in the method** and not supply an argument for that parameter. In other words, the following can be considered valid method signatures for those methods:
+
+    - `boolean exists(Path path)`
+    - `void writeString(Path path, CharSequence csq)`
+
 ---
 
 ## Implementation Task
 
-You have four concrete implementation areas. Work through them in order—each builds on the previous. 
+You have three concrete implementation areas. Work through them in order—each builds on the previous.
 
 ### What You Implement
 
@@ -311,10 +367,8 @@ Refer to the Javadoc on `RecipeCollection` for the full method-level specificati
 
 
 **What we test:**
-- `save()` followed by `findById()` returns an equal collection
-- `getSourceType()` is correct after a round-trip
-- Type-specific methods (e.g., `getAuthor()`) return correct values after a round-trip
-- Polymorphism is preserved: saving a `Cookbook` and loading it returns a `Cookbook`, not a generic `RecipeCollection`
+- `equals` and `hashCode` contracts
+- behaviors mentioned for each method are fulfilled by your implementations
 
 ---
 
@@ -324,7 +378,12 @@ Refer to the Javadoc on `RecipeCollection` for the full method-level specificati
 
 Before diving into implementation, read the Javadoc on `UserLibraryImpl`. Each method you need to complete is documented with its full behavioral specification.
 
-**Persistence note:** `UserLibrary` is an in-memory convenience wrapper. For now, the only way to guarantee persistence is to export it to Markdown using the `MarkdownExporter`. Later in the project, you will enable true persistence by parsing files containing recipes and collections.
+**Persistence note:** `UserLibrary` is an in-memory convenience wrapper. For now, the only way to guarantee persistence is to export it to Markdown using the `MarkdownExporter`. Later in the project, you will parsing files containing recipes and collections, allowing you to load CookYourBooks state from prior runs.
+
+**What we test:**
+
+- behaviors mentioned for each method are fulfilled by your implementation
+- **Type preservation**: methods that return `RecipeCollection` return the proper implementation (e.g. storing a `Cookbook` and retrieving that same collection preserves the type `Cookbook`)
 
 ---
 
@@ -359,19 +418,19 @@ _Exported from CookYourBooks, learn more at https://www.cookyourbooks.app_
 **Example:**
 
 ```markdown
-# Arepa
+# Chocolate Cake
 
 _Serves: 8 whole_
 
 ## Ingredients
 
-- 2 cups fine cornmeal
-- 2.5 cups coconut milk
+- 2 cups flour
+- 1 cup sugar
 
 ## Instructions
 
 1. Preheat oven to 350°F
-2. Mix ingredients in a pot over medium heat.
+2. Mix dry ingredients
 
 ---
 
@@ -379,6 +438,7 @@ _Exported from CookYourBooks, learn more at https://www.cookyourbooks.app_
 ```
 
 **Format rules:**
+
 - If the recipe has no servings, omit the `_Serves: ..._` line entirely (no extra blank line)
 - Use `Ingredient.toString()` and `Instruction.toString()` (the latter includes the step number, e.g., "1. Mix ingredients")
 - Include `## Ingredients` and `## Instructions` headers even if lists are empty
@@ -449,6 +509,7 @@ _Exported from CookYourBooks, learn more at https://www.cookyourbooks.app_
 ```
 
 **Format rules:**
+
 - Collection title uses H2 (`##`); recipe titles use H1 (`#`)
 - Metadata line is omitted entirely if the optional field is not present
 - Recipes within a collection use the recipe format **without** the individual recipe footer
@@ -512,18 +573,53 @@ Software engineering improves when we introduce more perspectives and its a grea
 
 :::
 
+::: tip Use @TempDir for tests that require files
+
+When writing tests for methods that perform I/O, we may need temporary files to read or write to. Furthermore, we have
+to clean up those temporary files when we are done. For these reasons and more, we use the `@TempDir` annotation in JUnit 
+for cleaner temporary file management. Below is an example test that uses an `@TempDir` to test `exportToFile(Recipe, Path)`.
+
+```java
+@TempDir Path tempDir; // No need to initialize! JUnit will do it for you!
+MarkdownExporter exporter;
+
+@Test
+void ensureTitleIsWrittenToFile() {
+    Recipe recipe = new Recipe(null, "Pancake", List.of(), List.of(), List.of());
+
+    // Find the path to this file (already existing or otherwise) in our temporary directory.
+    // Since we haven't done anything, the file doesn't exist yet...
+    Path pancakePath = tempDir.resolve("panckages.md");
+
+    // ...but it will after this call!
+    exporter.exportToFile(recipe, pancakePath);
+
+    // Let's read the data and assert what we care about!
+    String fileData = Files.readString(pancakePath);
+    assertTrue(fileData.startsWith("# Pancake"));
+}
+```
+
+`MarkdownExporterTest` already has the barebones setup for this along with a version of the above test.
+
+:::
+
 ---
 
 ## Reflection
 
 Complete the **6 reflection questions** in `REFLECTION.md`. Each question is worth 4 points (24 points total).
 
-1. **Learning from Samples** — Describe how you studied `CookbookImpl` and applied its patterns to your other collection implementations. What questions arose as you explore and how did you find answers to them?
-2. **Architecture and Testability** — Give specific examples of how interface abstraction benefited your work.
-3. **Recipe Search** — What techniques or algorithms did you consider when implementing the search methods for recipe collections? Why did you choose what you did?
-4. **Selecting tasks for AI Effectiveness** — Some tasks here have very low complexity. Which tasks would you have AI assist you with and how? What about those specific tasks would make an AI assistant valuable or beneficial?
-5. **AI for Understanding Code** — In the future, you will have explicit permission to use an AI-assistant on an assignment. Given your experiences with jumping into unknown code, what are some prompts you would (or maybe have) used to understand this given starter code?
-6. **Test Planning** — How did you think about various testing situations for the recipe collections and markdown exporter? What was your process?
+1. **Domain Model Design** — Describe your approach to implementing `PersonalCollectionImpl` and `WebCollectionImpl`.
+How did you leverage the `CookbookImpl` reference implementation? What modifications did you make
+for each collection type's unique metadata?
+2. **Architecture and Testability** — The assignment uses interfaces (`RecipeCollection`, `RecipeRepository`) with concrete
+implementations. Give a specific example from your code showing how this separation enables testing.
+What would be harder to test without the interface abstraction?
+3. **Searching Techniques** - Reflect on how you chose to implement the search methods in `UserLibraryImpl`. Did you use a functional style or a more iterative style and why?
+4. **Test planning** - Reflect on how you came up with your test cases for Markdown tests. Report the process you used.
+5. **Selecting tasks for AI Effectiveness** — Some tasks in this assignment have very low complexity. Which of those tasks would you have AI assist you with and how? What about those specific tasks would make an AI assistant valuable or beneficial?
+6. **AI for Understanding Code** — In the future, you will have explicit permission to use an AI-assistant on an assignment. Given your experiences with jumping into unknown code, what are some prompts you would (or maybe have) used to understand this given starter code?
 
 See `REFLECTION.md` for the full question prompts and grading rubric.
 
@@ -537,13 +633,11 @@ See `REFLECTION.md` for the full question prompts and grading rubric.
 
 | Component | Points |
 |---|---|
-| `RecipeCollection` domain model (tested via repository) | 12 |
+| `RecipeCollection` domain model | 12 |
 | `UserLibrary` | 6 |
-| `RecipeRepository` interface compliance | 4 |
-| `RecipeCollectionRepository` interface compliance | 4 |
-| `MarkdownExporter` (`exportRecipe` format correctness) | 6 |
-| `MarkdownExporter` (`exportCollection` format) | 4 |
-| `MarkdownExporter` (`exportToFile` file I/O) | 4 |
+| `MarkdownExporter` (`exportRecipe` format correctness) | 10 |
+| `MarkdownExporter` (`exportCollection` format) | 6 |
+| `MarkdownExporter` (`exportToFile` file I/O) | 6 |
 
 #### Test Suite Quality (36 points)
 
@@ -565,4 +659,4 @@ See `REFLECTION.md` for the full question prompts and grading rubric.
 
 ### Reflection (24 points)
 
-6 questions × 4 points each. See `REFLECTION.md` for rubric.
+4 questions × 6 points each. See `REFLECTION.md` for rubric.
