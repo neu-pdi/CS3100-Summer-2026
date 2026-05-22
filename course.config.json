@@ -344,7 +344,7 @@
       ]
     },
     {
-      "lectureId": "l18-architecture-design",
+      "lectureId": "l18-architecture-design-mvc-hexagonal",
       "dates": [
         "2026-05-27"
       ],
@@ -377,6 +377,15 @@
       ],
       "topics": [
         "Testing, Test Doubles and Isolation"
+      ]
+    },
+    {
+      "lectureId": "l16-testability-new",
+      "dates": [
+        "2026-06-02"
+      ],
+      "topics": [
+        "Testability and Design for Testability"
       ]
     },
     {
@@ -539,6 +548,7 @@
       "dates": [
         "2026-05-27"
       ],
+      "assignedTime": "08:00",
       "sections": [
         "L01",
         "L02",
@@ -546,7 +556,7 @@
         "L04",
         "L05"
       ],
-      "url": "/labs/lab6-copilot"
+      "url": "/labs/lab-copilot"
     },
     {
       "id": "lab6",
@@ -624,8 +634,10 @@
       "title": "Assignment 3: JSON Serialization Layer",
       "type": "homework",
       "assignedDate": "2026-05-23",
+      "assignedTime": "08:00",
       "dueDate": "2026-05-28",
       "dueTime": "20:59",
+      "status": "published",
       "points": 60,
       "url": "/assignments/cyb3-json-serialization"
     },
