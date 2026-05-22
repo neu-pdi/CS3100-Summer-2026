@@ -633,11 +633,9 @@ See `REFLECTION.md` for the full question prompts and grading rubric.
 |---|---|
 | `RecipeCollection` domain model | 12 |
 | `UserLibrary` | 6 |
-| `RecipeRepository` interface compliance | 4 |
-| `RecipeCollectionRepository` interface compliance | 4 |
-| `MarkdownExporter` (`exportRecipe` format correctness) | 6 |
-| `MarkdownExporter` (`exportCollection` format) | 4 |
-| `MarkdownExporter` (`exportToFile` file I/O) | 4 |
+| `MarkdownExporter` (`exportRecipe` format correctness) | 10 |
+| `MarkdownExporter` (`exportCollection` format) | 6 |
+| `MarkdownExporter` (`exportToFile` file I/O) | 6 |
 
 #### Test Suite Quality (36 points)
 
