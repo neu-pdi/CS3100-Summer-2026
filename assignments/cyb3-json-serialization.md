@@ -520,10 +520,10 @@ Complete the **6 reflection questions** in `REFLECTION.md`. Each question is wor
 
 1. **Learning from Samples** — Describe how you studied `CookbookImpl` and applied its patterns to your other collection implementations. What questions arose as you explore and how did you find answers to them?
 2. **Architecture and Testability** — Give specific examples of how interface abstraction benefited your work.
-3. **Modularity** — ???
+3. **Recipe Search** — What techniques or algorithms did you consider when implementing the search methods for recipe collections? Why did you choose what you did?
 4. **Selecting tasks for AI Effectiveness** — Some tasks here have very low complexity. Which tasks would you have AI assist you with and how? What about those specific tasks would make an AI assistant valuable or beneficial?
 5. **AI for Understanding Code** — In the future, you will have explicit permission to use an AI-assistant on an assignment. Given your experiences with jumping into unknown code, what are some prompts you would (or maybe have) used to understand this given starter code?
-6. **Unknown** — ???
+6. **Test Planning** — How did you think about various testing situations for the recipe collections and markdown exporter? What was your process?
 
 See `REFLECTION.md` for the full question prompts and grading rubric.
 
