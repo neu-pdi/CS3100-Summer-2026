@@ -372,7 +372,7 @@ Refer to the Javadoc on `RecipeCollection` for the full method-level specificati
 
 ---
 
-### Part 2: UserLibraryImpl
+### Phase 2: UserLibraryImpl
 
 `UserLibraryImpl` is a user's in-memory collection of recipe collections. A partial implementation is provided—you must implement the four search methods.
 
@@ -387,11 +387,11 @@ Before diving into implementation, read the Javadoc on `UserLibraryImpl`. Each m
 
 ---
 
-### Part 3: MarkdownExporter
+### Phase 3: MarkdownExporter
 
 Implement the missing methods in `MarkdownExporter`, carefully reading the documentation of each method before implementing.
 
-### Part 3a: Recipe Exporter Methods
+### Phase 3a: Recipe Exporter Methods
 
 Implement `exportRecipe` and its corresponding `exportToFile` overload. Their output must conform to the following format:
 
@@ -446,7 +446,7 @@ _Exported from CookYourBooks, learn more at https://www.cookyourbooks.app_
 - Titles and ingredient names are included as-is (no Markdown escaping)
 - Unix line endings (`\n`)
 
-### Part 3b: Collection Exporter Methods
+### Phase 3b: Collection Exporter Methods
 
 Implement `exportCollection` and its corresponding `exportToFile` overload. Their output must conform to the following format:
 
