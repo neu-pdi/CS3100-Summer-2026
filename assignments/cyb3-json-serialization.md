@@ -281,7 +281,7 @@ The constructors take in the following data:
 
 The constructors must also have the following behaviors:
 
-- If any **required** data is missing (or blank (empty or whitespace-only) for `String` type data), the constructor **must** throw an `IllegalArgumentException` The constructors have already been annotated for you using NullAway annotations for your convenience. You must handle the rest.
+- If any **required** data is missing (or blank (empty or whitespace-only) for `String` type data), the constructor **must** throw an `IllegalArgumentException. The constructors have already been annotated for you using NullAway annotations for your convenience. You must handle the rest.
 - If the list of recipes contains at least 2 recipes with the same ID, the constructor **must** throw an `IllegalArgumentException`.
 - If the `id` is missing, the constructor **must** create a UUID. (See `CookbookImpl` for how this is done).
 
@@ -513,7 +513,7 @@ _Exported from CookYourBooks, learn more at https://www.cookyourbooks.app_
 **Format rules:**
 
 - Collection title uses H2 (`##`); recipe titles use H1 (`#`)
-- Metadata line is omitted entirely if the optional field is not present
+- Metadata line is omitted entirely if the optional field is not present (no extra blank line)
 - Recipes within a collection use the recipe format **without** the individual recipe footer
 - Only the final recipe includes the CookYourBooks footer
 - If a collection has no recipes, include only the header and metadata (no `---` separators)
