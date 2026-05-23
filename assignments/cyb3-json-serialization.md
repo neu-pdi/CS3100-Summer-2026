@@ -19,7 +19,9 @@ This assignment emphasizes **separating concerns** between your core domain logi
 
 **Starter Code:** We provide all interface definitions and supporting types so you can focus on implementation and design decisions rather than transcription. See [What's Implemented For You](#whats-implemented-for-you) for details.
 
-:::tip How to Succeed on This Assignment
+:::tip 
+
+**How to Succeed on This Assignment**
 
 This assignment has more moving parts than previous ones. Here's a pacing strategy that works:
 
@@ -542,7 +544,9 @@ Testing follows the same model as Assignment 2.
 - **Edge cases:** Empty collections, absent optional fields, special characters in names
 - **Error cases:** Invalid input throws appropriate exceptions
 
-:::warning Avoid Order-Dependent Tests
+:::warning 
+
+**Avoid Order-Dependent Tests**
 
 Several methods have unspecified ordering: `findAll()`, `findAllByTitle()`, `UserLibrary.getCollections()`, and `UserLibrary.findRecipesByTitle()` do not guarantee any particular order.
 Below is an example of a test that assumes an order and another that does not assume order (or is order-independent).
@@ -565,7 +569,9 @@ Tests that fail on correct implementations due to ordering assumptions will not 
 :::
 
 
-:::tip MarkdownExporter Tests Benefits from Planning
+:::tip 
+
+**MarkdownExporter Tests Benefits from Planning**
 
 When testing the `MarkdownExporter`, consider the cases of recipes you would see For example, we could consider recipes with all fields, recipe without servings, empty ingredients/instructions, multiple ingredients, special characters, and so on. Take a moment to write down the different types of recipe objects that could be created
 and manually write what the expected Markdown would be. **Remember you are allowed to share and collaborate on ideas with others**. Meet up and compare lists to see if you are missing any edge cases.
@@ -573,7 +579,9 @@ Software engineering improves when we introduce more perspectives and its a grea
 
 :::
 
-::: tip Use @TempDir for tests that require files
+::: tip 
+
+**Use @TempDir for tests that require files**
 
 When writing tests for methods that perform I/O, we may need temporary files to read or write to. Furthermore, we have
 to clean up those temporary files when we are done. For these reasons and more, we use the `@TempDir` annotation in JUnit 
