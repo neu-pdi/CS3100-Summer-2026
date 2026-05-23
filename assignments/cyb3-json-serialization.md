@@ -659,4 +659,4 @@ See `REFLECTION.md` for the full question prompts and grading rubric.
 
 ### Reflection (24 points)
 
-4 questions × 6 points each. See `REFLECTION.md` for rubric.
+6 questions × 4 points each. See `REFLECTION.md` for rubric.
