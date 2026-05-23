@@ -88,9 +88,9 @@ Your letter grade is determined by both your total points AND meeting minimum th
 
 | Grade | Total Points | Individual Assignments | Group Assignments | Exams |
 |:-------:|:--------------:|:------------------------:|:-------------------|:-------:|
-| A | &ge;900 | &ge;320 (80%) | &ge;160 (80%) | &ge;270 (70%) |
-| B | &ge;800 | &ge;280 (70%) | &ge;140 (70%) | &ge;210 (60%) |
-| C | &ge;700 | &ge;240 (60%) | &ge;120 (60%) | &ge;175 (50%) |
+| A | &ge;900 | &ge;320 (80%) | &ge;160 (80%) | &ge;210 (70%) |
+| B | &ge;800 | &ge;280 (70%) | &ge;140 (70%) | &ge;180 (60%) |
+| C | &ge;700 | &ge;240 (60%) | &ge;120 (60%) | &ge;150 (50%) |
 | D | &ge;600 | — | — | — |
 | F | &lt;600 or fails to meet<br/>above minimums | — | — | — |
 
