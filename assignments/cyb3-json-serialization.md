@@ -6,12 +6,12 @@ sidebar_position: 4
 
 ## Overview
 
-In this assignment, you'll expand the CookYourBooks application in two major directions: **domain modeling** and **persistence architecture**. You will:
+In this assignment, you'll expand the CookYourBooks application in two major directions: **domain modeling** and **exporting data to files**. You will:
 
 - Model the different sources recipes can come from (published cookbooks, personal collections, websites) and a user's library that organizes them
 - Export recipes and collections to Markdown
 
-This assignment emphasizes **separating concerns** between your core domain logic and external concerns like storage and file formats. 
+This assignment emphasizes **separating concerns** between your core domain logic and external concerns like storage and file formats.
 
 **Due:** Thursday, May 28, 2026 at 9:00 PM Boston Time
 
@@ -24,8 +24,8 @@ This assignment emphasizes **separating concerns** between your core domain logi
 This assignment has more moving parts than previous ones. Here's a pacing strategy that works:
 
 1. **Read this handout when it's released.** Skim the whole thing to understand the scope. You don't need to understand every detail yet—just get the big picture.
-2. **Look at the starter code on Friday.** Open the files, read through `CookbookImpl` (the reference implementation), and start connecting the handout to actual code.
-3. **Post questions on the discussion board.** If something in the handout or starter code doesn't make sense, ask early—it helps everyone.
+2. **Look at the starter code as soon as possible.** Open the files, read through `CookbookImpl` (the reference implementation), and start connecting the handout to actual code.
+3. **Post questions on the discussion board.** If something in the handout or starter code doesn't make sense, ask early—it helps everyone. Especially if something in the specification is unclear to you.
 4. **Work incrementally over several days.** Don't try to do everything in one session. Let ideas settle and come back with fresh eyes.
 5. **If you're stuck for more than 30 minutes on an error: STOP.** Post on the discussion board, then step away for a few hours. Banging your head against an error rarely helps.
 6. **Submit early and often.** The limit is 15 per rolling 24 hours—use early submissions as free feedback from the autograder.
@@ -59,7 +59,7 @@ Your challenge is to implement concrete classes that fulfill interface contracts
 
 ### Architecture: Layers and Interfaces
 
-This assignment expands the model to hold collections of recipes and enable persistence by saving recipes and collections to Markdown files.
+This assignment expands the model to hold collections of recipes and enable exporting recipes and collections to Markdown files.
 
 The diagram below shows the complete architecture. Blue dashed classes are provided interfaces; yellow classes are what you implement. We will start including these diagrams when relevant as our codebase increases in size and complexity.
 
@@ -207,7 +207,7 @@ src/
 | `UserLibrary.java` | Interface for user's recipe library |
 | `Recipe.java` (updated) | Now includes `id` field with auto-generation |
 | **`CookbookImpl.java`** | **Complete reference implementation—study this first** |
-| `RepositoryException.java` | Unchecked exception for persistence failures |
+| `RepositoryException.java` | Unchecked exception for persistence and exporting failures |
 
 **Test files:**
 
@@ -225,7 +225,7 @@ This assignment focuses on learning from sample code, working with a new package
 
 - Use official Java documentation (especially for the `Files` and `Paths` classes used later in the assignment)
 - Consult any textbook and course materials
-- Ask questions in office hours or on the course discussion board (especially if something seems unclear)
+- Ask questions in office hours or on the course discussion board (especially if something is unclear in this specification)
 - Discuss high-level approaches with classmates (but write your own code)
 
 As always, planning your design and writing tests before diving into implementation allows you to check understanding, catch bugs during development,
@@ -279,7 +279,7 @@ The constructors take in the following data:
 
 The constructors must also have the following behaviors:
 
-- If any required item is missing, the constructor **must** throw an `IllegalArgumentException`.
+- If any **required** data is missing (or blank (empty or whitespace-only) for `String` type data), the constructor **must** throw an `IllegalArgumentException` The constructors have already been annotated for you using NullAway annotations for your convenience. You must handle the rest.
 - If the list of recipes contains at least 2 recipes with the same ID, the constructor **must** throw an `IllegalArgumentException`.
 - If the `id` is missing, the constructor **must** create a UUID. (See `CookbookImpl` for how this is done).
 
@@ -289,7 +289,7 @@ The constructors must also have the following behaviors:
 
 You can create an `Optional` object that is empty using `Optional.empty()`. You can also create an `Optional` object for an existing value using `Optional.of(T value)` or `Optional.ofNullable(T value)`. See the [`Optional` class Java documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html) for more information as well as `CookbookImpl` for example usage.
 
-**Blank String Handling for WebCollection**: The `siteName` field follows the same blank string normalization as other optional String fields—blank strings (empty or whitespace-only) are treated as absent and `getSiteName()` must return `Optional.empty()`.
+**Blank String Handling for WebCollection**: The `siteName` field follows the same blank string normalization as other optional `String` fields—blank strings (empty or whitespace-only) are treated as absent and `getSiteName()` must return `Optional.empty()`.
 
 Document your approach and rationale in `REFLECTION.md`.
 
@@ -298,7 +298,7 @@ Document your approach and rationale in `REFLECTION.md`.
 Regardless of the structural decisions you make, all implementations must satisfy:
 
 - **Immutability.** All domain objects must be immutable. Transformation methods return new instances.
-- **Separation of concerns.** Domain classes must not depend on file I/O or persistence implementations (e.g. the `MarkdownExporter`).
+- **Separation of concerns.** Domain classes must not depend on file I/O, or persistence and file exporting implementations (e.g. the `MarkdownExporter`).
 - **Interface abstraction.** Code using other objects must depend on their interfaces, not the concrete class.
 - **Null safety.** Use `@NonNull` / `@Nullable` from JSpecify. NullAway enforces this statically—you do not need runtime null checks for parameters.
 - **Documentation.** Javadoc on all public classes and methods, including design decisions.
@@ -321,7 +321,7 @@ For more information and methods you can use on `Path`, see the [`Path` document
 
 #### Files
 
-The `Files` class exposes **static** methods to make reading from files more convenient. Most of the methods will take in a `Path`, avoiding the use of different `InputStream` types we do not need to use. Read about all of these methods in the [`Files` documentaton from Java 21](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/file/Files.html). Here are some methods we recommend taking a look at the following for this assignment, but you are free to use others
+The `Files` class exposes **static** methods to make reading from files more convenient. Most of the methods will take in a `Path`, avoiding the use of different `InputStream` types we do not need to use. Read about all of these methods in the [`Files` documentaton from Java 21](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/nio/file/Files.html). Here are some methods we recommend taking a look at the following for this assignment, but you are free to use others:
 
 - `boolean exists(Path path, LinkOptions... options)` :: does the file referred to by path exist?
 - `String readString(Path path) throws IOException` :: put the contents of the file referred to by path in a single String
@@ -378,7 +378,7 @@ Refer to the Javadoc on `RecipeCollection` for the full method-level specificati
 
 Before diving into implementation, read the Javadoc on `UserLibraryImpl`. Each method you need to complete is documented with its full behavioral specification.
 
-**Persistence note:** `UserLibrary` is an in-memory convenience wrapper. For now, the only way to guarantee persistence is to export it to Markdown using the `MarkdownExporter`. Later in the project, you will parsing files containing recipes and collections, allowing you to load CookYourBooks state from prior runs.
+**Persistence note:** `UserLibrary` is an in-memory convenience wrapper. For now, we can only export it to Markdown using the `MarkdownExporter`. Later in the project, you will parsing files containing recipes and collections, allowing you to load CookYourBooks state from prior runs and enabling persistence.
 
 **What we test:**
 
