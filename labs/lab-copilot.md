@@ -195,6 +195,7 @@ You should now see the Copilot icon in your editor and have access to chat featu
 1. **Generate Code:**
 
     - Open GitHub Copilot Chat (`Ctrl+Shift+I` / `Cmd+Shift+I`)
+    - Check the prompt is set to use the `Auto` option instead of a specific model. Otherwise you will burn your free tokens far too quickly! **Instructors cannot refill these!**
     - Navigate to the `part3_code_generation` folder in your lab repo
     - Try **both** prompting approaches above
     - Review the generated code
