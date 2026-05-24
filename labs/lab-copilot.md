@@ -196,7 +196,7 @@ You should now see the Copilot icon in your editor and have access to chat featu
 
     - Open GitHub Copilot Chat (`Ctrl+Shift+I` / `Cmd+Shift+I`)
     - Navigate to the `part3_code_generation` folder in your lab repo
-    - Try both prompting approaches above
+    - Try **both** prompting approaches above
     - Review the generated code
 
 2. **Before running tests, pause and predict:**
