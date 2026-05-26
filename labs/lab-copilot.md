@@ -154,6 +154,7 @@ You'll be implementing a simple animal shelter management system. Here's what it
 **Approach B: Concept-First**
 
 > "I need an AnimalShelter class that manages animals with species tracking and adoption status. Design it with changeability in mind:
+
 > - Use encapsulation (private fields, public methods)
 > - Consider using an enum for animal status since new statuses might be added later
 > - Keep the Animal class separate from AnimalShelter (modularity)
@@ -176,10 +177,10 @@ There's no "right answer" here - different situations may call for different app
 **Steps:**
 1. **Generate Code:**
 
-    - Open GitHub Copilot Chat (`Ctrl+Shift+I` / `Cmd+Shift+I`)
-    - Navigate to the `part3_code_generation` folder in your lab repo
-    - Try both prompting approaches above
-    - Review the generated code
+- Open GitHub Copilot Chat (`Ctrl+Shift+I` / `Cmd+Shift+I`)
+- Navigate to the `part3_code_generation` folder in your lab repo
+- Try both prompting approaches above
+- Review the generated code
 
 2. **Before running tests, pause and predict:**
 
