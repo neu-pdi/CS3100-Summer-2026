@@ -1,0 +1,739 @@
+---
+sidebar_position: 18
+title: "Architectural Design"
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Architectural Design
+
+### MVC & Hexagonal Architecture
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2026 Amit Shesh, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Theme of this lecture:**
+- We move from writing correct code to engineering software that survives time
+- Key insight: software engineering = programming × time
+- Today: two architectural patterns that make systems changeable and testable
+
+→ **Transition:** Why isn't "correct code" enough?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 2: FROM CORRECT CODE TO ENGINEERING */}
+{/* ============================================ */}
+
+<Slide>
+
+## From Correct Code to Engineering Software
+
+<p style={{fontSize: '0.85em', fontStyle: 'italic', color: '#9370DB'}}>
+  "Software engineering is the integral of programming over time."
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '1em'}}>
+  <li>Correct code is necessary — but not sufficient</li>
+  <li>Systems are repaired, enhanced, debugged, and grown</li>
+  <li>Every change requires review and testing — time and money</li>
+</ul>
+
+<div style={{marginTop: '1em', fontSize: '0.85em'}}>
+
+**The two goals of good software design:**
+
+</div>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>Changeability</strong> — isolated changes with minimal ripple effects</li>
+  <li><strong>Testability</strong> — ability to verify changes without breaking the system</li>
+</ul>
+
+<aside className="notes">
+- Emphasize that this is a design and engineering problem, not just a coding problem
+- The two properties are inseparable — they must go hand-in-hand
+- This frames everything else in the lecture
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 2.1: DESIGN BY COMPOSITION */}
+{/* ============================================ */}
+
+<Slide>
+
+## 2.1 Design by Composition
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Large teams build large products — how does it not collapse into chaos?</li>
+  <li>Answer: <strong>composition</strong> — complex systems built from simpler parts</li>
+  <li>Each contributor understands <em>some</em> parts deeply, not the whole system</li>
+</ul>
+
+<div style={{marginTop: '1em', fontSize: '0.85em'}}>
+
+**The key distinction:**
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>**What** a part does → clients need this</li>
+  <li>**How** a part works → hidden from clients</li>
+</ul>
+
+</div>
+
+<aside className="notes">
+- Connect to what students already know: interface vs. implementation
+- The insight scales from a single class to an entire architecture
+- "What/How" demarcation is the foundation of every design principle in this lecture
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 2.2: WELL-DESIGNED SYSTEM */}
+{/* ============================================ */}
+
+<Slide>
+
+## 2.2 Characteristics of a Well-Designed System
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Supports making changes <strong>with less effort</strong></li>
+  <li>Changes can be made in an <strong>isolated</strong> manner</li>
+  <li>New requirements don't trigger extensive re-implementation</li>
+</ul>
+
+<div style={{marginTop: '1em', fontSize: '0.85em', color: '#9370DB'}}>
+
+**Three guiding OO ideas:**
+
+</div>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>Cohesion</strong> — components have well-defined, focused boundaries</li>
+  <li><strong>Coupling</strong> — minimize dependencies that cause cascading changes</li>
+  <li><strong>Information hiding</strong> — expose only what clients need</li>
+</ul>
+
+<aside className="notes">
+- These OO ideas apply broadly — not just to OO languages
+- OO just makes "component" concrete: encapsulation of data + operations
+- Ask students: which of these do they already apply in their code?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Practical Design Guidelines
+
+<div style={{fontSize: '0.8em'}}>
+
+**Applying cohesion, coupling & information hiding in practice:**
+
+</div>
+
+<ul style={{fontSize: '0.78em', marginTop: '0.5em'}}>
+  <li><strong>Program by interface:</strong> depend on interface names, not implementations — swapping is easy</li>
+  <li><strong>Use <code>private</code> liberally:</strong> private members can't be depended on externally</li>
+  <li><strong>Distribute methods well:</strong> if a method only uses one class's data, it belongs there</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', fontStyle: 'italic', color: '#666'}}>
+  Goal: not eliminate re-design (impossible) — but <strong>delay the inevitable</strong>.
+</p>
+
+<aside className="notes">
+- These are simple rules that students can apply immediately
+- The goal framing is important: good design buys time, it doesn't grant immunity
+- Transition: these guidelines are general — SOLID gives us named, actionable principles
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 3: SOLID PRINCIPLES */}
+{/* ============================================ */}
+
+<Slide>
+
+## The SOLID Principles
+
+<ol style={{fontSize: '0.78em'}}>
+  <li><strong>S</strong>ingle Responsibility — one class, one reason to change</li>
+  <li><strong>O</strong>pen/Closed — open for extension, closed for modification</li>
+  <li><strong>L</strong>iskov Substitution — subtypes must be backward-compatible with their supertypes</li>
+  <li><strong>I</strong>nterface Segregation — no client forced to depend on methods it doesn't use</li>
+  <li><strong>D</strong>ependency Inversion — depend on abstractions, not concrete implementations</li>
+</ol>
+
+<aside className="notes">
+- SOLID = distilled best practices from decades of software engineering
+- Each principle reinforces cohesion, coupling and information hiding
+- Emphasize: knowing WHY is easy — knowing HOW requires practice and patterns
+- We'll see these in action when we look at MVC and Hexagonal Architecture
+</aside>
+
+</Slide>
+
+<Slide>
+
+## SOLID — Effects in Practice
+
+<ul>
+  <li><strong>Single Responsibility</strong>
+    <ul>
+      <li>One reason to change → easy to locate the right class</li>
+    </ul>
+  </li>
+  <li><strong>Open/Closed</strong>
+    <ul>
+      <li>Add functionality without modifying tested code</li>
+    </ul>
+  </li>
+  <li><strong>Liskov Substitution</strong>
+    <ul>
+      <li>Override methods consistently — no surprises for callers</li>
+    </ul>
+  </li>
+  <li><strong>Interface Segregation</strong>
+    <ul>
+      <li>Decompose large interfaces so clients only see what they use</li>
+    </ul>
+  </li>
+  <li><strong>Dependency Inversion</strong>
+    <ul>
+      <li>High-level classes depend on interfaces, not low-level details</li>
+    </ul>
+  </li>
+</ul>
+
+
+<p style={{fontSize: '0.8em', marginTop: '1em', fontStyle: 'italic', color: '#9370DB'}}>
+  These become concrete when we look at architectural patterns.
+</p>
+
+<aside className="notes">
+- Go through each effect briefly — the students will see these come alive in MVC and Hexagonal
+- Dependency Inversion is especially important for Hexagonal Architecture (ports are abstractions)
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 4: MVC */}
+{/* ============================================ */}
+
+<Slide>
+
+## Model-View-Controller (MVC)
+
+<p style={{fontSize: '0.85em'}}>
+  A starting decomposition: break the program into three broad categories.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', fontSize: '0.78em', marginTop: '0.5em'}}>
+
+<div style={{background: '#f0f4ff', padding: '0.75em', borderRadius: '8px'}}>
+
+**Model**
+
+The actual functionality. Computes, stores, and manages domain data.
+
+</div>
+
+<div style={{background: '#f0fff4', padding: '0.75em', borderRadius: '8px'}}>
+
+**View**
+
+Shows results to the user. Displays state — does not decide what to show.
+
+</div>
+
+<div style={{background: '#fff8f0', padding: '0.75em', borderRadius: '8px'}}>
+
+**Controller**
+
+Takes user input, tells the model what to do and the view what to show.
+
+</div>
+
+</div>
+
+<aside className="notes">
+- Example: IntelliJ IDEA
+  - View: source editor, project tree, console
+  - Controller: Run, File→Open, etc.
+  - Model: compiler, runtime, project state — invisible but doing the work
+- MVC is also called an "architecture" because it applies to the whole program
+</aside>
+
+</Slide>
+
+<Slide>
+
+## MVC — Cohesion
+
+<p style={{fontSize: '0.85em'}}>
+  Each class belongs to <strong>exactly one</strong> of Model, View, or Controller.
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>A class that implements functionality <em>and</em> prints results → ❌ mixed concerns</li>
+  <li>A class that shows a menu <em>and</em> implements its operations → ❌ mixed concerns</li>
+</ul>
+
+<Img
+  src="/img/lectures/l18-architecture-design-mvc-hexagonal/class-division.png"
+  alt="Diagram showing correct vs incorrect class division in MVC"
+  style={{maxHeight: '2.5in', marginTop: '0.5em'}}
+/>
+
+<aside className="notes">
+- The diagram shows a well-separated MVC vs one where classes bleed across layers
+- Badly implemented MVC is worse than no MVC — it gives false confidence
+- Cohesion within each layer is the first benefit
+</aside>
+
+</Slide>
+
+<Slide>
+
+## MVC — Coupling
+
+<p style={{fontSize: '0.85em'}}>
+  MVC mandates <strong>which components can access which</strong>.
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>Model and View <strong>cannot</strong> directly access each other</li>
+  <li>Controller communicates with both</li>
+  <li>In many designs, View cannot <em>ask</em> the Controller for data — Controller <em>pushes</em> data to View</li>
+</ul>
+
+<Img
+  src="/img/lectures/l18-architecture-design-mvc-hexagonal/coupling.png"
+  alt="MVC coupling diagram showing allowed communication paths"
+  style={{maxHeight: '2.5in', marginTop: '0.5em'}}
+/>
+
+<aside className="notes">
+- The coupling diagram is key — draw attention to the directional arrows
+- This "push not pull" design further reduces coupling: View has no knowledge of Controller internals
+- Result: you can swap the View without touching the Model, or change the Model without touching the View
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 5: HEXAGONAL ARCHITECTURE */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Hexagonal Architecture
+
+<p style={{fontSize: '0.85em'}}>
+  Also known as <strong>Ports and Adapters</strong> — proposed by Alistair Cockburn (2005).
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>MVC was designed for apps with a single, well-defined UI</li>
+  <li>Modern apps: one core accessed via desktop, web, mobile, APIs…</li>
+  <li>Need: separate <strong>domain logic</strong> from <strong>infrastructure</strong> more generally</li>
+</ul>
+
+<Img
+  src="/img/lectures/l18-architecture-design-mvc-hexagonal/hexagonal-architecture.png"
+  alt="Hexagonal Architecture diagram"
+  style={{maxHeight: '2.5in', marginTop: '0.5em'}}
+/>
+
+<aside className="notes">
+- Changeability and testability goals are the same as MVC — but the shape of the problem is different
+- Hexagonal generalizes MVC's ideas to any number of external systems, not just a UI
+- Cockburn's original insight: the application should be equally drivable by tests, UIs, other programs
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 5.1 The Core Idea — Three Layers
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+
+<div style={{background: '#f0f4ff', padding: '0.75em', borderRadius: '8px'}}>
+
+**Application Core (Domain)**
+
+All business logic and domain rules. Knows nothing about databases, web services, or hardware.
+
+</div>
+
+<div style={{background: '#f0fff4', padding: '0.75em', borderRadius: '8px'}}>
+
+**Ports**
+
+Interfaces defining what the application needs from the outside. Technology-agnostic: *what*, not *how*.
+
+</div>
+
+<div style={{background: '#fff8f0', padding: '0.75em', borderRadius: '8px'}}>
+
+**Adapters**
+
+Implement ports for specific technologies. Translate between the abstract port and a concrete system (DB, API, hardware).
+
+</div>
+
+</div>
+
+<aside className="notes">
+- Core → completely ignorant of the outside world
+- Port → contract between core and outside; the interface the domain defines
+- Adapter → the glue code: HTTP client, SQL query, Zigbee command, etc.
+- Key: dependencies point inward. Adapters depend on ports. Core depends on nothing external.
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 5.2: EXAMPLES */}
+{/* ============================================ */}
+
+<Slide>
+
+## 5.2.1 Example: Thermostat Manager
+
+<p style={{fontSize: '0.85em'}}>Three implementations of the same application:</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li><strong>Monolith:</strong> functional, classes defined, but no overall structure</li>
+  <li><strong>MVC:</strong> code redistributed into Model, View, Controller — layers communicate through interfaces</li>
+  <li><strong>Hexagonal:</strong> code redistributed into ports and adapters</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', fontStyle: 'italic', color: '#666'}}>
+  Operations: create thermostat, increment/decrement temperature, get temperature, monitor changes, save to file.
+</p>
+
+<aside className="notes">
+- Point students to the linked code zip for hands-on comparison
+- The same feature set is implemented three ways — makes differences concrete
+- Encourage them to look at how coupling and cohesion differ across the three
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 5.2.2 Example: Smart Home Energy Manager
+
+<p style={{fontSize: '0.85em'}}>
+  <strong>Domain problem:</strong> When energy prices are high, reduce consumption. When low, pre-condition the home.
+</p>
+
+<div style={{fontSize: '0.78em', marginTop: '0.5em'}}>
+
+**Ports defined by the domain:**
+
+</div>
+
+<ul style={{fontSize: '0.75em'}}>
+  <li><code>EnergyPricePort</code> — get current price and forecasts (technology-agnostic)</li>
+  <li><code>DeviceControlPort</code> — list and control devices (technology-agnostic)</li>
+  <li><code>UserPreferencesPort</code> — retrieve user settings (technology-agnostic)</li>
+</ul>
+
+<aside className="notes">
+- Notice: ports are defined in terms of what the domain needs, not what any API happens to offer
+- This is Dependency Inversion in action — the domain defines the contract, infrastructure implements it
+- The domain never imports HTTP clients, SQL drivers, or Zigbee libraries
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Smart Home — Application Core
+
+<p style={{fontSize: '0.85em'}}>
+  <code>EnergyOptimizer</code> contains pure business logic — no infrastructure.
+</p>
+
+```java
+public class EnergyOptimizer {
+    private final EnergyPricePort priceService;
+    private final DeviceControlPort deviceControl;
+    private final UserPreferencesPort preferences;
+
+    public void optimizeForPrice(String homeId) {
+        double currentPrice = priceService.getCurrentPricePerKWh();
+        EnergyPreferences prefs = preferences.getPreferences(homeId);
+
+        if (currentPrice > prefs.highPriceThreshold()) {
+            // Reduce non-essential devices to 50%
+        } else if (currentPrice < prefs.lowPriceThreshold()) {
+            // Run all devices at 100%
+        }
+    }
+}
+```
+
+<aside className="notes">
+- Constructor injection: the core receives ports, never creates adapters itself
+- The logic is pure — readable, understandable, no infrastructure noise
+- Could run this class in a test with a stub port in one line
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Smart Home — Adapters
+
+<p style={{fontSize: '0.85em'}}>
+  Each adapter implements a port for a specific technology:
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li><code>GridPriceApiAdapter</code> → <code>EnergyPricePort</code> via HTTP calls</li>
+  <li><code>ZigbeeDeviceAdapter</code> → <code>DeviceControlPort</code> via Zigbee protocol</li>
+  <li><code>PostgresPreferencesAdapter</code> → <code>UserPreferencesPort</code> via SQL</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', color: '#9370DB'}}>
+  Swap <code>PostgresPreferencesAdapter</code> for a <code>MongoPreferencesAdapter</code> — the domain is untouched.
+</p>
+
+<aside className="notes">
+- This is the payoff of the architecture: infrastructure changes are localized to adapters
+- Each adapter is independently testable
+- The domain doesn't know or care which adapter is wired in
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 5.3: DESIGN ADVANTAGES */}
+{/* ============================================ */}
+
+<Slide>
+
+## 5.3.1 Ports as a Design Technique
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Whenever domain logic needs something from the outside world — <strong>let a port emerge</strong></li>
+  <li>Define the contract that makes sense for your domain first</li>
+  <li>Implement the adapter later</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', fontStyle: 'italic', color: '#666'}}>
+  Keeps you focused on the business problem — not distracted by infrastructure details.
+</p>
+
+<aside className="notes">
+- This is a design mindset, not just a structural rule
+- Ports force you to think: what does my domain *really* need? Not: what does this API happen to give me?
+- This naturally leads to better abstractions and more testable code
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 5.3.2 Modularity
+
+<p style={{fontSize: '0.85em'}}>
+  Ports are modules with well-defined interfaces. A well-designed module has:
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>A well-defined interface that specifies behavior</li>
+  <li>An implementation hidden from other modules</li>
+  <li>Independence from other modules' implementation details</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em'}}>
+  <code>EnergyPricePort</code> specifies <em>what</em> the domain needs (price, forecasts) without revealing <em>how</em> — no HTTP clients, API keys, or JSON parsing leak in.
+</p>
+
+<aside className="notes">
+- Connect back to section 2.2: cohesion, coupling, information hiding
+- Ports satisfy all three modularity criteria by construction
+- The domain depends only on the interface — not on any specific technology
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 5.3.3 Coupling
+
+<p style={{fontSize: '0.85em'}}>
+  Hexagonal Architecture minimizes the kinds of coupling most harmful to changeability:
+</p>
+
+<ul style={{fontSize: '0.78em', marginTop: '0.5em'}}>
+  <li>Ports pass only data needed — e.g. <code>getCurrentPricePerKWh()</code> returns <code>double</code>, not <code>GridApiResponse</code></li>
+  <li>Domain types are controlled by the domain, not external APIs</li>
+  <li>Domain classes decide what to do with data — no external control of internal behavior</li>
+  <li>Well-defined boundaries eliminate shared global state</li>
+</ul>
+
+<aside className="notes">
+- Point 1: narrow return types prevent "type bleeding" from external APIs into the domain
+- Point 3: the domain is in charge — outside systems can only provide data through ports, not direct behavior
+- Point 4: global state is one of the most common sources of hard-to-trace bugs
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 5.3.4 Cohesion
+
+<p style={{fontSize: '0.85em'}}>
+  Ports promote <strong>functional cohesion</strong> — each port has a single, clear responsibility.
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li><code>EnergyPricePort</code> — about getting prices. That's it.</li>
+  <li><code>DeviceControlPort</code> — about controlling devices. That's it.</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+  <strong>Key insight:</strong> Low coupling + high cohesion don't just make code easier to change — they make it easier to <em>test</em>.
+</p>
+
+<aside className="notes">
+- Single Responsibility Principle at the architectural level
+- The insight about testability is what we explore next
+- This is why the two design goals (changeability + testability) are inseparable
+</aside>
+
+</Slide>
+
+<Slide>
+
+## 5.3.5 Testability
+
+<p style={{fontSize: '0.85em'}}>
+  Layered architectures enable testing at every level:
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li><strong>Unit tests:</strong> substitute stub/spy implementations for ports — no real infrastructure</li>
+  <li><strong>Integration tests:</strong> real adapters with test instances (e.g., in-memory DB)</li>
+  <li><strong>End-to-end tests:</strong> production adapters</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', fontStyle: 'italic', color: '#666'}}>
+  Core business logic is identical across all test types — only the adapters change.
+</p>
+
+<aside className="notes">
+- Show the unit test snippet from the notes: EnergyPricePort as a lambda, SpyDeviceControl, etc.
+- The domain is tested in complete isolation from HTTP, databases, hardware
+- This is the payoff that justifies the architectural investment
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Unit Test: No Infrastructure Needed
+
+```java
+@Test
+void reducesNonEssentialDevicesWhenPriceIsHigh() {
+    EnergyPricePort stubPrices = () -> 0.35;  // High price stub
+
+    List<ControllableDevice> devices = List.of(
+        new ControllableDevice("light-1", true, 100),  // non-essential
+        new ControllableDevice("fridge", false, 100)   // essential
+    );
+    SpyDeviceControl spyDevices = new SpyDeviceControl(devices);
+    UserPreferencesPort stubPrefs =
+        (homeId) -> new EnergyPreferences(0.25, 0.10);
+
+    EnergyOptimizer optimizer =
+        new EnergyOptimizer(stubPrices, spyDevices, stubPrefs);
+    optimizer.optimizeForPrice("home-123");
+
+    assertEquals(50, spyDevices.getPowerLevel("light-1"));
+    assertEquals(100, spyDevices.getPowerLevel("fridge")); // unchanged
+}
+```
+
+<aside className="notes">
+- Each port is replaced with a trivial implementation — a lambda or spy
+- No HTTP server, no database, no Zigbee hub needed to run this test
+- Tests run fast, deterministically, and in isolation
+- Ask: could they write this test for the monolith version? Why not?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SUMMARY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Summary
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
+
+<div>
+
+**MVC**
+- Decomposes: Model / View / Controller
+- Promotes cohesion (one category per class)
+- Mandates coupling rules (no direct Model ↔ View)
+- Best for: single-UI applications
+
+</div>
+
+<div>
+
+**Hexagonal Architecture**
+- Decomposes: Domain / Ports / Adapters
+- Domain is completely isolated from infrastructure
+- Swap any adapter without touching the domain
+- Best for: multi-interface, multi-infrastructure applications
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
+  Both serve the same goal: <strong>changeability</strong> and <strong>testability</strong>.
+</p>
+
+<aside className="notes">
+- Both patterns apply SOLID — especially Single Responsibility, Open/Closed, Dependency Inversion
+- The choice depends on the shape of the system, not on one being "better"
+- A complex system may use both: MVC for a specific UI surface, Hexagonal for the broader application
+</aside>
+
+</Slide>
+
+</RevealJS>
