@@ -4,16 +4,15 @@ lecture_number: 18
 title: Architectural Design
 ---
 
-
-# 2 From Correct Code to Engineering Software: Scaling up
+# 1 From Correct Code to Engineering Software: Scaling up
  
-A correctly-working program is undoubtedly useful, but is not enough. It is a fact of software development that systems are repaired, enhanced, debugged and otherwise grown. Each one of these activities require changes to the code, and any change necessitates review and testing which costs time and money. 
+A correctly-working program is undoubtedly useful, but is not enough. It is a fact of software development that systems are repaired, enhanced, debugged and otherwise grown. Each one of these activities require changes to the code, and any change necessitates review and testing which costs time and money.
 
 *Software engineering is the integral of programming over time*. 
 
 Therefore the objective of writing software should not only be a program that (somehow) spits out the correct answer, but also one that can stand inevitable changes in the future. Thus whatever we design needs *changeability*, and this is inherently a design and engineering problem. When we change something, we must also have ways to inspect if the changes work, and the things that have changed have not broken. Thus whatever we design also needs *testability*. The two must go hand-in-hand.
 
-## 2.1 Design by composition
+## 1.1 Design by composition
  
 One can witness a common phenomenon in virtually any software organization: many people with varying expertise work with each other, in and across teams, towards building a single product. How is it that the work of so many developers comes together without resulting in a spectacular disaster (sometimes that does happen!)? Conversely how is it possible for a developer or designer understand the ins-and-outs of the product well enough to meaningfully contribute? The answer lies in the main rule of taming complexity and size: composition. We naturally compose complex systems out of simpler parts, whether it be software or physical manufacturing. However each contributor is able to meaningfully contribute to the final product without fully understanding how it works. 
 
@@ -21,7 +20,7 @@ This statement seems contradictory to everything we have learned: aren't we supp
 
 We already know the simplest manifestation of this concept: interface vs. implementation. The interface of a class lists only the method signatures (or in general, the list of publicly available functions in a component). The implementation provides the details of *how* it implements these methods. Any client needs to know how to use the functions, not how the implementation actually provides that functionality. In other words, a client only needs the interface information in order to use the implementing object. But how does one scale up such characteristics with the size and complexity of software? 
 
-## 2.2 Characteristics of a *well-designed* system
+## 1.2 Characteristics of a *well-designed* system
  
 A well-designed system not only works correctly, but supports making changes to it *with less effort*. It is not possible to quantify this in an absolute manner, and the problem becomes more difficult when we realize that we don't know what changes will be proposed in the future at the time of designing it. A broad characteristic is for the design to allow changes to be made in an *isolated* manner, i.e. a new requirement shouldn't require extensive changes to the current design or a significant re-implementation. But how do we actually (try to) ensure this?
 
@@ -44,7 +43,7 @@ We have seen several *simple* examples of good design facilitating these above g
  
 But how does one *create* a design that has all these characteristics? How would one know that the design is good, without knowing specifically what must be changed? There is no foolproof answer to this, but several design practices and principles have been shown to work well in practice. The realistic objective of good design is not eliminate the possibility of major re-design and re-implementation (this is not possible) but to *delay* the inevitable. 
 
-# 3  The SOLID principles
+# 2  The SOLID principles
  
 Many good practices in design and coding have been distilled into the SOLID principles. They are: 
 
@@ -71,13 +70,13 @@ Many good practices in design and coding have been distilled into the SOLID prin
 
 While it is more obvious *why* the SOLID principles lead to good design, it may not be as obvious as to *how* to follow them. We will understand this further when we see different design recipes, patterns and practices. 
 
-# 4 Model-view-controller
+# 3 Model-view-controller
  
 Usually the desire of a software program is expressed in terms of what it is expected to do. This list of requirements is likely both long and vague. While we can envision what the overall program will look like, how do we proceed to decompose it? A popular way to start the decomposition is to break it into three parts: the model, the view and the controller. 
 
 ![Image not loaded](/img/lectures/l18-architecture-design-mvc-hexagonal/mvc.png) 
 
-The model-view-controller (MVC) is a composition of an entire program into three broad categories by what part of the program they implement (hence it is also referred to as the MVC ''architecture") . The model implements the actual functionalities offered by the program. The view is the part of the program that shows results to the user. The controller takes inputs from the user and tells the model what to do and the view what to show. Take the IDE you are using to write programs as an example (IntelliJ). The view shows the source code, the project structure and the console output. The controller is the part that decides what to do when you select ''Run" or ''File->Open" and tells others parts of the program to actually carry out the operations. The model is the part that you cannot see, but one that actually compiles your program, runs it and keeps track of all the data needed for the program to function. 
+The model-view-controller (MVC) is a composition of an entire program into three broad categories by what part of the program they implement (hence it is also referred to as the MVC "architecture") . The model implements the actual functionalities offered by the program. The view is the part of the program that shows results to the user. The controller takes inputs from the user and tells the model what to do and the view what to show. Take the IDE you are using to write programs as an example (IntelliJ). The view shows the source code, the project structure and the console output. The controller is the part that decides what to do when you select ''Run" or ''File->Open" and tells others parts of the program to actually carry out the operations. The model is the part that you cannot see, but one that actually compiles your program, runs it and keeps track of all the data needed for the program to function. 
 
 ![Image not loaded](/img/lectures/l18-architecture-design-mvc-hexagonal/class-division.png) 
 
@@ -87,36 +86,16 @@ The MVC architecture allows you to isolate the entire behavior of your program i
 
 The MVC architecture also mandates which components can directly use other components. Since the model, view and controller have separate functions, access to each other is also restricted. Typically the model and the view cannot directly access each other, and the controller communicates with both. In many programs the view cannot *ask* the controller for data: the controller decides when to *provide* data to it. This is illustrated in the figure above. In doing so, the MVC architecture promotes *low coupling* between groups of classes. 
 
-Another way to think about the merits of MVC is what each part *does not do*: 
 
-   * Model: 
-
-What it does: implements all the functionality 
-
-Does not do: does not care about which functionality is used when, how results are shown to the user 
-
-   * Controller: 
-
-What it does: takes user inputs, tells model what to do and view what to display 
-
-Does not do: does not care how model implements functionality, does not care how the screen is laid out to display results 
-
-   * View: 
-
-What it does: display results to user 
-
-Does not do: does not care how the results were produced, when to respond to user action 
-
-
-# 5 The Hexagonal Architecture
+# 4 The Hexagonal Architecture
 
 ![Hexagonal Architecture](/img/lectures/l18-architecture-design-mvc-hexagonal/hexagonal-architecture.png) 
 
-The MVC architecture was traditionally proposed for applications that are *monolithic* in nature, e.g. desktop applications that have a single well-defined user interface. Many applications are more complex. For example we could have a singular component that offers functionality and stores relevant data, which is accessed through different desktop applications, web applications and mobile apps. The basic principles and objectives of *changeability* remain the same, but a more general-purpose architecture is desirable.
+The MVC architecture was traditionally proposed for applications that have a well-defined, often singular way to interact with users (e.g. desktop applications that have a single well-defined user interface). Many applications are more complex. For example we could have a singular component that offers functionality and stores relevant data, which is accessed through different desktop applications, web applications and mobile apps. The basic principles and objectives of *changeability* remain the same, but a more general-purpose architecture is desirable.
 
 The principle of separating infrastructure from domain code is formalized in an architectural pattern called **Hexagonal Architecture** (also known as **Ports and Adapters**), proposed by [Alistair Cockburn in 2005](https://alistair.cockburn.us/hexagonal-architecture).
 
-## 5.1 The Core Idea
+## 4.1 The Core Idea
 
 ```mermaid
 graph LR
@@ -159,9 +138,9 @@ The architecture has three layers:
 
 3. **Adapters**: Implementations of ports that know how to talk to specific external systems. An adapter translates between the port's abstract interface and the concrete technology.
 
-## 5.2 Examples
+## 4.2 Examples
 
-### 5.2.1 A simple Thermostat Manager: Comparing designs
+### 4.2.1 A simple Thermostat Manager: Comparing designs
 
 [Code](/code/lectures/l18-architecture-design-mvc-hexagonal/HexArchitectureExample.zip)
 
@@ -181,7 +160,7 @@ The accompanying code linked above creates a simple Java application with the ab
 * Hexagonal architecture: this example is not only functional but redistributes the code from the monolith variant into ports and adapters.
 
 
-### 5.2.2 A More Elaborate IoT Example Using Hexagonal Architecture: Smart Home Energy Manager
+### 4.2.2 A More Elaborate IoT Example Using Hexagonal Architecture: Smart Home Energy Manager
 
 Now we design a smart home energy management system using Hexagonal Architecture.
 
@@ -281,15 +260,15 @@ public class PostgresPreferencesAdapter implements UserPreferencesPort {
 }
 ```
 
-## 5.3 Design Advantages of the Hexagonal Architecture
+## 4.3 Design Advantages of the Hexagonal Architecture
 
-### 5.3.1 Ports as a Design Technique
+### 4.3.1 Ports as a Design Technique
 
 When developing with Hexagonal Architecture, you can use ports as a design technique. Whenever you notice that your domain logic needs something from the outside world, let an interface (port) emerge. Define the contract that makes sense for your domain, then implement the adapter later.
 
 This approach keeps you focused on the business problem without getting distracted by infrastructure details. It also forces you to think about what your domain *really* needs, rather than being constrained by what a particular API happens to offer.
 
-### 5.3.2 Modularity
+### 4.3.2 Modularity
 
 Hexagonal Architecture promotes modularity and minimizes or streamlines coupling.
 
@@ -301,30 +280,22 @@ Hexagonal Architecture promotes modularity and minimizes or streamlines coupling
 
 Ports satisfy all three criteria. The `EnergyPricePort` interface specifies *what* the domain needs (current price, forecasts) without revealing *how* that information is obtained. The domain code depends only on this interface, not on HTTP clients, API keys, or JSON parsing.
 
-### 5.3.3 Coupling
+### 4.3.3 Coupling
 
 The Hexagonal Architecture minimizes coupling, specifically those kinds that are more detrimental to changeability.
 
-| Coupling Type | How Hexagonal Architecture Addresses It |
-|---------------|----------------------------------------|
-| **Data coupling** | Ports pass only the data needed — `getCurrentPricePerKWh()` returns a `double`, not a `GridApiResponse` |
-| **Stamp coupling** | Domain types like `EnergyPreferences` are defined by the domain, not dictated by external APIs |
-| **Control coupling** | Adapters don't pass flags that control domain logic — the domain decides what to do with the data |
-| **Common coupling** | No shared global state between domain and infrastructure |
-| **Content coupling** | Impossible — adapters can't access domain internals, and vice versa |
+1. Ports pass only the data needed. For example `getCurrentPricePerKWh()` returns a `double`, not a `GridApiResponse`.
+2. Domain types are controlled by the domain, not external APIs.
+3. Domain classes are walled off, and decide what to do with the data. This behavior cannot be controlled from outside because the ports do not offer any such functionality. 
+4. Because of the well-defined boundaries established by the ports, there is no shared global state between domain classes and external classes.
 
-Consider what would happen without this architecture. If `EnergyOptimizer` directly used an `HttpClient` to call the pricing API, we'd have:
-- **Stamp coupling**: The domain would depend on `HttpResponse` objects
-- **Common coupling**: If we used a shared `HttpClient` instance
-- **Lower cohesion**: The `EnergyOptimizer` would mix HTTP concerns with business rules
+### 4.3.4 Cohesion
 
-### 5.3.4 Cohesion
+Ports promote functional cohesion. Each port has a single, well-defined responsibility. `EnergyPricePort` is about getting prices. `DeviceControlPort` is about controlling devices. 
 
-Ports promote functional cohesion. Each port has a single, well-defined responsibility. `EnergyPricePort` is about getting prices. `DeviceControlPort` is about controlling devices. Compare this to the monolithic `SmartThermostat` class we saw earlier that mixed database queries, business logic, and HTTP calls — that class had only procedural cohesion at best.
+The key insight is that **low coupling and high cohesion don't just make code easier to change — they make it easier to test**. When each module has a single responsibility and maintains proper isolation from others, we can test it in isolation.
 
-The key insight is that **low coupling and high cohesion don't just make code easier to change — they make it easier to test**. When your domain logic has no knowledge of infrastructure, you can test it with simple stubs. When each module has a single responsibility, you can test it in isolation.
-
-### 5.3.5 Testability
+### 4.3.5 Testability
 
 Another advantage of segregating parts of an application into layers (model-view-controller or ports-adapters) is that it facilitates testing components in isolation (unit testing) and with each other (integration testing). 
 
