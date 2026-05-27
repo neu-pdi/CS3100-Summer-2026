@@ -3,6 +3,8 @@ title: 'Assignment 3: Domain Extensions and File Exporting'
 sidebar_position: 4
 ---
 
+## Updates
+- 05/27: All mentions of `RecipeRepository` have been struck out. This interface does not exist in this assignment. We've updated the example of order-independent testing to use `UserLibrary` methods instead.
 
 ## Overview
 
