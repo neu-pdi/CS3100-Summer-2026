@@ -548,20 +548,20 @@ Testing follows the same model as Assignment 2.
 
 **Avoid Order-Dependent Tests**
 
-Several methods have unspecified ordering: `findAll()`, `findAllByTitle()`, `UserLibrary.getCollections()`, and `UserLibrary.findRecipesByTitle()` do not guarantee any particular order.
+Several methods have unspecified ordering: ~`findAll()`, `findAllByTitle()`,~ `UserLibrary.getCollections()`, and `UserLibrary.findRecipesByTitle()` do not guarantee any particular order.
 Below is an example of a test that assumes an order and another that does not assume order (or is order-independent).
 
 ```java
 //OBJECTIVE: verify that there is a recipe for Chocolate Cake in the repository
 
 // BAD: assumes specific order
-List<Recipe> results = repository.findAll();
-assertEquals("Chocolate Cake", results.get(0).getTitle());
+List<RecipeCollections> results = library.getCollections()();
+assertEquals("Home Cookbook", results.get(0).getTitle());
 
 // GOOD: order-independent
-List<Recipe> results = repository.findAll();
+List<RecipeCollections> results = library.getCollections()();
 assertEquals(2, results.size());
-assertTrue(results.stream().anyMatch(r -> r.getTitle().equals("Chocolate Cake")));
+assertTrue(results.stream().anyMatch(r -> r.getTitle().equals("Home Cookbook")));
 ```
 
 Tests that fail on correct implementations due to ordering assumptions will not receive credit.
@@ -621,7 +621,7 @@ Complete the **6 reflection questions** in `REFLECTION.md`. Each question is wor
 1. **Domain Model Design** — Describe your approach to implementing `PersonalCollectionImpl` and `WebCollectionImpl`.
 How did you leverage the `CookbookImpl` reference implementation? What modifications did you make
 for each collection type's unique metadata?
-2. **Architecture and Testability** — The assignment uses interfaces (`RecipeCollection`, `RecipeRepository`) with concrete
+2. **Architecture and Testability** — The assignment uses interfaces (`RecipeCollection`~, `RecipeRepository`~) with concrete
 implementations. Give a specific example from your code showing how this separation enables testing.
 What would be harder to test without the interface abstraction?
 3. **Searching Techniques** - Reflect on how you chose to implement the search methods in `UserLibraryImpl`. Did you use a functional style or a more iterative style and why?
