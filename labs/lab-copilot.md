@@ -1,5 +1,6 @@
 # Learning Objectives
 By the end of this lab, you will be able to:
+
 - Utilize control flow and data flow analysis to understand unfamiliar code
 - Utilize an AI programming agent to assist with understanding and implementation tasks
 - Determine the appropriate level of abstraction and context to provide to AI programming agents
@@ -175,12 +176,30 @@ There's no "right answer" here - different situations may call for different app
 ---
 
 **Steps:**
+
+0. **Re-enabling AI features**
+
+In Lab 1, you disabled AI features in VS Code to build foundational skills. Now it's time to turn them back on!
+
+To re-enable AI features:
+
+    - Open VS Code Settings:
+        - Mac: Press ⌘+, (Command + comma)
+        - Windows/Linux: Press Ctrl+,
+    - In the search bar, type: chat.disableAIFeatures
+    - Uncheck the box next to "Chat: Disable AI Features"
+
+Or click this link: [vscode://settings/chat.disableAIFeatures](vscode://settings/chat.disableAIFeatures)
+
+You should now see the Copilot icon in your editor and have access to chat features. If you don't have GitHub Copilot set up yet, see the [GitHub Copilot documentation](https://docs.github.com/en/copilot/using-github-copilot/getting-code-suggestions-in-your-ide-with-github-copilot) for setup instructions.
+
 1. **Generate Code:**
 
-- Open GitHub Copilot Chat (`Ctrl+Shift+I` / `Cmd+Shift+I`)
-- Navigate to the `part3_code_generation` folder in your lab repo
-- Try both prompting approaches above
-- Review the generated code
+    - Open GitHub Copilot Chat (`Ctrl+Shift+I` / `Cmd+Shift+I`)
+    - Check the prompt is set to use the `Auto` option instead of a specific model. Otherwise you will burn your free tokens far too quickly! **Instructors cannot refill these!**
+    - Navigate to the `part3_code_generation` folder in your lab repo
+    - Try **both** prompting approaches above
+    - Review the generated code
 
 2. **Before running tests, pause and predict:**
 
@@ -189,6 +208,7 @@ There's no "right answer" here - different situations may call for different app
     - Rate your confidence (1-5) that this code will work as intended.
 
 3. **Run Tests:**
+
     - Run the JUnit tests with Gradle:
       ```bash
       ./gradlew test --tests "part3_code_generation.AnimalShelterTests"
@@ -196,6 +216,7 @@ There's no "right answer" here - different situations may call for different app
     - Record pass/fail results
 
 4. **Document in REFLECTION.md (Question 2):**
+
     - What is working? What is broken?
     - Impressions of the prompt strength
     - What did you learn about basic prompting?
@@ -217,9 +238,12 @@ Now that you've worked with creating code with AI, you'll practice debugging—b
 
 1. Navigate to `src/main/java/part4_debugging/` in your lab repo
 2. Choose **one** of the two options to debug:
+
    - **Bank** (`bank/` folder) - Bank account management with transactions
    - **Music** (`music/` folder) - Instrument management utility methods
+
 3. Each folder contains:
+
    - Multiple Java files with intentional bugs
    - A `bugs.md` file listing the expected bugs (check your findings against this **after** you've done your own analysis)
    - JUnit tests to verify your fixes
@@ -243,12 +267,14 @@ Now that you've worked with creating code with AI, you'll practice debugging—b
 **Before looking for bugs, spend time understanding the code.**
 
 Choose an approach that works for you:
+
 - **Ask AI to generate a diagram** (call graph, sequence diagram, class diagram)
 - **Trace control flow:** What methods call what? What branches exist?
 - **Trace data flow:** How do values change? What edge cases could break?
 - **Combine approaches** as needed
 
 **Example prompts:**
+
 > "Create a Mermaid diagram showing how methods in `BankAccount.java` call each other"
 
 > "What are the key fields in this class and where do they get modified?"
@@ -280,6 +306,7 @@ After fixing, run ALL tests to make sure you didn't break anything.
 ---
 
 ### Document in REFLECTION.md (Question 3):
+
 - How did you explore the code? Did it help?
 - What bugs did you find and fix? (brief)
 - Did you find all bugs in `bugs.md`?
@@ -337,6 +364,7 @@ Commit to these practices going forward:
 ## Submission Requirements
 
 Submit your completed `REFLECTION.md` file containing:
+
 - **Question 1:** Survey confirmation numbers (1a: pre-survey, 1b: post-survey)
 - **Question 2:** Code generation exercise (comparing Test-First vs Concept-First prompting)
 - **Question 3:** Debugging exercises (3a: bug identification, 3b: bug fixing strategies)
@@ -377,6 +405,7 @@ Write one sentence describing how you will use AI in future assignments:
 ### Share What You Learned
 
 **Discussion Board:** Post to the **AI Lab** topic on the course discussion board:
+
 - An effective prompt you discovered
 - A surprising AI response
 - A debugging insight that might help classmates
@@ -386,6 +415,7 @@ Your classmates in other sections will benefit from what you learned!
 ---
 
 The goal is to learn how to:
+
 - Understand unfamiliar code through control flow and data flow analysis
 - Use AI for visualization and explanation, not to skip understanding
 - Evaluate code critically
