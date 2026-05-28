@@ -3,13 +3,6 @@ title: "Assignment 4: RecipeService and Testing"
 sidebar_position: 5
 ---
 
-# TODO: Move the updated RecipeService.java documentation into the starter code
-
-## Update log
-- 2/19/2026: Note error in handout: the documentation on the `RecipeService` interface is incomplete compared to the handout, in particular, this page explains exactly the effects of `importFromJson` and `importFromText`, please rely on this over the documentation on the handout.
-
----
-
 ## Overview
 
 In this assignment, you'll build **`RecipeService`** — the application layer that sits between user interfaces (CLI, GUI) and your domain model. This facade coordinates everything: transforming quantities, persisting to repositories, and aggregating shopping lists.
