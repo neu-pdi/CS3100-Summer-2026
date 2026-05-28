@@ -43,8 +43,6 @@ Don't use this as a model for your own API designs. Instead, recognize the patte
 
 This assignment involves design decisions. You'll hit moments where something doesn't work and you're not sure why. That's normal and valuable — **if** you have time to step back, sleep on it, and come to office hours.
 
-**Early Bird Bonus (+10 points):** Complete through **Part 1** (simple service methods working with tests) by **Friday, February 20 at 11:59 PM** and earn +10 bonus points. The bonus is added to the numerator of your final score after all other adjustments (your final score can be up to 110/100). This gets you to office hours *before* the hard parts.
-
 **Submission limits:** You can submit up to **15 times per rolling 24-hour period**.
 
 :::
@@ -324,8 +322,6 @@ You have six facade methods to implement, plus `ShoppingListImpl` and `ShoppingI
 Start here — these are the most straightforward facade methods and will build confidence before tackling parsing and aggregation. Write mock-based tests as you go. See [Unit Test With Mockito](#unit-tests-with-mockito) and [Testing `importFromJson` with Temporary Files](#testing-importfromjson-with-temporary-files) for more information on mock-based tests.
 
 For each method, add the required [INFO completion log message and ERROR failure log messages](#logging-requirements).
-
-**Checkpoint:** Tests pass for both methods. **Submit by Friday 2/20 11:59 PM for the +10 early bird bonus.**
 
 #### Implement `importFromJson`
 
