@@ -1,23 +1,19 @@
 ---
-title: 'A3: Jackson and JSON Primer'
+title: 'Jackson and JSON Primer'
 sidebar_position: 6
 ---
 
-# TODO: Verify all links in this page before publishing
 
-## JSON and Jackson Primer
+# 1 JSON and Jackson Primer
 
-This page provides background on JSON and the Jackson library for students who haven't worked
-with JSON serialization before.
+This page provides background on JSON and the Jackson library for students who haven't worked with JSON serialization before.
 
-### What is JSON?
+## 1.1 What is JSON?
 
 **JSON (JavaScript Object Notation)** is a lightweight text format for storing and exchanging data.
-Despite "JavaScript" in the name, JSON is language-independent and has become the de facto standard
-for data interchange on the web and in modern applications.
+Despite "JavaScript" in the name, JSON is language-independent and has become the de facto standard for data interchange on the web and in modern applications.
 
-A JSON document is plain text that humans can read and machines can parse reasonably efficiently. It
-is so pervasive, that even if you haven't worked with it before, you've probably seen it before.
+A JSON document is plain text that humans can read and machines can parse reasonably efficiently. It is so pervasive, that even if you haven't worked with it before, you have probably seen it before.
 Here's an example:
 
 ```json
@@ -49,13 +45,12 @@ Here's an example:
 - No trailing commas (`[1, 2, 3]`, not `[1, 2, 3,]`)
 - No comments (unlike Java, JSON has no comment syntax)
 
-### Why JSON Became Popular
+## 1.2 Why JSON Became Popular
 
 JSON emerged in the early 2000s as a simpler alternative to XML (another popular data format at the
 time). Its rise to dominance came from several factors:
 
-1. **Human-readable:** Unlike binary formats, you can open a JSON file in any text editor and
-   understand its structure immediately.
+1. **Human-readable:** Unlike binary formats, we can open a JSON file in any text editor and understand its structure immediately.
 
 2. **Lightweight:** JSON has minimal syntax overhead compared to XML. Compare:
 
@@ -79,26 +74,41 @@ Today, JSON is used for:
 - Configuration files (e.g. VS Code settings)
 - Document databases (e.g. MongoDB stores JSON-like documents)
 
-### Jackson: Java's JSON Library
+## 1.3 Jackson: Java's JSON Library
 
-**Jackson** is the most widely-used JSON library for Java. It handles serialization (Java objects →
-JSON) and deserialization (JSON → Java objects). Jackson is already included in your project
-dependencies.
+**Jackson** is the most widely-used JSON library for Java. It handles serialization (Java objects → JSON) and deserialization (JSON → Java objects).
 
 :::note Simpler Examples Online
 
-If you search for Jackson tutorials, you'll find simpler-looking examples using mutable classes with
-no-arg constructors and setters. These approaches won't work for this assignment because your domain
+If you search for Jackson tutorials, you will find simpler-looking examples using mutable classes with no-arg constructors and setters. These approaches won't work for this assignment because your domain
 classes must be immutable (final fields, no setters). The patterns below are what you need.
 
 :::
 
-### Jackson with Immutable Classes
+:::note Working with Jackson in Gradle
 
-Your domain classes are immutable—they have `final` fields and no setters. The default approach used
-by Jackson to create new objects from JSON is to use a no-arg constructor, and then to set each
-field one-by-one. However, this is not possible when your classes are immutable - the fields must be
-set in the constructor. Hence, you need to use the `@JsonCreator` annotation to tell Jackson how to
+To work with Jackson in a Gradle project, add the following to build.gradle:
+
+```json 
+
+dependencies {
+    ...
+
+    // Jackson for JSON serialization
+    implementation libs.jackson.databind
+    implementation libs.jackson.core
+    implementation libs.jackson.annotations
+    implementation libs.jackson.jdk8      // For Optional support
+    implementation libs.jackson.jsr310    // For Java 8 date/time support
+
+}
+```
+
+:::
+
+## 1.4 Jackson with Immutable Classes
+
+Domain classes are often immutable—they have `final` fields and no setters. The default approach used by Jackson to create new objects from JSON is to use a no-arg constructor, and then to set each field one-by-one. However, this is not possible when your classes are immutable - the fields must be set in the constructor. Hence, we need to use the `@JsonCreator` annotation to tell Jackson how to
 construct instances:
 
 ```java
@@ -129,17 +139,15 @@ public final class Person {
 
 - `@JsonCreator` tells Jackson to use this constructor for deserialization
 - `@JsonProperty("name")` maps the JSON field `"name"` to this constructor parameter
-- Jackson uses your getters (`getName()`) to determine what fields to serialize
-- Your validation logic in the constructor runs during deserialization
+- Jackson uses getters (`getName()`) to determine what fields to serialize
+- Any validation logic in the constructor runs during deserialization
 
 **Serializing and deserializing:**
 
 The `ObjectMapper` class is used to serialize and deserialize Java objects to and from JSON.
 
-When deserializing, you must specify the class of the object to deserialize to so that the return
-object is of the correct type. This type is **not** used to instantiate the object - that is done by
-the `@JsonCreator` annotation, so the code below will work even if the `json` string is a subclass
-of `Person`.
+When deserializing, we must specify the class of the object to deserialize to so that the return object is of the correct type. This type is **not** used to instantiate the object - that is done by
+the `@JsonCreator` annotation, so the code below will work even if the `json` string is a subclass of `Person`.
 
 ```java
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -167,18 +175,16 @@ String json = mapper.writeValueAsString(people);
 List<Person> restored = mapper.readValue(json, new TypeReference<List<Person>>() {});
 ```
 
-### Handling Optional Fields
+## 1.5 Handling Optional Fields
 
-For backwards compatibility reasons, Java's `Optional<T>` needs special handling. Register the
-`Jdk8Module` with the `ObjectMapper`:
+For backwards compatibility reasons, Java's `Optional<T>` needs special handling. Register the `Jdk8Module` with the `ObjectMapper`:
 
 ```java
 ObjectMapper mapper = new ObjectMapper();
 mapper.registerModule(new Jdk8Module());
 ```
 
-The starter code provides stub files for `JsonRecipeRepository` and `JsonRecipeCollectionRepository`
-with the `ObjectMapper` configuration already set up.
+The starter code provides stub files for `JsonRecipeRepository` and `JsonRecipeCollectionRepository` with the `ObjectMapper` configuration already set up.
 
 Now `Optional` fields work correctly:
 
@@ -206,11 +212,10 @@ Recipe r2 = new Recipe("Cookies", Optional.empty());
 // {"title":"Cookies","author":null}  or  {"title":"Cookies"} depending on config
 ```
 
-### Handling Polymorphism (Inheritance)
+## 1.6 Handling Polymorphism (Inheritance)
 
-This is the trickiest part. When you have a class hierarchy like `Quantity` with subclasses
-`ExactQuantity`, `FractionalQuantity`, and `RangeQuantity`, Jackson needs to know which subclass to
-instantiate during deserialization.
+When we have a class hierarchy like `Quantity` with subclasses
+`ExactQuantity`, `FractionalQuantity`, and `RangeQuantity`, Jackson needs to know which subclass to instantiate during deserialization.
 
 **The problem:**
 
@@ -250,15 +255,12 @@ This produces JSON like:
 {"type": "range", "min": 2, "max": 3, "unit": "CUP"}
 ```
 
-You'll need similar annotations on `Ingredient` (for `MeasuredIngredient` and `VagueIngredient`) and
-on `RecipeCollection` (for your collection implementations).
-
-### Common Errors and Solutions
+## 1.7 Common Errors and Solutions
 
 | Error                                                     | Cause                               | Solution                                             |
 | --------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------- |
 | `InvalidDefinitionException: Cannot construct instance`   | No suitable constructor             | Add `@JsonCreator` to constructor                    |
-| `UnrecognizedPropertyException: Unrecognized field "xyz"` | JSON has field your class doesn't   | Add the field, or configure mapper to ignore unknown |
+| `UnrecognizedPropertyException: Unrecognized field "xyz"` | JSON has field our class does not   | Add the field, or configure mapper to ignore unknown |
 | `InvalidTypeIdException: Missing type id`                 | Polymorphic type without type field | Ensure `@JsonTypeInfo` is configured                 |
 | `JsonMappingException: No serializer found`               | Private fields without getters      | Add getters, or configure field visibility           |
 
@@ -268,7 +270,7 @@ on `RecipeCollection` (for your collection implementations).
 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 ```
 
-### Testing JSON Round-Trips
+## 1.8 Testing JSON Round-Trips
 
 A round-trip test verifies that serialization and deserialization preserve all data:
 
@@ -297,15 +299,15 @@ void recipeRoundTrip() throws Exception {
 }
 ```
 
-### Further Reading
+## 1.9 Further Reading
 
 - [Jackson Project Home](https://github.com/FasterXML/jackson) — Official documentation
 - [Baeldung Jackson Tutorial](https://www.baeldung.com/jackson) — Comprehensive tutorial series
 - [JSON Specification](https://www.json.org/) — The official JSON format specification
 
-:::tip Ask Your AI Assistant
+:::tip Ask AI Assistant
 
-Jackson configuration can be tricky. This is a great place to use your AI assistant:
+Jackson configuration can be tricky. This is a great place to use an AI assistant:
 
 - "How do I configure Jackson to serialize LocalDate as a string?"
 - "My deserialization is failing with [error]. What's wrong?"
