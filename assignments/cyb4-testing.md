@@ -24,7 +24,7 @@ Don't use this as a model for your own API designs. Instead, recognize the patte
 :::tip How to Succeed on This Assignment
 
 1. **Read the `RecipeService` interface carefully.** Understand what each method must accomplish before you start coding. The interface is your specification.
-2. **Start simple, build up.** Implement `findByIngredient` and `importFromJson` first — they're straightforward. Then tackle aggregation (`generateShoppingList`).
+2. **Start simple, build up.** Implement `findByIngredient` and `importFromJson` first — they're more straightforward than the others. Then tackle aggregation (`generateShoppingList`).
 3. **Test with mocks.** Use Mockito to mock repository dependencies. Verify your service calls the right methods with the right arguments and returns expected results.
 4. **Submit early and often.** The autograder tests your facade. Early feedback helps you catch issues before the deadline.
 
@@ -46,10 +46,9 @@ This assignment involves design decisions. You'll hit moments where something do
 
 By completing this assignment, you will demonstrate proficiency in:
 
-- **Building an application service layer** — implementing a facade that coordinates domain operations, parsing, and persistence ([L17: From Code Patterns to Architecture Patterns](/lecture-notes/l17-creation-patterns))
-- **Implementing behind an arbitrary interface** — building clean internals despite an externally-imposed API ([L16: Designing for Testability](/lecture-notes/l16-testability))
-- **Parsing unstructured text** — transforming recipe and ingredient strings into structured domain objects
-- **Using dependency injection** to wire services with their dependencies ([L17](/lecture-notes/l17-creation-patterns))
+- **Building an application service layer** — implementing a facade that coordinates domain operations and persistence 
+- **Implementing behind an arbitrary interface** — building clean internals despite an externally-imposed API 
+- **Using dependency injection** to wire services with their dependencies
 - **Unit testing with mocks** — using Mockito to test service logic in isolation ([L15: Test Doubles and Isolation](/lecture-notes/l15-testing))
 
 ---
@@ -132,7 +131,7 @@ To test these methods in isolation, you'll mock the repository interfaces. This 
 - **Verify interactions:** Use `verify(repo).save(...)` to confirm the service called the right methods
 - **Test edge cases:** Mock exceptions to test error handling without real I/O
 
-The key is testing that your service **correctly coordinates** the parsing, lookup, and save operations.
+The key is testing that your service **correctly coordinates** the lookup, save, and aggregation operations.
 
 :::
 
@@ -229,7 +228,7 @@ public class RecipeNotFoundException extends RuntimeException {
 
 ### AI Policy for This Assignment
 
-AI coding assistants continue to be encouraged. Building on A3's introduction, this assignment provides more opportunities for effective AI collaboration:
+AI coding assistants are now **allowed**, but are not necessary for this assignment. This assignment provides opportunities for effective AI collaboration:
 
 | Task Type | AI Value | Strategy |
 |-----------|----------|----------|
@@ -238,7 +237,7 @@ AI coding assistants continue to be encouraged. Building on A3's introduction, t
 | **Test generation** | Moderate | AI for structure/ideas, you verify tests are meaningful |
 | **Debugging** | High | Use scientific debugging, supported by AI |
 
-For boilerplate (mock setup, test structure), AI saves time — but always verify expected values are correct. For parsing and aggregation logic, think through the cases yourself first, then use AI to help with implementation details.
+For boilerplate (mock setup, test structure), AI saves time — but always verify expected values are correct. For aggregation logic, think through the cases yourself first, then use AI to help with implementation details.
 
 **Document your AI usage** in the [Reflection](#reflection) section.
 
@@ -312,9 +311,7 @@ You have six facade methods to implement, plus `ShoppingListImpl` and `ShoppingI
 
 ### Part 1: Searching and Importing from JSON
 
-Start here — these are the most straightforward facade methods and will build confidence before tackling parsing and aggregation. Write mock-based tests as you go. See [Unit Test With Mockito](#unit-tests-with-mockito) and [Testing `importFromJson` with Temporary Files](#testing-importfromjson-with-temporary-files) for more information on mock-based tests.
-
-For each method, add the required [INFO completion log message and ERROR failure log messages](#logging-requirements).
+Start here — these are the most straightforward facade methods and will build confidence before tackling aggregation. Write mock-based tests as you go. See [Unit Test With Mockito](#unit-tests-with-mockito) and [Testing `importFromJson` with Temporary Files](#testing-importfromjson-with-temporary-files) for more information on mock-based tests.
 
 #### Implement `importFromJson`
 
@@ -339,8 +336,6 @@ This method searches `RecipeRepository` only — it does not search recipes embe
 ### Part 2: Transformation Methods
 
 With the import methods working, tackle the transformation methods next. Try edge cases as you go — missing recipes, invalid servings.
-
-For each method, add the required [INFO completion log message](#logging-requirements). `scaleRecipe` additionally requires a DEBUG message for the scaling factor.
 
 **Checkpoint:** Tests pass for both methods.
 
@@ -383,7 +378,6 @@ Delegate to `Recipe.convert(targetUnit, conversionRegistry)`, which converts eac
 
 Implement this last. Once all tests pass, run `./gradlew build` and submit to the autograder — if mutants are surviving, add more targeted tests.
 
-For each method, add the required [INFO completion log message](#logging-requirements). `generateShoppingList` additionally requires a DEBUG message for each recipe it aggregates.
 
 **Checkpoint:** All tests pass and `./gradlew build` succeeds.
 
@@ -424,132 +418,6 @@ ShoppingList list = service.generateShoppingList(List.of("rec-cookies", "rec-cak
 
 ---
 
-### Logging Requirements
-
-Your service must implement logging using **SLF4J**. This section introduces logging concepts you'll use throughout your career.
-
-#### Why Logging Matters
-
-`System.out.println()` works for quick debugging, but it has serious limitations — no severity levels, no way to turn off debug messages without removing code, and no context like timestamps or class names. Professional applications use **logging frameworks** that solve these problems.
-
-#### SLF4J: The Logging Facade
-
-**SLF4J** is a *facade* (interface) for logging — it defines what you can do, but not how it's done. The actual logging is handled by a *backend* like Logback, Log4j, or java.util.logging. The starter code includes **Logback** as the SLF4J backend. You don't need to configure it — just use the SLF4J API.
-
-#### Basic Usage
-
-```java
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class RecipeServiceImpl implements RecipeService {
-    private static final Logger logger = LoggerFactory.getLogger(RecipeServiceImpl.class);
-
-    public Recipe importFromJson(Path jsonFile, String collectionId) {
-        logger.info("Importing recipe to collection {}", collectionId);
-        logger.info("Successfully imported recipe '{}' with ID {}", recipe.getTitle(), recipe.getId());
-        return recipe;
-    }
-}
-```
-
-#### Log Levels
-
-| Level | When to Use | Example |
-|-------|-------------|---------|
-| **ERROR** | Something failed and needs attention | `logger.error("Failed to parse recipe", exception)` |
-| **WARN** | Something unexpected but recoverable | `logger.warn("Skipping vague ingredient: {}", name)` |
-| **INFO** | Major operations completing successfully | `logger.info("Imported recipe '{}' to collection", title)` |
-| **DEBUG** | Detailed information for troubleshooting | `logger.debug("Parsing {} ingredient lines", count)` |
-| **TRACE** | Very detailed, usually too verbose | `logger.trace("Checking unit alias: {}", alias)` |
-
-#### Parameterized Messages
-
-Always use **placeholders** (`{}`) instead of string concatenation:
-
-```java
-// GOOD: string formatting only happens if DEBUG is enabled
-logger.debug("Scaling recipe from {} to {} servings", original, target);
-
-// BAD: string concatenation happens even if DEBUG is disabled
-logger.debug("Scaling recipe from " + original + " to " + target + " servings");
-```
-
-#### Logging Exceptions
-
-Pass the exception as the last argument — SLF4J logs the full stack trace:
-
-```java
-try {
-    // ... risky operation ...
-} catch (IOException e) {
-    logger.error("Failed to read file: {}", filename, e);
-    throw new ImportException("Could not import from " + filename, e);
-}
-```
-
-#### Required Logging (Auto-Graded)
-
-Your logging will be automatically graded. You must use the exact logger names and message formats specified below.
-
-**Required logger** (create in `RecipeServiceImpl`):
-
-```java
-private static final Logger logger = LoggerFactory.getLogger(RecipeServiceImpl.class);
-```
-
-The autograder checks for a logger named `app.cookyourbooks.services.RecipeServiceImpl`.
-
-**INFO level — method completion:**
-
-| Method | Message Pattern | Example |
-|--------|-----------------|---------|
-| `importFromJson` | `Imported recipe '{}' from JSON to collection '{}'` | `Imported recipe 'Chocolate Cake' from JSON to collection 'desserts'` |
-| `scaleRecipe` | `Scaled recipe '{}' from {} to {} servings` | `Scaled recipe 'Cookies' from 12 to 24 servings` |
-| `convertRecipe` | `Converted recipe '{}' to {}` | `Converted recipe 'Bread' to GRAM` |
-| `generateShoppingList` | `Generated shopping list from {} recipes` | `Generated shopping list from 3 recipes` |
-| `findByIngredient` | `Found {} recipes containing '{}'` | `Found 5 recipes containing 'flour'` |
-
-**DEBUG level — implementation details:**
-
-| Situation | Message Pattern | Example |
-|-----------|-----------------|---------|
-| Scaling calculation | `Scaling factor: {}` | `Scaling factor: 2.0` |
-| Shopping list aggregation | `Aggregating ingredients from recipe '{}'` | `Aggregating ingredients from recipe 'Cookies'` |
-
-**ERROR level — failures:**
-
-| Situation | Message Pattern | Example |
-|-----------|-----------------|---------|
-| File read failure | `Failed to read file: {}` | `Failed to read file: /path/to/recipe.json` |
-
-Always include the exception object in ERROR logs:
-
-```java
-logger.error("Failed to read file: {}", jsonFile, e);
-logger.error("Failed to parse recipe text", e);
-```
-
-:::tip Logging Output
-
-By default, logs are written to `logs/cookyourbooks.log` rather than the console. To see logs in the console while debugging, adjust `src/main/resources/logback.xml`:
-
-```xml
-<root level="DEBUG">
-    <appender-ref ref="FILE" />
-    <appender-ref ref="STDOUT" />
-</root>
-```
-
-The autograder uses its own logging configuration, so your `logback.xml` settings won't affect grading.
-
-:::
-
----
-
-
-
----
 
 ## Testing Requirements
 
@@ -730,13 +598,13 @@ src/test/java/app/cookyourbooks/
     └── RecipeServiceTest.java     (REQUIRED)
 ```
 
-All tests for the `RecipeService` specification must go in `src/test/java/app/cookyourbooks/services/`. You can organize across multiple files (e.g., `RecipeServiceParsingTest.java`, `RecipeServiceScalingTest.java`).
+All tests for the `RecipeService` specification must go in `src/test/java/app/cookyourbooks/services/`. You can organize across multiple files (e.g., `RecipeServiceScalingTest.java`, `RecipeServiceShoppingAggregation.java`).
 
 :::caution Test Location Matters for Grading
 
 The autograder runs tests from `app.cookyourbooks.services` against **our reference implementation**, not yours.
 
-If you want to write additional tests for your own helper classes (e.g., `ShoppingListAggregator`), put them in a **different package** (e.g., `app.cookyourbooks.parsing`). Tests outside the `services` package won't run against our reference implementation and won't fail unexpectedly.
+If you want to write additional tests for your own helper classes (e.g., `ShoppingListAggregator`), put them in a **different package** (e.g., `app.cookyourbooks.aggregator`). Tests outside the `services` package won't run against our reference implementation and won't fail unexpectedly.
 
 - `app.cookyourbooks.services.*` → Tests the **spec** (runs against our implementation)
 - Any other package → Tests **your implementation** (won't affect grading)
@@ -749,7 +617,7 @@ If you want to write additional tests for your own helper classes (e.g., `Shoppi
 
 Update `REFLECTION.md` to address:
 
-1. **Parsing Design:** How did you structure your aggregation logic? Did you create separate classes or keep it inline? What tradeoffs did you consider? If you were explaining your design choice to a skeptical teammate who preferred a different approach, what arguments would you use to advocate for your decision?
+1. **Aggregator Design:** How did you structure your aggregation logic? Did you create separate classes or keep it inline? What tradeoffs did you consider? If you were explaining your design choice to a skeptical teammate who preferred a different approach, what arguments would you use to advocate for your decision?
 
 2. **What Are Your Tests Actually Testing?** Look at your `RecipeServiceTest` suite. Are your tests primarily verifying *coordination* (the service calls the right methods in the right order) or *computation* (the service produces correct results)? Which type of bug would your tests catch? Which might they miss? Is that the right balance for a service layer?
 
@@ -767,7 +635,7 @@ Update `REFLECTION.md` to address:
 
 ### Automated Grading (76 points)
 
-#### Implementation Correctness (40 points) (missing 16)
+#### Implementation Correctness (40 points) (missing 20)
 
 | Component | Points |
 |-----------|--------|
@@ -776,8 +644,7 @@ Update `REFLECTION.md` to address:
 | `convertRecipe` | 2 |
 | `generateShoppingList` | 4 |
 | `findByIngredient` | 4 |
-| Exception handling (not found, parse errors) | 2 |
-| Logging (required messages at correct levels) | 4 |
+| Exception handling (not found, JSON parse errors) | 2 |
 
 #### Test Suite Quality (36 points) (missing 10)
 
