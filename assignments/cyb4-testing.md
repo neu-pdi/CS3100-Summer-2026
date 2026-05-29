@@ -179,12 +179,21 @@ To allow persistence (saving and loading of program state) in our system, we exp
 
 We use the Jackson Annotation Libary to annotate domain objects and allow easy serialization of our domain objects to JSON. We have provided [a primer on JSON and Jackson](/assignments/Appendices/jackson-primer). Read through this as needed for how to work with JSON, focusing on the "Serializing and deserializing" portion.
 
-:::tip Ask Your AI Assistant
+We also recommending looking at the following methods in both `JsonRecipeRepository` and `JsonRecipeCollectionRepository` for how we specifically read JSON files for recipes and collections
+
+- `createObjectMapper` method for the `ObjectMapper` creation
+- `findById` method for reading JSON
+- `save` method for writing JSON
+
+:::tip 
+
+Ask Your AI Assistant
 
 Jackson configuration can be tricky and working with a new library can be daunting. This is a great place to use your AI assistant:
 
 "My deserialization is failing with [error]. What's wrong?"
 "How do I handle a field that might be missing in the JSON?"
+"How do I use the ObjectMapper to read a JSON file?"
 Just remember to understand what the generated code does before using it.
 
 :::
@@ -509,13 +518,17 @@ void importFromJson_throwsImportExceptionOnBadFile() {
 }
 ```
 
-:::info Why Can't We Mock File I/O?
+:::info 
+
+Why Can't We Mock File I/O?
 
 `importFromJson` takes a `Path` and directly performs file I/O rather than going through an injected dependency. A more testable design might accept an `InputStream` or a `RecipeLoader` interface that could be mocked. You'll reflect on this design tradeoff in the [Reflection](#reflection) section.
 
 :::
 
-:::tip Generating Test JSON with Jackson Serialization
+:::tip 
+
+Generating Test JSON with Jackson Serialization
 
 Don't guess at the Jackson polymorphic JSON format — **generate it programmatically**:
 
@@ -558,7 +571,9 @@ src/test/java/app/cookyourbooks/
 
 All tests for the `RecipeService` specification must go in `src/test/java/app/cookyourbooks/services/`. You can organize across multiple files (e.g., `RecipeServiceScalingTest.java`, `RecipeServiceShoppingAggregation.java`).
 
-:::caution Test Location Matters for Grading
+:::caution 
+
+Test Location Matters for Grading
 
 The autograder runs tests from `app.cookyourbooks.services` against **our reference implementation**, not yours.
 
@@ -593,44 +608,42 @@ Update `REFLECTION.md` to address:
 
 ## 6.1 Automated Grading (76 points)
 
-### 6.1.1 Implementation Correctness (40 points) (missing 20)
+### 6.1.1 Implementation Correctness (40 points)
 
 | Component | Points |
 |-----------|--------|
 | `importFromJson` | 6 |
-| `scaleRecipe` | 2 |
-| `convertRecipe` | 2 |
-| `generateShoppingList` | 4 |
+| `scaleRecipe` | 8 |
+| `convertRecipe` | 8 |
+| `generateShoppingList` | 10 |
 | `findByIngredient` | 4 |
-| Exception handling (not found, JSON parse errors) | 2 |
+| Exception handling (not found, JSON parse errors) | 4 |
 
-### 6.1.2 Test Suite Quality (36 points) (missing 10)
+### 6.1.2 Test Suite Quality (36 points)
 
 | Component | Points | What We Mutate | 
 |-----------|--------|----------------|
-| `importFromJson` | 4 | File reading, deserialization, save/update logic |
-| `scaleRecipe` | 6 | Scaling calculations, vague ingredient handling |
-| `convertRecipe` | 6 | Conversion delegation, exception propagation, vague ingredient handling |
-| `generateShoppingList` | 6 | Aggregation logic, quantity combining, uncountable item collection |
-| `findByIngredient` | 4 | Search logic, case-insensitivity |
+| `importFromJson` | 6 | File reading, deserialization, save/update logic |
+| `scaleRecipe` | 8 | Scaling calculations, vague ingredient handling |
+| `convertRecipe` | 8 | Conversion delegation, exception propagation, vague ingredient handling |
+| `generateShoppingList` | 8 | Aggregation logic, quantity combining, uncountable item collection |
+| `findByIngredient` | 6 | Search logic, case-insensitivity |
 
 ## 6.2 Manual Grading (Subtractive, max −36 points)
 
-### 6.2.1 Service Architecture (max −20) (missing 6)
+### 6.2.1 Service Architecture (max −20)
 
 | Issue | Max Deduction | Description | 
 |-------|-----------|-------------|
-| **Monolithic service** | −8 | All logic in `RecipeServiceImpl` with no delegation to helper classes |
-| **Tight coupling** | −6 | Service depends on concrete classes instead of interfaces; hard-coded dependencies instead of constructor injection |
-| **Missing immutability** | −4 | Transformations mutate existing objects instead of returning new ones |
+| **Monolithic service** | −10 | All logic in `RecipeServiceImpl` with no delegation to helper classes |
+| **Tight coupling** | −8 | Service depends on concrete classes instead of interfaces; hard-coded dependencies instead of constructor injection |
+| **Missing immutability** | −6 | Transformations mutate existing objects instead of returning new ones |
 
-:::info Design Guidance
+:::info 
 
-Review the lectures on good design before implementing:
-- [L16: Designing for Testability](/lecture-notes/l16-testability) — why facades with many responsibilities are hard to test, and how to structure code for testability
-- [L17: From Code Patterns to Architecture Patterns](/lecture-notes/l17-creation-patterns) — service layers, dependency injection, and separating coordination from computation
+Design Guidance
 
-The principle: each class should have one job. Services coordinate; aggregators aggregate.
+**The principle**: each class should have one job to make code easier to test. Services coordinate; aggregators aggregate.
 
 :::
 
@@ -642,7 +655,9 @@ The principle: each class should have one job. Services coordinate; aggregators 
 | **Copy/paste tests** | −8 | Same setup code duplicated across tests instead of `@BeforeEach` and helper methods |
 | **Does not use mocks** | −16 | Service methods are not tested using mocks |
 
-:::tip Test Quality Expectations
+:::tip 
+
+Test Quality Expectations
 
 ```java
 // GOOD: Reusable setup and helpers with mocks
