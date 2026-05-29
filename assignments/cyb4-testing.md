@@ -32,7 +32,7 @@ Don't use this as a model for your own API designs. Instead, recognize the patte
 
 **Starting early isn't about needing more hours to code** — it's about giving yourself time to think, get stuck productively, and get help when you need it.
 
-This assignment involves design decisions. You'll hit moments where something doesn't work and you're not sure why. That's normal and valuable — **if** you have time to step back, sleep on it, and come to office hours.
+This assignment involves design decisions. You will encounter moments where something does not work and you are not sure why. That is normal and valuable — **if** you have time to step back, sleep on it, and come to office hours.
 
 **Submission limits:** You can submit up to **15 times per rolling 24-hour period**.
 
@@ -45,8 +45,7 @@ This assignment involves design decisions. You'll hit moments where something do
 By completing this assignment, you will demonstrate proficiency in:
 
 - **Building an application service layer** — implementing a facade that coordinates domain operations, parsing, and persistence
-- **Implementing behind an arbitrary interface** — building clean internals despite an externally-imposed API
-- **Parsing unstructured text** — transforming recipe and ingredient strings into structured domain objects
+- **Implementing an arbitrary interface** — building clean internals despite an externally-imposed API
 - **Using dependency injection** to wire services with their dependencies
 - **Unit testing with mocks** — using Mockito to test service logic in isolation
 
@@ -113,13 +112,13 @@ flowchart TB
 
 **Legend:** Yellow = facade interface (prescribed). Green = your implementation (design freedom). Blue = mocked dependencies (for your unit tests).
 
-**Key principle:** `RecipeService` depends only on **port interfaces**, never on concrete adapters. In tests, you mock these interfaces using Mockito.
+**Key principle:** `RecipeService` depends only on **port interfaces**, never on concrete adapters. This enables you to mock these interfaces using Mockito during testing.
 
 ### The Facade Problem
 
 The `RecipeService` interface is designed for **CLI convenience**. Each method does everything the CLI needs in one call — but this convenience has implications for testing.
 
-This interface represents an arbitrary specification you've been given, not a design you should emulate. In practice, you'll often inherit interfaces like this from legacy code, external contracts, or team decisions made before testability was a priority. The skill is implementing them cleanly internally, even when the external API is suboptimal.
+This interface represents an arbitrary specification you have been given, not a design you should emulate. In practice, you will often inherit interfaces like this from legacy code, external contracts, or team decisions made before testability was a priority. The skill is implementing them cleanly internally, even when the external API is suboptimal.
 
 :::info Testing with Mocks
 
@@ -165,6 +164,8 @@ Examples:
 
 #### `ShoppingList` and `ShoppingItem` (Provided)
 
+One of the operations in `RecipeService` is to create a list of shopping items that will allow a user to cook the specified recipes.  
+
 The `ShoppingList` and `ShoppingItem` interfaces are provided, along with stub implementations (`ShoppingListImpl` and `ShoppingItemImpl`) that throw `UnsupportedOperationException`. You must complete these implementations:
 
 ```java
@@ -185,7 +186,7 @@ These are immutable data containers returned by `generateShoppingList()`. `Shopp
 
 To allow persistence (saving and loading of program state) in our system, we exposed two ports in the `reposirory` package: `RecipeRepository` and `RecipeCollectionRepository`. Both add functionality to save recipes and collections (respectively) to and from the outside world. We have provided two adapters to save to and load from JSON (JavaScript Object Notation), `JsonRecipeRepository` and `JsonRecipeCollectionRepository`.
 
-We use the Jackson Annotation Libary to annotate domain objects and allow easy serialization of our domain objects to JSON. We have provided [a primer on JSON and Jackson](/assignments/Appendices/cyb3-jackson-primer). Read through this as needed for how to work with JSON, focusing on the "Serializing and deserializing" portion.
+We use the Jackson Annotation Libary to annotate domain objects and allow easy serialization of our domain objects to JSON. We have provided [a primer on JSON and Jackson](/assignments/Appendices/jackson-primer). Read through this as needed for how to work with JSON, focusing on the "Serializing and deserializing" portion.
 
 :::tip Ask Your AI Assistant
 
@@ -227,11 +228,10 @@ public class RecipeNotFoundException extends RuntimeException {
 
 ### AI Policy for This Assignment
 
-AI coding assistants continue to be encouraged. Building on A3's introduction, this assignment provides more opportunities for effective AI collaboration:
+AI coding assistants continue to be encouraged:
 
 | Task Type | AI Value | Strategy |
 |-----------|----------|----------|
-| **Service implementation** | High | AI can help translate interface contracts into working code |
 | **Mock setup boilerplate** | High | AI excels at Mockito `when`/`thenReturn` patterns |
 | **Test generation** | Moderate | AI for structure/ideas, you verify tests are meaningful |
 | **Debugging** | High | Use scientific debugging, supported by AI |
@@ -286,7 +286,7 @@ RecipeServiceImpl
 └── ... other helpers as needed
 ```
 
-You don't need to submit a design document, but spending 15-30 minutes planning will save hours of refactoring later. This is a good use case for AI: describe your plan and ask for feedback before implementing.
+You do not need to submit a design document, but spending 15-30 minutes planning will save hours of refactoring later. This is a good use case for AI: describe your plan and ask for feedback before implementing.
 
 ### Required Design Properties
 
@@ -311,8 +311,6 @@ You have six facade methods to implement, plus `ShoppingListImpl` and `ShoppingI
 ### Part 1: Searching and Importing from JSON
 
 Start here — these are the most straightforward facade methods and will build confidence before tackling parsing and aggregation. Write mock-based tests as you go. See [Unit Test With Mockito](#unit-tests-with-mockito) and [Testing `importFromJson` with Temporary Files](#testing-importfromjson-with-temporary-files) for more information on mock-based tests.
-
-For each method, add the required [INFO completion log message and ERROR failure log messages](#logging-requirements).
 
 #### Implement `importFromJson`
 
