@@ -3,44 +3,14 @@ title: "Assignment 4: RecipeService and Testing"
 sidebar_position: 5
 ---
 
-## Overview
+# 1 Overview
 
 In this assignment, you'll build **`RecipeService`** — the application layer that sits between user interfaces (CLI, GUI) and your domain model. This facade coordinates everything: transforming quantities, persisting to repositories, and aggregating shopping lists.
 
-:::caution RecipeService is NOT Ideal Design
+**Prerequisites:** This assignment builds on the A3 sample implementation (provided) that has been extended with persistence ports: `RecipeRepository`, `RecipeCollectionRepository`, and their JSON adapters. You'll also use `ConversionRegistry` from A2.
 
-The `RecipeService` interface is **intentionally not an example of good API design**. It's an arbitrary specification you've been given — the kind of "convenient but problematic" facade you might inherit on a real project. Your job is to implement it correctly while keeping your internal design clean.
 
-Don't use this as a model for your own API designs. Instead, recognize the patterns that make it hard to test and maintain — and practice building clean implementations behind messy interfaces.
-
-:::
-
-**How do you verify a service like this works?** You'll learn to use **mocks** — test doubles that stand in for real dependencies during testing. Using Mockito, you'll mock the repository interfaces to test your service in isolation, verifying both the outcomes and the interactions with dependencies.
-
-**Prerequisites:** This assignment builds on the A3 sample implementation (provided) that has been extended with persitence ports: `RecipeRepository`, `RecipeCollectionRepository`, and their JSON adapters. You'll also use `ConversionRegistry` from A2.
-
-:::tip How to Succeed on This Assignment
-
-1. **Read the `RecipeService` interface carefully.** Understand what each method must accomplish before you start coding. The interface is your specification.
-2. **Start simple, build up.** Implement `findByIngredient` and `importFromJson` first — they're more straightforward than the others. Then tackle aggregation (`generateShoppingList`).
-3. **Test with mocks.** Use Mockito to mock repository dependencies. Verify your service calls the right methods with the right arguments and returns expected results.
-4. **Submit early and often.** The autograder tests your facade. Early feedback helps you catch issues before the deadline.
-
-:::
-
-:::danger Start Early — This Is About Learning, Not Just Coding
-
-**Starting early isn't about needing more hours to code** — it's about giving yourself time to think, get stuck productively, and get help when you need it.
-
-This assignment involves design decisions. You will encounter moments where something does not work and you are not sure why. That is normal and valuable — **if** you have time to step back, sleep on it, and come to office hours.
-
-**Submission limits:** You can submit up to **15 times per rolling 24-hour period**.
-
-:::
-
----
-
-## Learning Objectives
+# 2 Learning Objectives
 
 By completing this assignment, you will demonstrate proficiency in:
 
@@ -51,9 +21,9 @@ By completing this assignment, you will demonstrate proficiency in:
 
 ---
 
-## Assignment Context and Concepts
+# 3 Assignment Context and Concepts
 
-### Architecture Overview
+## 3.1 Architecture Overview
 
 This assignment adds a **`RecipeService`** facade that sits between driving adapters (like the CLI you will build in A5) and your domain/ports.
 
@@ -114,34 +84,55 @@ flowchart TB
 
 **Key principle:** `RecipeService` depends only on **port interfaces**, never on concrete adapters. This enables you to mock these interfaces using Mockito during testing.
 
-### The Facade Problem
 
-The `RecipeService` interface is designed for **CLI convenience**. Each method does everything the CLI needs in one call — but this convenience has implications for testing.
+## 3.2 The `RecipeService` Interface
 
-This interface represents an arbitrary specification you have been given, not a design you should emulate. In practice, you will often inherit interfaces like this from legacy code, external contracts, or team decisions made before testability was a priority. The skill is implementing them cleanly internally, even when the external API is suboptimal.
+This is the main "facade" the CLI will call. You must implement this service in the `RecipeServiceImpl` class. Details of how you structure this implementation internally is up to you. **We will test your implementation through this interface.** 
 
-:::info Testing with Mocks
+:::danger The Facade Problem
 
-Each method interacts with at least one port, like `RecipeRepository`.
+The `RecipeService` interface is designed for **CLI convenience**. Each method does everything the CLI needs in one call — but this convenience comes at a price. It is incohesive and difficult to test.
 
-To test these methods in isolation, you can mock the repository interfaces. This will let you:
+This interface represents an arbitrary specification you have been given and combines operations mostly for the sake of being a one-stop shop for a CLI or GUI to use. This is not a design you should emulate. However in practice, you will often inherit interfaces like this from legacy code, external contracts, or team decisions made before testability was a priority. The skill is implementing them cleanly internally, even when the external API is suboptimal.
+
+Therefore do not use this as an exemplar for your own API designs. Instead, recognize the patterns that make it hard to test and maintain — and practice building clean implementations behind messy interfaces. This is exactly what we will do in this assignment.
+
+:::
+
+### 3.2.1 Injected Dependencies
+
+We can **inject dependencies** into services by accepting them in the constructor. The `RecipeServiceImpl` class must accept these dependencies through its constructor:
+
+```java
+public RecipeServiceImpl(
+    RecipeRepository recipeRepository,
+    RecipeCollectionRepository collectionRepository,
+    ConversionRegistry conversionRegistry
+) { ... }
+```
+
+| Dependency | Purpose |
+|------------|---------|
+| `RecipeRepository` | Save/retrieve individual recipes |
+| `RecipeCollectionRepository` | Save/retrieve collections |
+| `ConversionRegistry` | Find unit conversion rules |
+
+You will find that each method of this class interacts with at least one of these ports. 
+
+### 3.2.2 Testing `RecipeServiceImpl`
+
+To test the methods of `RecipeServiceImpl` you can create mocks of the ports that it uses. This will let you:
+
 - **Control inputs:** Use `when(repo.findById(...)).thenReturn(...)` to set up the test scenario
 - **Verify interactions:** Use `verify(repo).save(...)` to confirm the service called the right methods
 - **Test edge cases:** Mock exceptions to test error handling without real I/O
 
-The key is testing that your service **correctly coordinates** the lookup, save, and aggregation operations.
+The key is testing that your service **correctly coordinates** the lookup, save, and aggregation operations by using these ports appropriately.
 
-:::
 
-### The `RecipeService` Interface
+## 3.3 Domain Types
 
-This is the facade the CLI will call. **We test your implementation through this interface.** How you structure the implementation behind it is your design decision.
-
-The full interface is provided in `RecipeService.java`.
-
-### Domain Types
-
-#### `Servings` (Provided)
+### 3.3.1 `Servings` (Provided)
 
 ```java
 public class Servings {
@@ -162,7 +153,7 @@ Examples:
 
 `Recipe.getServings()` returns `@Nullable Servings` — null if the recipe has no servings information.
 
-#### `ShoppingList` and `ShoppingItem` (Provided)
+### 3.3.2 `ShoppingList` and `ShoppingItem` (Provided)
 
 One of the operations in `RecipeService` is to create a list of shopping items that will allow a user to cook the specified recipes.  
 
@@ -182,7 +173,7 @@ public interface ShoppingItem {
 
 These are immutable data containers returned by `generateShoppingList()`. `ShoppingItem` represents `MeasuredIngredient`s with concrete quantities. `VagueIngredient`s appear in the `uncountableItems` list instead. See [Shopping List Requirements](#shopping-list-requirements).
 
-### Repository Classes (Provided)
+## 3.4 Repository Classes (Provided)
 
 To allow persistence (saving and loading of program state) in our system, we exposed two ports in the `reposirory` package: `RecipeRepository` and `RecipeCollectionRepository`. Both add functionality to save recipes and collections (respectively) to and from the outside world. We have provided two adapters to save to and load from JSON (JavaScript Object Notation), `JsonRecipeRepository` and `JsonRecipeCollectionRepository`.
 
@@ -198,7 +189,7 @@ Just remember to understand what the generated code does before using it.
 
 :::
 
-### Exception Classes (Provided)
+## 3.5 Exception Classes (Provided)
 
 The following are already provided in `app.cookyourbooks.services` — you do not need to create them:
 
@@ -226,7 +217,7 @@ public class RecipeNotFoundException extends RuntimeException {
 
 **Note:** All exceptions here are **unchecked** because they represent programming errors or environmental failures.
 
-### AI Policy for This Assignment
+# 4 AI Policy for This Assignment
 
 AI coding assistants are now **allowed**, but are not necessary for this assignment. This assignment provides opportunities for effective AI collaboration:
 
@@ -248,31 +239,13 @@ For boilerplate (mock setup, test structure), AI saves time — but always verif
 
 ---
 
-## Design Task
+# 5 How to approach this assignment
 
 Before writing implementation code, you need to make and document the following design decisions.
 
-### Injected Dependencies
+## 5.1 Internal Structure
 
-We can **inject dependencies** into services by accepting them in the constructor. Your `RecipeService` implementation must accept these dependencies through its constructor:
-
-```java
-public RecipeServiceImpl(
-    RecipeRepository recipeRepository,
-    RecipeCollectionRepository collectionRepository,
-    ConversionRegistry conversionRegistry
-) { ... }
-```
-
-| Dependency | Purpose |
-|------------|---------|
-| `RecipeRepository` | Save/retrieve individual recipes |
-| `RecipeCollectionRepository` | Save/retrieve collections |
-| `ConversionRegistry` | Find unit conversion rules |
-
-### Internal Structure
-
-The `RecipeService` facade is prescribed, but how you structure the implementation is your decision. Before coding, sketch out your approach:
+Before writing the code for `RecipeServiceImpl`, sketch out your approach:
 
 **Questions to answer:**
 - Will you put all logic in `RecipeServiceImpl`, or extract helper classes?
@@ -286,7 +259,7 @@ RecipeServiceImpl
 └── ... other helpers as needed
 ```
 
-You do not need to submit a design document, but spending 15-30 minutes planning will save hours of refactoring later. This is a good use case for AI: describe your plan and ask for feedback before implementing.
+You do not need to submit a design document, but spending 15-30 minutes planning will save hours of refactoring later. We recommend revisiting the [Internal Structure](#internal-structure) design decisions before proceeding.
 
 ### Required Design Properties
 
@@ -298,25 +271,19 @@ Regardless of structural decisions you make, your implementation must satisfy:
 - **Null Safety:** Use `@NonNull` and `@Nullable` annotations from JSpecify
 - **Documentation:** Javadoc for all public classes and methods
 
----
 
-## Implementation Task
+## 5.2 Implementation Order
 
-Before writing any code, read through the `RecipeService` interface carefully — what does each method need to do, what exceptions should be thrown and when, and what are the edge cases? Understand how to use Mockito to mock repository interfaces for testing.
+You must implement all six methods in `RecipeServiceImpl`, plus `ShoppingListImpl` and `ShoppingItemImpl`. Work through them in the order below.
 
-Then sketch out your internal structure before coding. You don't need to submit a design document, but 15–30 minutes of planning will save hours of refactoring. Revisit the [Internal Structure](#internal-structure) design decisions before proceeding.
+### 5.2.1 Part 1: Searching and Importing from JSON
 
-You have six facade methods to implement, plus `ShoppingListImpl` and `ShoppingItemImpl`. Work through them in the order below.
+These are relatively straightforward and will build confidence before tackling the other methods. Write mock-based tests as you go. See [Unit Test With Mockito](#unit-tests-with-mockito) and [Testing `importFromJson` with Temporary Files](#testing-importfromjson-with-temporary-files) for more information on mock-based tests.
 
-### Part 1: Searching and Importing from JSON
-
-Start here — these are the most straightforward facade methods and will build confidence before tackling aggregation. Write mock-based tests as you go. See [Unit Test With Mockito](#unit-tests-with-mockito) and [Testing `importFromJson` with Temporary Files](#testing-importfromjson-with-temporary-files) for more information on mock-based tests.
-
-#### Implement `importFromJson`
+**Implement `importFromJson`**
 
 Read a JSON file, deserialize it into a `Recipe`, save it to the recipe repository, and add it to the specified collection.
 
-**Behavior:**
 - Validate the collection exists **before** reading the file. If not found, throw `CollectionNotFoundException` immediately.
 - If the collection exists but the file cannot be read or parsed, throw `ImportException`.
 - The JSON file contains a recipe serialized in Jackson's polymorphic JSON format — the same format used by the repository adapters. Use Jackson's `ObjectMapper` to deserialize it directly, since `Recipe` and its nested types already have `@JsonCreator` and `@JsonTypeInfo` annotations.
@@ -324,23 +291,22 @@ Read a JSON file, deserialize it into a `Recipe`, save it to the recipe reposito
 
 **Exception precedence for `importFromJson`:** Validate the collection exists **before** reading the file. If not found, throw `CollectionNotFoundException` immediately. If the collection exists but the file cannot be read or parsed, throw `ImportException`.
 
-#### Implement `findByIngredient`
+**Implement `findByIngredient`**
 
 Search all recipes in `RecipeRepository` (via `findAll()`) by ingredient name using case-insensitive substring matching. For example, searching for `"chicken"` would match recipes containing `"chicken breast"`, `"ground chicken"`, or `"Chicken Thighs"`.
 
 This method searches `RecipeRepository` only — it does not search recipes embedded within collections in `RecipeCollectionRepository`. Any recipe imported through the service will be findable; recipes that exist only inside a collection and were never individually saved to `RecipeRepository` will not appear in results.
 
----
 
-### Part 2: Transformation Methods
+### 5.2.2 Part 2: Transformation Methods
 
 With the import methods working, tackle the transformation methods next. Try edge cases as you go — missing recipes, invalid servings.
 
-**Checkpoint:** Tests pass for both methods.
+**Checkpoint:** Ensure that tests pass for both methods.
 
-#### Implement `scaleRecipe`
+**Implement `scaleRecipe`**
 
-Look up a recipe by ID, scale all measured ingredients proportionally, save the result as a **new recipe** (new auto-generated ID), and return it. The original recipe is not modified or overwritten.
+Look up a recipe by ID, scale all measured ingredients proportionally, save the result as a new recipe (new auto-generated ID), and return it. The original recipe is not modified or overwritten.
 
 ```java
 // Original recipe "rec-1" serves 4, with 2 cups flour, 1 cup sugar
@@ -349,7 +315,7 @@ Recipe scaled = service.scaleRecipe("rec-1", 8);
 // The original recipe "rec-1" still exists unchanged
 ```
 
-**Exception precedence** — validate in this order:
+Exception precedence — validate in this order:
 
 | Priority | Scenario | Required Behavior |
 |----------|----------|-------------------|
@@ -358,13 +324,15 @@ Recipe scaled = service.scaleRecipe("rec-1", 8);
 | 3 | Recipe has no servings | Throw `IllegalArgumentException` |
 | — | `VagueIngredient` | Leave unchanged (can't scale "salt to taste") |
 
-#### Implement `convertRecipe`
+---
 
-Look up a recipe by ID, convert all measured ingredients to the target unit, save the result as a **new recipe** (new auto-generated ID), and return it. The original recipe is not modified or overwritten.
+**Implement `convertRecipe`**
+
+Look up a recipe by ID, convert all measured ingredients to the target unit, save the result as a new recipe (new auto-generated ID), and return it. The original recipe is not modified or overwritten.
 
 Delegate to `Recipe.convert(targetUnit, conversionRegistry)`, which converts each `MeasuredIngredient` to the target unit and automatically enhances the conversion registry with recipe-specific conversion rules. `VagueIngredient`s are left unchanged. If any `MeasuredIngredient` cannot be converted, `Recipe.convert` throws `UnsupportedConversionException` — let this propagate to the caller.
 
-**Exception precedence:**
+Exception precedence:
 
 | Priority | Scenario | Required Behavior |
 |----------|----------|-------------------|
@@ -373,22 +341,22 @@ Delegate to `Recipe.convert(targetUnit, conversionRegistry)`, which converts eac
 
 ---
 
-### Part 3: Aggregation
+### 5.2.3 Part 3: Aggregation
 
 Implement this last. Once all tests pass, run `./gradlew build` and submit to the autograder — if mutants are surviving, add more targeted tests.
 
 
 **Checkpoint:** All tests pass and `./gradlew build` succeeds.
 
-#### Implement `generateShoppingList`
+
+**Implement `generateShoppingList`**
 
 Look up recipes by ID and aggregate their ingredients into a `ShoppingList`. You must also complete the `ShoppingListImpl` and `ShoppingItemImpl` stubs.
 
 See [Shopping List Requirements](#shopping-list-requirements) for the full specification.
 
----
 
-### Shopping List Requirements
+**Shopping List Requirements**
 
 ```java
 // "rec-cookies" has 2 cups flour, 1 cup sugar, and VagueIngredient "salt" (to taste)
@@ -400,7 +368,7 @@ ShoppingList list = service.generateShoppingList(List.of("rec-cookies", "rec-cak
 // list.getUncountableItems(): ["salt"]  (deduplicated)
 ```
 
-**Required behaviors:**
+Required behaviors:
 
 - Combine `MeasuredIngredient`s with the same name (case-insensitive exact match) **and** the same unit by summing their quantities using `toDecimal()` — the result should be an `ExactQuantity` with the summed total.
 - If two ingredients share a name but have different units, list them as **separate** shopping items (do not attempt unit conversion).
@@ -418,13 +386,13 @@ ShoppingList list = service.generateShoppingList(List.of("rec-cookies", "rec-cak
 ---
 
 
-## Testing Requirements
+## 5.3 Testing Requirements
 
-You'll write **unit tests** for your `RecipeService` implementation using **Mockito** to mock dependencies.
+You will write unit tests for your `RecipeService` implementation using **Mockito** to mock dependencies.
 
-### Unit Tests with Mockito
+### 5.3.1 Unit Tests with Mockito
 
-#### Basic Mock Setup
+**Basic Mock Setup**
 
 ```java
 @ExtendWith(MockitoExtension.class)
@@ -443,7 +411,7 @@ class RecipeServiceTest {
 }
 ```
 
-#### Stubbing Return Values
+**Stubbing Return Values**
 
 ```java
 @Test
@@ -458,7 +426,7 @@ void scaleRecipe_looksUpRecipeAndSavesScaledVersion() {
 }
 ```
 
-#### Verifying Interactions
+**Verifying Interactions**
 
 ```java
 @Test
@@ -473,7 +441,7 @@ void importFromText_savesRecipeAndUpdatesCollection() {
 }
 ```
 
-#### Using Argument Captors
+**Using Argument Captors**
 
 When you need to inspect *what* was passed to a mocked method:
 
@@ -494,7 +462,7 @@ void scaleRecipe_savesRecipeWithCorrectScaledQuantities() {
 }
 ```
 
-### Testing `importFromJson` with Temporary Files
+### 5.3.2 Testing `importFromJson` with Temporary Files
 
 The `importFromJson` method reads from the file system — file I/O is **not** a mocked dependency, so you'll need to create actual temporary files in your tests:
 
@@ -565,21 +533,12 @@ This guarantees the JSON includes the correct type discriminator fields (e.g., `
 
 :::
 
-### Test Quality via Mutation Testing
+### 5.3.3 Test Quality via Mutation Testing
 
-Your `RecipeService` tests are graded via **mutation testing**. We run your tests against our reference implementation with bugs introduced. If your tests catch the bugs, you score well.
+Your `RecipeService` tests are graded via mutation testing: we run your tests against our reference implementation with bugs introduced. If your tests catch the bugs, you score well.
 
-:::info How This Works
 
-1. We have a reference implementation of `RecipeService`
-2. We introduce mutations (bugs) into our implementation
-3. We run YOUR tests against our buggy versions
-4. If your tests fail (catch the bug), the mutant is "killed" — good!
-5. If your tests pass (miss the bug), the mutant "survives" — bad!
-
-:::
-
-### What Your Tests Should Verify
+**What Your Tests Should Verify**
 
 | Method | Test Cases |
 |--------|-----------|
@@ -589,7 +548,7 @@ Your `RecipeService` tests are graded via **mutation testing**. We run your test
 | `generateShoppingList` | Combines like ingredients; collects vague ingredients into uncountable items; throws `RecipeNotFoundException` if any not found |
 | `findByIngredient` | Case-insensitive substring match; returns empty list when none found |
 
-### Required Test Files
+### 5.3.4 Required Test Files
 
 ```
 src/test/java/app/cookyourbooks/
@@ -612,7 +571,7 @@ If you want to write additional tests for your own helper classes (e.g., `Shoppi
 
 ---
 
-## Reflection
+## 5.4 Reflection
 
 Update `REFLECTION.md` to address:
 
@@ -630,11 +589,11 @@ Update `REFLECTION.md` to address:
 
 ---
 
-## Grading
+# 6 Grading
 
-### Automated Grading (76 points)
+## 6.1 Automated Grading (76 points)
 
-#### Implementation Correctness (40 points) (missing 20)
+### 6.1.1 Implementation Correctness (40 points) (missing 20)
 
 | Component | Points |
 |-----------|--------|
@@ -645,7 +604,7 @@ Update `REFLECTION.md` to address:
 | `findByIngredient` | 4 |
 | Exception handling (not found, JSON parse errors) | 2 |
 
-#### Test Suite Quality (36 points) (missing 10)
+### 6.1.2 Test Suite Quality (36 points) (missing 10)
 
 | Component | Points | What We Mutate | 
 |-----------|--------|----------------|
@@ -655,9 +614,9 @@ Update `REFLECTION.md` to address:
 | `generateShoppingList` | 6 | Aggregation logic, quantity combining, uncountable item collection |
 | `findByIngredient` | 4 | Search logic, case-insensitivity |
 
-### Manual Grading (Subtractive, max −36 points)
+## 6.2 Manual Grading (Subtractive, max −36 points)
 
-#### Service Architecture (max −20) (missing 6)
+### 6.2.1 Service Architecture (max −20) (missing 6)
 
 | Issue | Max Deduction | Description | 
 |-------|-----------|-------------|
@@ -675,7 +634,7 @@ The principle: each class should have one job. Services coordinate; aggregators 
 
 :::
 
-#### Test Architecture (max −28)
+### 6.2.2 Test Architecture (max −28)
 
 | Issue | Deduction | Description |
 |-------|-----------|-------------|
@@ -714,13 +673,13 @@ private void givenCollectionExists(String id) {
 
 :::
 
-#### Code Quality (max −8)
+### 6.2.3 Code Quality (max −8)
 
 | Issue | Deduction | Description |
 |-------|-----------|-------------|
 | **Missing Javadoc** | −4 | Public classes and methods lack documentation |
 | **Poor naming/style** | −4 | Unclear variable names; methods doing multiple things; inconsistent formatting |
 
-### Reflection (24 points)
+### 6.3 Reflection (24 points)
 
 6 questions × 4 points each. See [Reflection](#reflection) for full prompts.
