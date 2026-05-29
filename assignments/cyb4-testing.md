@@ -17,8 +17,6 @@ Don't use this as a model for your own API designs. Instead, recognize the patte
 
 **How do you verify a service like this works?** You'll learn to use **mocks** — test doubles that stand in for real dependencies during testing. Using Mockito, you'll mock the repository interfaces to test your service in isolation, verifying both the outcomes and the interactions with dependencies.
 
-**Due:** Thursday, June 4, 2026 at 8:59 PM Boston Time
-
 **Prerequisites:** This assignment builds on the A3 sample implementation (provided) that has been extended with persitence ports: `RecipeRepository`, `RecipeCollectionRepository`, and their JSON adapters. You'll also use `ConversionRegistry` from A2.
 
 :::tip How to Succeed on This Assignment
