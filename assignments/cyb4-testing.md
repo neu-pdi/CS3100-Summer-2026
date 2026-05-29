@@ -44,11 +44,11 @@ This assignment involves design decisions. You'll hit moments where something do
 
 By completing this assignment, you will demonstrate proficiency in:
 
-- **Building an application service layer** — implementing a facade that coordinates domain operations, parsing, and persistence ([L17: From Code Patterns to Architecture Patterns](/lecture-notes/l17-creation-patterns))
-- **Implementing behind an arbitrary interface** — building clean internals despite an externally-imposed API ([L16: Designing for Testability](/lecture-notes/l16-testability))
+- **Building an application service layer** — implementing a facade that coordinates domain operations, parsing, and persistence
+- **Implementing behind an arbitrary interface** — building clean internals despite an externally-imposed API
 - **Parsing unstructured text** — transforming recipe and ingredient strings into structured domain objects
-- **Using dependency injection** to wire services with their dependencies ([L17](/lecture-notes/l17-creation-patterns))
-- **Unit testing with mocks** — using Mockito to test service logic in isolation ([L15: Test Doubles and Isolation](/lecture-notes/l15-testing))
+- **Using dependency injection** to wire services with their dependencies
+- **Unit testing with mocks** — using Mockito to test service logic in isolation
 
 ---
 
@@ -56,7 +56,7 @@ By completing this assignment, you will demonstrate proficiency in:
 
 ### Architecture Overview
 
-This assignment adds a **`RecipeService`** facade that sits between driving adapters (like the CLI you'll build in A5) and your domain/ports.
+This assignment adds a **`RecipeService`** facade that sits between driving adapters (like the CLI you will build in A5) and your domain/ports.
 
 ```mermaid
 flowchart TB
@@ -125,7 +125,7 @@ This interface represents an arbitrary specification you've been given, not a de
 
 Each method interacts with at least one port, like `RecipeRepository`.
 
-To test these methods in isolation, you'll mock the repository interfaces. This lets you:
+To test these methods in isolation, you can mock the repository interfaces. This will let you:
 - **Control inputs:** Use `when(repo.findById(...)).thenReturn(...)` to set up the test scenario
 - **Verify interactions:** Use `verify(repo).save(...)` to confirm the service called the right methods
 - **Test edge cases:** Mock exceptions to test error handling without real I/O
