@@ -9,36 +9,29 @@ sidebar_position: 6
 
 ## Overview
 
-In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — a command-oriented terminal application that lets users manage their recipe library, import recipes, scale and convert ingredients, generate shopping lists, and follow recipes step-by-step while cooking.
+In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — a command-oriented terminal application that lets users manage their recipe library, import recipes, scale ingredients, and generate shopping lists.
 
-The CLI is your first **driving adapter** in the [hexagonal architecture](/lecture-notes/l16-testability) — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to). But here's the twist: you won't use the `RecipeService` from A4. Instead, you'll design your own service layer — one that's actually well-suited for *multiple* user interfaces. In A4, we told you `RecipeService` was not ideal design. Now you get to prove you understand *why* by building something better.
+The CLI is your first **driving adapter** in the [hexagonal architecture](/lecture-notes/l16-testability) — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to).
 
-This assignment has two parts:
-1. **Design and implement CLI-oriented services** that coordinate the domain model and repositories
-2. **Build an interactive CLI** on top of those services — with command parsing, tab completion, and an interactive cooking mode
+:::danger 
 
-This is a **design-heavy assignment.** We provide the commands your CLI must support and explicit guidance on service boundaries through the **actor heuristic** and other boundary heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design). But *how* you decompose the service layer requires you to apply those heuristics thoughtfully. You'll document your decisions using Architecture Decision Records (ADRs) — see the [ADR section and sample in L18](/lecture-notes/l18-architecture-design#architecture-decision-records-adrs); your ADRs can be just as short as that example.
-
-:::danger Design Quality Is Equally Weighted with Implementation
+Design Quality Is Equally Weighted with Implementation
 
 - **We provide the majority of the test suite.** You can run tests locally to verify functionality.
-- **Design documentation is worth 50% of your grade.** ADRs and reflection questions are worth 50 points total.
+- **Design documentation is worth 50% of your grade.** Reflection questions are worth 50 points total.
 - **Manual grading can deduct up to 30 points** for poor design, architecture, or code quality.
-- **Use AI to implement your design.** The key learning objectives are architectural thinking. Spend more time on design; rely on AI to help implement it.
 
 :::
 
-**Due:** Thursday, March 19, 2026 at 11:59 PM Boston Time
+**Due:** Friday, June 12, 2026 at 11:59 PM Boston Time
 
-**Early Bird Bonus:** +10 points for completing the Library Commands by Friday, March 13 at 11:59 PM EDT. See [Grading](#grading) for details.
+**Prerequisites:** This assignment builds on the A4 sample implementation (provided). You should be familiar with `RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`, and the domain model.
 
-**Prerequisites:** This assignment builds on the A4 sample implementation (provided). You should be familiar with `RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`, and the domain model. You should also understand why the A4 `RecipeService` interface was problematic — that understanding drives your service design here.
+:::danger 
 
-:::danger Start Early — Design Takes Time
+Start Early — Design Takes Time
 
 Good design requires iteration. You'll make better architectural decisions if you have time to sketch ideas, sleep on them, get feedback in office hours, and refine before implementing.
-
-**Early Bird Bonus (+10 points):** Get the full **Librarian suite** passing by **Friday, March 13 at 11:59 PM EDT** — all tests in **GeneralCommandTests** and **LibraryCommandTests**, including *all* of the **help** feature. This covers: `help`, `collections`, `collection create`, `recipes`, `conversions`, `conversion add`, and `conversion remove`.
 
 **Submission limits:** Up to **15 times per rolling 24-hour period.**
 
@@ -50,14 +43,10 @@ Good design requires iteration. You'll make better architectural decisions if yo
 
 By completing this assignment, you will demonstrate proficiency in:
 
-
-- **Applying service boundary heuristics** — using the four heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design) (rate of change, actor, interface segregation, testability) to decompose your service layer
-- **Writing Architecture Decision Records (ADRs)** — documenting the *why* behind your service boundaries and design choices ([L18 ADR section](/lecture-notes/l18-architecture-design#architecture-decision-records-adrs); ADRs can be just as short as the sample)
-- **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testability), [L19: Architectural Qualities](/lecture-notes/l19-architectural-qualities))
 - **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter (it *drives* the application on behalf of the user) that consumes your services without leaking domain logic into the presentation layer; preparing for a second driving adapter (GUI) in the group project
 - **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
 - **End-to-end testing with JLine** — understanding how integration tests use dumb terminal mode to verify CLI behavior
-- **Interactive UX for terminals** — building rich interactions including step-by-step cooking mode, tab completion, and contextual help
+- **Interactive UX for terminals** — building rich interactions including tab completion, and contextual help
 
 ---
 
@@ -65,34 +54,17 @@ By completing this assignment, you will demonstrate proficiency in:
 
 ### Actors: Who Uses CookYourBooks?
 
-The **actor heuristic** from L18 says: *different actors — people who use the system in different ways and whose needs change independently — should be served by different service boundaries.* CookYourBooks serves three distinct actors, each using different CLI commands (defined [in this command reference](/assignments/Appendices/cyb5-command-reference.md)):
+CookYourBooks this summer will serve a single actor: a librarian who wants to organize, curate, and transform their recipe collection. This librarian will want to perform the following operations
 
-| Actor | Goals | Key Commands |
-|---------|-------|--------------|
-| **The Librarian** | Organizes and curates their recipe collection. Imports recipes, creates collections, searches, manages house conversion rules. | `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `search`, `delete` |
-| **The Cook** | Follows recipes step-by-step while cooking. Needs hands-free navigation, clear ingredient lists. | `cook`, `show`* |
-| **The Planner** | Plans meals and shopping trips. Aggregates ingredients, generates shopping lists, scales and converts recipes, exports. | `shopping-list`, `scale`, `convert`, `export` |
+- import and remove recipes
+- create collections
+- search collections
+- view a particular recipe
+- scale recipes and optionally save them
 
-**The Transformer** (scaling and unit conversion) is a **shared capability** — it primarily serves the Planner today, but the Cook or Librarian could benefit in the future. Extracting it into its own service boundary keeps this logic reusable and testable independent of any single actor.
+The specific commands you will expose via your CLI are defined [in this command reference](/assignments/Appendices/cyb5-command-reference.md).
 
-\* `show` is useful to all three actors but appears in the Cook column because it directly supports the cook workflow.
-
-This actor alignment matters for your group project: your four-member team will divide GUI work by actor. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
-
-:::warning Actor-Aligned Services Required
-
-Your service layer **must** have separate services aligned with the three actors, plus a separate Transformer capability. A monolithic "CookYourBooksService" will receive significant design quality deductions regardless of how well it's documented in ADRs.
-
-:::
-
-### Applying the L18 Heuristics
-
-Apply the four service boundary heuristics from L18:
-
-1. **Rate of Change** — UI formatting changes fastest; domain operations change less frequently; infrastructure changes rarely. Things that change at different speeds should be separate.
-2. **Actor** — Different actors should inform different service boundaries, just as the Student, Instructor, and Sysadmin each got their own slice of Pawtograder.
-3. **Interface Segregation** — Each part of your CLI should depend only on the service capabilities it actually needs. Avoid fat service interfaces that force callers to depend on methods they don't use.
-4. **Testability** — Things that need independent testing should be separable. Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.
+We have provided a modified `RecipeService` facade to cater to this single actor. In this assignment, you will create the CLI driving adapter utilizing this facade.
 
 ### Data Persistence
 
@@ -116,14 +88,9 @@ public class CookYourBooksApp {
         RecipeCollectionRepository collRepo = library.getCollectionRepository();
         ConversionRegistry conversionRegistry = library.getConversionRegistry();
 
-        // YOUR services — design and wire these yourself
-        // Align with the three actors (L18 actor heuristic):
-        // - Librarian: collection/recipe management, import, search
-        // - Cook: step-by-step navigation, session state
-        // - Planner: shopping lists, export
-        // Plus a shared Transformer (scaling + conversion)
+        RecipeService service = new RecipeServiceImpl(recipeRepo, collRepo, conversionRegistry);
 
-        CookYourBooksCli cli = new CookYourBooksCli(/* your services */);
+        CookYourBooksCli cli = new CookYourBooksCli(service);
         cli.run();
     }
 }
@@ -144,9 +111,9 @@ AI coding assistants are encouraged. Use AI to implement your design — the key
 
 :::tip Using AI as a Thinking Tool for Design
 
-Instead of asking "How should I design my service layer?", try visualizing your own ideas first:
+Instead of asking "How should I design my CLI driver?", try visualizing your own ideas first:
 
-> "I'm thinking of having three services: a LibrarianService, a PlannerService, and a CookingSessionService. Generate a Mermaid diagram showing these services and their dependencies on the repositories."
+> "I'm thinking of having different command objects for the following commands in my CLI that utilize the `RecipeService`: [insert command details here]. Some commands like `collection` and `show` must also enable some type of autocompletion. Generate a Mermaid diagram showing the command objects and their dependency on the RecipeService."
 
 Seeing your ideas as a diagram helps you spot issues. Use AI to externalize your thinking, not replace it.
 
@@ -170,40 +137,18 @@ Do not manually select expensive AI models. Always use **"Auto" mode** in Copilo
 
 ## Design Task
 
-Before writing any implementation code, document your architectural decisions. Design documentation is worth 30 of the 50 reflection/documentation points.
+Before writing any implementation code, plan and document your CLI architecture. By planning and documenting the architecture, your group can decide
+how to divide work so each member can implement and test without waiting on another. It may be tempting to let one member do the heavy lifting, 
+but this is how teams fail to meet deadlines! That one member needs more time due to the heavy implementation workload and suddenly everyone 
+is waiting on **them** to finish. That is not fair to that member, yourself, and the other teammates. 
 
-### Required Architecture Decision Records (ADRs)
+**Task**: Plan ahead to avoid this scenario by documenting your answers to the following questions in `GROUP_PLAN.md`:
 
-Create exactly **4 ADRs** in a `docs/adr/` folder using this format:
-
-```markdown
-# ADR-001: [Title]
-
-## Context
-[What is the situation? What forces are at play?]
-
-## Decision
-[What did you decide to do?]
-
-## Consequences
-[Tradeoffs — both positive and negative.]
-```
-
-**Required ADR topics:**
-
-1. **Service boundary decomposition** — How did you decompose your service layer to align with the three actors? Which L18 heuristics drove your boundary decisions? How did you handle the Transformer as a shared capability?
-2. **Transformation vs. persistence separation** — How does your design handle "preview before save" workflows? How is this different from A4's `RecipeService`?
-3. **Command architecture** — How did you design your command dispatch system? What responsibilities does each component have? Which heuristics informed those assignments?
-4. **Tab completion architecture** — How did you design your completer? What concerns did you identify, and how did you assign responsibility for each?
-
-### Design Requirements
-
-All implementations must satisfy:
-
-- **Services depend only on port interfaces** (`RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`) — never on concrete adapter classes
-- **Dependency injection** — services receive dependencies through constructors
-- **Separation of transformation from persistence** — your design must enable "preview before save" workflows (document this in ADR-002)
-- **Immutability** — transformations return new `Recipe` objects; don't mutate the original
+- For each command to be tested, what commands must already be implemented? (Hint: Read the tests we gave you to validate your answers.)
+- Are there any shared interfaces we should design together before implementing separately? What are they and what do they represent?
+- What will we do if a shared interface needs to be changed?
+- Have we accurately distributed the commands such that everyone has roughly the same amount of work?
+- Who will take charge and implement which commands given our answers to the above?
 
 ### Separation of Concerns
 
@@ -215,7 +160,7 @@ Think of your CLI as three distinct layers. Code for one layer must not mix conc
 
 ### Command Architecture
 
-Design an extensible command system. **Lab 9** walks through a command dispatch pattern you can use as a starting point. What you must *not* do is put all commands in one giant `switch` or `if-else` — that's the same anti-pattern as a monolithic service, just at the CLI layer.
+Design an extensible command system. Refer to our lecture on the [Command Design Pattern]() as a starting point in your design. What you must *not* do is put all commands in one giant `switch` or `if-else` — that's the same anti-pattern as a monolithic service, just at the CLI layer.
 
 ### Tab Completion Architecture
 
@@ -227,13 +172,13 @@ Tab completion involves distinct concerns with different rates of change:
 | **What values are available?** | Where do recipe titles, unit names come from? | Recipe titles from services; unit names from `Unit` enum |
 | **How to format completions?** | How are candidates presented? | Names with spaces need quotes |
 
-Apply the L18 heuristics to decide where each concern belongs, and document your reasoning in ADR-004.
+Consider where each concern belongs and document your reasoning in your `REFLECTION.md`.
 
 ---
 
 ## Implementation Task
 
-Once your ADRs are written, implement your design. The command reference and full example session are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference).
+Once you have a plan, implement your design. The command reference and full example session are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference).
 
 ### Command Summary
 
@@ -244,18 +189,11 @@ Below are all the commands in a convenient table. The full reference and details
 | **Library** | `collections` | List all recipe collections |
 | | `collection create <name>` | Create a new personal collection |
 | | `recipes <collection>` | List recipes in a collection |
-| | `conversions` | List all house conversion rules |
-| | `conversion add` | Add a house conversion rule (interactive) |
-| | `conversion remove <rule>` | Remove a house conversion rule |
 | **Recipe** | `show <recipe>` | Display a recipe |
 | | `search <ingredient>` | Find recipes containing an ingredient |
 | | `import json <file> <coll>` | Import recipe from JSON file |
 | | `delete <recipe>` | Delete a recipe |
 | **Tools** | `scale <recipe> <servings>` | Scale recipe to target servings |
-| | `convert <recipe> <unit>` | Convert recipe to different units |
-| | `shopping-list <r1> [r2] ...` | Generate shopping list from recipes |
-| | `cook <recipe>` | Step-by-step cooking mode |
-| | `export <recipe> <file>` | Export recipe to Markdown |
 | **General** | `help [command]` | Show help (or help for a specific command) |
 | | `quit` / `exit` | Exit the application |
 
@@ -273,7 +211,7 @@ Your CLI must use [JLine 3](https://github.com/jline/jline3) for terminal intera
 When a user types a command and presses Enter, JLine gives you the entire line as a `String`. Your CLI must **tokenize** it — splitting into a command name and arguments. The challenge is that spaces separate arguments *and* appear within argument values. Use **quoting** to group words:
 
 ```
-shopping-list "Classic Pancakes" "Chocolate Chip Cookies"
+search "Chicken Thighs"
 ```
 
 Configure your `LineReader` with a `DefaultParser` for quote-aware tokenization:
@@ -289,16 +227,20 @@ LineReader reader = LineReaderBuilder.builder()
 // Retrieve pre-tokenized arguments from ParsedLine:
 String line = reader.readLine("cyb> ");
 ParsedLine parsed = reader.getParsedLine();
-List<String> words = parsed.words(); // ["shopping-list", "Classic Pancakes", "Chocolate Chip Cookies"]
+List<String> words = parsed.words(); // ["search", "Chicken Thighs"]
 ```
 
-:::tip Single-word arguments don't need quotes
+:::tip 
+
+Single-word arguments don't need quotes
 
 `show Pancakes` and `show "Pancakes"` are equivalent. Quotes are only needed when an argument contains spaces.
 
 :::
 
-:::tip Windows Users: Backslash in Paths
+:::tip 
+
+Windows Users: Backslash in Paths
 
 JLine's `DefaultParser` treats backslash (`\`) as an escape character. On Windows, paths like `C:\Users\recipes\pie.json` get mangled — backslashes are stripped and path segments merge (see [jline/jline3#1238](https://github.com/jline/jline3/issues/1238)). To fix this, use a custom parser that does not treat backslash as an escape:
 
@@ -350,11 +292,9 @@ The command is **not re-prompted** — the user must re-enter with a more specif
 Your CLI must provide tab completion for:
 
 1. **Command names** — `sc` + Tab suggests `scale`; `col` suggests `collection`, `collections`
-2. **Recipe titles and short IDs** — for `show`, `delete`, `scale`, `convert`, `cook`, `export`, and all recipe arguments to `shopping-list`
+2. **Recipe titles and short IDs** — for `show`, `delete`, and `scale`
 3. **Collection names** — for `recipes` and the collection argument of `import json`
-4. **Unit names** — after `convert <recipe>`, Tab suggests valid unit names
-5. **Conversion rule identifiers** — after `conversion remove`, Tab suggests existing rule identifiers
-6. **Cook mode commands** — while in cook mode, Tab suggests `next`, `prev`, `ingredients`, `quit`
+4. **Conversion rule identifiers** — after `conversion remove`, Tab suggests existing rule identifiers
 
 Use JLine's [`Completer` interface](https://jline.org/docs/tab-completion#custom-completers). A combination of `AggregateCompleter` and `StringsCompleter` may be helpful.
 
@@ -435,13 +375,17 @@ class CookYourBooksCliTest {
 }
 ```
 
-:::info Why E2E Testing Instead of Mocks?
+:::info
+
+Why E2E Testing Instead of Mocks?
 
 Unit testing CLIs with mocks often tests that your mock setup is correct, not that your CLI works. Real terminal behavior is hard to mock accurately, and integration bugs slip through because mocked layers never actually talk to each other. E2E tests with a dumb terminal are simpler and catch more bugs.
 
 :::
 
-:::caution Test Location Matters
+:::caution
+
+Test Location Matters
 
 The provided tests are in `src/test/java/app/cookyourbooks/cli/`. Do not modify them. If you write additional tests for your own helper classes, put them in a different package.
 
@@ -454,6 +398,8 @@ The provided tests are in `src/test/java/app/cookyourbooks/cli/`. Do not modify 
 **Do not use AI to write your reflection.** Your answers must be your own.
 
 Update `REFLECTION.md` to address:
+
+## TODO: Replace question 1-4 with something else relevant to commands and CLI
 
 1. **Applying Boundary Heuristics:** Which of the four L18 heuristics most influenced your service layer design? Give a concrete example: describe a specific boundary you drew (or chose not to draw) and explain which heuristic(s) informed that decision. If multiple heuristics pointed in different directions, how did you resolve the tension?
 
@@ -477,58 +423,32 @@ Update `REFLECTION.md` to address:
 
 Run `./gradlew test` locally to verify before submitting.
 
-:::tip Early Bird Bonus (+10 points)
-
-Pass all tests in **GeneralCommandTests** and **LibraryCommandTests** by **Friday, March 13 at 11:59 PM EDT**, including all of the `help` feature.
-
-:::
-
-#### Library Commands (15 points) — Required for Early Bird Bonus
+#### Library Commands (38 points) (missing 10 points)
 
 | Component | Points |
 |-----------|--------|
 | `help` (list and per-command) | 3 |
 | `collections` | 3 |
 | `collection create` | 3 |
-| `conversions` / `conversion add` / `conversion remove` | 3 |
 | `recipes <collection>` | 3 |
-
-#### Remaining Commands (23 points)
-
-| Component | Points |
-|-----------|--------|
 | Data persistence (`cyb-library.json` load/save) | 3 |
 | `show <recipe>` | 2 |
 | `search <ingredient>` | 3 |
 | `import json` | 3 |
 | `delete <recipe>` | 3 |
 | `scale` | 2 |
-| `convert` | 2 |
-| `shopping-list` | 2 |
-| `cook` mode | 2 |
-| `export` | 1 |
 
-### Manual Demo Tests (12 points)
+### Manual Demo Tests (12 points) (missing 8 points, consider at least one more demo)
 
 Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `build/manual-demo-output/`. Graders review these for formatting and visual layout.
 
 | Test | Output File | Points | Grading Criteria |
 |------|-------------|--------|------------------|
 | Recipe Display & Transform | `recipe-transform-demo.txt` | 4 | Decorative borders (═══); bullet points (•); scale/convert comparison tables with column headers, arrows (→), and alignment; vague ingredients show "to taste" |
-| Cook Mode Walkthrough | `cook-mode-demo.txt` | 4 | "COOKING:" prefix with decorative border; two-column ingredient layout; step separators (───), "Step N of M" counter, "Uses:" prefix or "(no ingredients)"; hints bar |
-| Library & Shopping List | `library-lists-demo.txt` | 4 | Numbered collections with [Personal]/[Cookbook]/[Web] badges and recipe counts; search results with collection names; ambiguous match with short IDs; shopping list with measured/vague sections and totals |
 
 ### Manual Grading — Design Quality (up to −30 points)
 
-#### Service Layer Design (up to −15)
-
-| Issue | Max Deduction | Description |
-|-------|---------------|-------------|
-| Wrapping A4 `RecipeService` instead of redesigning | −8 | Thin wrapper around `RecipeService` instead of a redesigned service layer |
-| Bundled transformation + persistence (no "preview before save") | −6 | Service methods that always save results (same problem as A4) — no "preview before save" capability |
-| No dependency injection | −4 | Services construct their own dependencies instead of receiving them |
-| Tight coupling to concrete adapters | −3 | Services depend on concrete classes (`JsonRecipeRepository`) instead of port interfaces |
-| Monolithic service with no actor alignment | −4 | All functionality in one class with no coherent decomposition rationale; no alignment with actors or rate-of-change boundaries |
+#### Service Layer Design (up to −15) (all of this is gone)
 
 #### CLI Architecture (up to −10)
 
@@ -547,15 +467,7 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 | Missing Javadoc | −2 | Public classes and methods lack documentation |
 | Poor naming/style | −1 | Unclear variable names; inconsistent formatting |
 
-### Design Documentation (30 points)
-
-| Criterion | Points |
-|-----------|--------|
-| ADR coverage (exactly 4, all required topics) | 8 |
-| Heuristic application (explicit L18 references) | 10 |
-| Tradeoff analysis (benefits and drawbacks) | 8 |
-| Concern identification | 2 |
-| ADRs match implementation | 2 |
+### Design Documentation (30 points) (missing all of these points due to no ADRs)
 
 ### Reflection Questions (20 points)
 
@@ -566,12 +478,6 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 ## Submission
 
 ```text
-├── docs/
-│   └── adr/
-│       ├── ADR-001-service-boundaries.md
-│       ├── ADR-002-transformation-persistence.md
-│       ├── ADR-003-command-architecture.md
-│       └── ADR-004-tab-completion.md
 ├── src/
 │   ├── main/java/app/cookyourbooks/...
 │   └── test/java/app/cookyourbooks/...  (provided — do not modify)
