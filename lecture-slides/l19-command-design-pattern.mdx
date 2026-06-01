@@ -1,0 +1,572 @@
+---
+sidebar_position: 19
+title: "Command Design Pattern"
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 19: Command Design Pattern
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2026 Amit Shesh, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Theme of this lecture:**
+- We revisit the thermostat application from L18 and motivate a new design problem
+- Key insight: growing a feature set with if-else chains is unsustainable — we need a better abstraction
+- Today: the Command pattern, macro commands, and the Factory Method pattern (bonus sighting)
+- Also: a practical look at CLI polish using JLine
+
+→ **Transition:** Let's recall the program we're working with…
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 1: CONTEXT */}
+{/* ============================================ */}
+
+<Slide>
+
+## Context: The Thermostat Application
+
+<p style={{fontSize: '0.85em'}}>
+  Revisiting the smart home thermostat app from L18 — with three additions:
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>A <strong>controller</strong> that drives the application loop</li>
+  <li>Controller accepts any <code>InputStream</code> / <code>PrintStream</code> → promotes testability</li>
+  <li>New service method: get the IDs of all existing thermostats</li>
+</ul>
+
+<div style={{marginTop: '1em', fontSize: '0.78em', color: '#555'}}>
+
+**Supported CLI operations:**
+
+</div>
+
+<ul style={{fontSize: '0.75em', columns: 2, columnGap: '2em'}}>
+  <li><code>create &lt;id&gt; &lt;temp&gt;</code></li>
+  <li><code>increment &lt;id&gt;</code></li>
+  <li><code>decrement &lt;id&gt;</code></li>
+  <li><code>get &lt;id&gt;</code></li>
+  <li><code>monitor &lt;id&gt;</code></li>
+  <li><code>save &lt;filepath&gt;</code></li>
+  <li><code>exit</code></li>
+</ul>
+
+<aside className="notes">
+- Students should recall the thermostat domain from L18
+- The CLI addition is the new context for today — we're building a user-facing application on top of the domain
+- The InputStream/PrintStream injection is a nice design choice worth highlighting: it makes the controller testable without a real terminal
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Starting Parser
+
+<p style={{fontSize: '0.85em'}}>
+  Instructions are parsed in <code>ThermostatTextScriptProcessor</code>:
+</p>
+
+```java
+public void process(String command) {
+    String[] parts = command.split(" ");
+    if (parts[0].equals("create")) {
+        service.createThermostat(parts[1], Integer.parseInt(parts[2]));
+    } else if (parts[0].equals("increment")) {
+        service.incrementTemperature(parts[1]);
+    } else if (parts[0].equals("decrement")) {
+        service.decrementTemperature(parts[1]);
+    } else if (parts[0].equals("get")) {
+        System.out.println(service.getTemperature(parts[1]));
+    } else if (parts[0].equals("save")) {
+        service.saveAll(new TextfilePersistAdapter(parts[1]));
+    } else {
+        System.out.println("Unknown command: " + command);
+    }
+}
+```
+
+<aside className="notes">
+- This is the "before" state — functional, readable for now
+- The key observation: every new feature adds another branch to this ladder
+- Ask students: what happens after 20 features? 40?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 2: ENHANCEMENTS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Enhancing the Application
+
+<p style={{fontSize: '0.85em'}}>
+  We add two new features. Watch what happens to the parser each time.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.8em', marginTop: '0.5em'}}>
+
+<div style={{background: '#f0f4ff', padding: '0.75em', borderRadius: '8px'}}>
+
+**Enhancement 1: Help**
+
+Add a `help` command that prints the list of available instructions.
+
+</div>
+
+<div style={{background: '#fff8f0', padding: '0.75em', borderRadius: '8px'}}>
+
+**Enhancement 2: Remove Monitoring**
+
+Add `removemonitors <id>` to undo monitoring.
+
+</div>
+
+</div>
+
+<aside className="notes">
+- Enhancement 1 is harmless-looking — just one more branch
+- Enhancement 2 reveals the deeper problem: new features can require domain changes AND parser changes
+- Note violation of Open-Closed: we directly modified existing interfaces and classes (acknowledged as a pragmatic shortcut here)
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Growing Problem
+
+<p style={{fontSize: '0.85em'}}>
+  With every new instruction, the parser grows — but not uniformly:
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li><strong>Non-linear growth:</strong> some additions are 3 lines, others bring in private helper methods</li>
+  <li><strong>Unwieldy branches:</strong> some <code>if</code> blocks are longer than others — no consistency</li>
+  <li><strong>Harder to debug:</strong> imagine a bug in case 10 of a 33-case ladder</li>
+  <li><strong>Decreasing cohesion:</strong> unrelated logic accumulates — e.g. <code>printMenu</code> ends up in the parser</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', fontStyle: 'italic', color: '#9370DB'}}>
+  Each new feature asks: <em>where does this code actually belong?</em>
+</p>
+
+<aside className="notes">
+- This is the core motivation slide — make sure students feel the pain before presenting the solution
+- The cohesion point is the most important: the parser is slowly becoming a dumping ground
+- Connect back to L18: cohesion, coupling, changeability
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 3: COMMAND DESIGN PATTERN */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Command Design Pattern — Insight
+
+<p style={{fontSize: '0.85em'}}>
+  Each <code>if</code> branch does something different — but all share the same shape:
+</p>
+
+<p style={{fontSize: '0.82em', marginTop: '0.5em', fontStyle: 'italic', color: '#555', textAlign: 'center'}}>
+  "Take the service object, the view object, and possibly additional data — then execute operations on the service."
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.75em'}}>
+  <li>The operations differ; the <em>signature</em> does not</li>
+  <li>Unify all helper methods under one interface: <code>void execute(service, view)</code></li>
+  <li>Each instruction becomes its own <strong>class</strong> that implements this interface</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', color: '#9370DB'}}>
+  This is the <strong>Command pattern</strong>: encapsulate each operation as an object.
+</p>
+
+<aside className="notes">
+- Walk through the mental leap: helper method → interface → class per command
+- The insight is that "different operations, same shape" is exactly the signal to create an interface
+- Commands are objects — they can be passed around, stored, deferred, composed
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Command Interface
+
+```java
+/**
+ * Represents a high-level command: a set of operations to be executed.
+ * A command encapsulates all instructions for one "atomic" operation.
+ */
+public interface ThermostatCommand {
+    void execute(SmarthouseServicePort service, PrintStream view);
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  One implementation per instruction:
+</p>
+
+```java
+public record CreateThermostatCommand(String id, int initialTemperature)
+        implements ThermostatCommand {
+    @Override
+    public void execute(SmarthouseServicePort service, PrintStream view) {
+        service.createThermostat(id, initialTemperature);
+    }
+}
+
+public record GetTemperatureCommand(String id)
+        implements ThermostatCommand {
+    @Override
+    public void execute(SmarthouseServicePort service, PrintStream view) {
+        view.println(service.getTemperature(id));
+    }
+}
+```
+
+<aside className="notes">
+- Records are a natural fit: immutable, data-carrying, concise
+- Each command class is small, focused, independently readable and testable
+- The constructor stores any arguments the command needs — the service/view are passed at execute time
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Parser After Commands
+
+<p style={{fontSize: '0.85em'}}>
+  The parser no longer <em>executes</em> anything — it only <em>creates</em> command objects:
+</p>
+
+```java
+public ThermostatCommand process(String command) {
+    String[] parts = command.split(" ");
+    ThermostatCommand commandObject = null;
+
+    if (parts[0].equals("create")) {
+        commandObject = new CreateThermostatCommand(
+            parts[1], Integer.parseInt(parts[2]));
+    } else if (parts[0].equals("get")) {
+        commandObject = new GetTemperatureCommand(parts[1]);
+    } else if (parts[0].equals("addmonitor")) {
+        commandObject = new AddMonitorCommand(
+            parts[1], new PrintMonitorAdapter());
+    }
+    // ...
+    return commandObject;
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
+  Adding a new instruction = adding one new class + one new branch. The branch is now <em>always</em> the same size.
+</p>
+
+<aside className="notes">
+- Every branch is now exactly one line: create and return a command object
+- The logic of what to do lives entirely in the command class, not here
+- Growth is now uniform and predictable
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Advantages of the Command Pattern
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', fontSize: '0.78em', marginTop: '0.5em'}}>
+
+<div style={{background: '#f0f4ff', padding: '0.75em', borderRadius: '8px'}}>
+
+**Promotes Cohesion**
+
+The parser has one job: *create commands*. The controller has one job: *execute commands*. Neither accumulates unrelated logic.
+
+</div>
+
+<div style={{background: '#f0fff4', padding: '0.75em', borderRadius: '8px'}}>
+
+**Promotes Changeability**
+
+Each command is self-contained. New instructions add a new class — no need to edit the controller or parser logic.
+
+</div>
+
+<div style={{background: '#fff8f0', padding: '0.75em', borderRadius: '8px'}}>
+
+**Aligns with Features**
+
+Service methods model *domain operations*. Commands model *how the user interacts* via the CLI (or GUI).
+
+</div>
+
+</div>
+
+<aside className="notes">
+- The cohesion point: both parser and controller now have a single, clear reason to exist
+- The changeability point: connect back to Open-Closed — adding a new command doesn't modify existing ones
+- The alignment point: commands are user-facing abstractions; the service is domain-facing — these are different levels
+</aside>
+
+</Slide>
+
+<Slide>
+
+## "Macro" Commands
+
+<p style={{fontSize: '0.85em'}}>
+  <strong>New operation:</strong> change the temperature of <em>all</em> thermostats by a given amount.
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>The service has no such method — only single-thermostat operations</li>
+  <li>Rather than adding to the domain, implement this <strong>at the command level</strong></li>
+  <li>A macro command uses existing commands (or service calls) to build a new operation</li>
+</ul>
+
+```java
+public record ChangeAllThermostatsCommand(int increment)
+        implements ThermostatCommand {
+    @Override
+    public void execute(SmarthouseServicePort service, PrintStream view) {
+        List<String> ids = service.getAllIds();
+        for (String id : ids) {
+            ThermostatCommand cmd = new ChangeTemperatureCommand(id, ...);
+            for (int i = 0; i < Math.abs(increment); i++) {
+                cmd.execute(service, view);
+            }
+        }
+    }
+}
+```
+
+<aside className="notes">
+- This is a powerful implication of commands-as-objects: they can compose
+- Other macro examples: monitor all thermostats, print all temperatures
+- Key design insight: not every new user-facing feature needs a service change — some fit naturally at the command layer
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 4: FACTORY METHOD */}
+{/* ============================================ */}
+
+<Slide>
+
+## A Brief Detour: Factory Method
+
+<p style={{fontSize: '0.85em'}}>
+  The updated <code>process</code> method is also an example of the <strong>Factory Method</strong> pattern.
+</p>
+
+<p style={{fontSize: '0.8em', marginTop: '0.75em'}}>A factory method:</p>
+
+<ol style={{fontSize: '0.78em'}}>
+  <li><strong>Creates and returns objects</strong> as its primary purpose</li>
+  <li>Can return <strong>several different kinds</strong> of objects (all sharing a common type)</li>
+  <li>Decides <strong>at runtime</strong> which object to create (based on input)</li>
+</ol>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', color: '#9370DB'}}>
+  Factory methods <strong>consolidate object creation</strong> in one place — if creation logic changes, there is one place to edit.
+</p>
+
+<aside className="notes">
+- The factory method emerges naturally from the Command pattern here — a nice example of patterns working together
+- Consolidation is the key benefit: adding a new command type means editing the factory, and only the factory
+- Can be streamlined further with a switch expression
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SECTION 5: STREAMLINING THE CLI */}
+{/* ============================================ */}
+
+<Slide>
+
+## Streamlining the CLI
+
+<p style={{fontSize: '0.85em'}}>
+  <code>Scanner</code>-based input works — but users expect more from a terminal:
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>A prompt before each input line</li>
+  <li><code>Ctrl+C</code> to cancel input (not terminate the whole program)</li>
+  <li>Text colors and syntax highlighting</li>
+  <li>Tab-completion for command names</li>
+  <li>Up/down arrow keys to recall command history</li>
+  <li>All of the above must remain testable</li>
+</ul>
+
+<p style={{fontSize: '0.8em', marginTop: '1em'}}>
+  The <strong>JLine</strong> library provides a terminal-like experience inside any Java program.
+</p>
+
+<aside className="notes">
+- This section is more practical — motivate why Scanner isn't enough for a polished CLI
+- The testability requirement is important: our controller already accepts InputStream/PrintStream, which JLine can use
+- Transition: how do we actually use JLine?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Adding JLine to a Gradle Project
+
+```java
+dependencies {
+    implementation 'org.jline:jline:4.0.0'
+    // ...
+}
+```
+
+<aside className="notes">
+- One-liner dependency — straightforward to adopt
+- The rest of the work is wiring the Terminal and LineReader in the controller
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Rewriting the Controller with JLine
+
+```java
+public void control() {
+    // 1. Create a Terminal (use our streams, not System.in/out)
+    Terminal terminal = TerminalBuilder.builder()
+        .name("custom terminal")
+        .streams(in, view)
+        .system(true)
+        .build();
+
+    // 2. Create a LineReader from the terminal
+    LineReader reader = LineReaderBuilder.builder()
+        .terminal(terminal)
+        .build();
+
+    // 3. Use reader.readLine() instead of scanner.nextLine()
+}
+```
+
+<ul style={{fontSize: '0.78em', marginTop: '0.75em'}}>
+  <li><strong>Terminal:</strong> specifies I/O streams, display properties</li>
+  <li><strong>LineReader:</strong> reads one line at a time with terminal features</li>
+  <li>Still JUnit-ready — our custom <code>InputStream</code>/<code>PrintStream</code> are passed through</li>
+</ul>
+
+<aside className="notes">
+- Two-step setup: Terminal → LineReader
+- The testability point is worth emphasizing: because we injected streams from the start, JLine slots in without breaking tests
+- This is a payoff of the earlier design decision to accept InputStream/PrintStream
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tab-Completion with JLine
+
+<p style={{fontSize: '0.85em'}}>
+  A <strong>Completer</strong> object powers tab-completion — connected to the <code>LineReader</code>.
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>When tab is pressed, JLine feeds the partial input to the completer</li>
+  <li>The completer returns matching suggestions</li>
+</ul>
+
+```java
+// Get all supported command names from the parser
+String[] commandStrings = processor.getAllCommandNames();
+
+LineReader reader = LineReaderBuilder.builder()
+    .terminal(terminal)
+    .completer(new StringsCompleter(commandStrings))
+    .build();
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
+  The parser already knows all valid command names — we reuse that knowledge here.
+</p>
+
+<aside className="notes">
+- Three steps: get command names from parser → build StringsCompleter → attach to LineReader
+- Nice design coherence: the parser is the single source of truth for known commands
+- Extend this idea: a smarter completer could suggest thermostat IDs for the second argument
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SUMMARY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Summary
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.78em'}}>
+
+<div>
+
+**Command Pattern**
+- Encapsulate each operation as an object
+- Uniform growth: new instruction = new class
+- Enables macro commands without domain changes
+
+</div>
+
+<div>
+
+**Macro Commands**
+- Commands can compose other commands
+- New user-facing features need not touch the service
+- Examples: change all thermostats, monitor all, print all
+
+**JLine**
+- Terminal-grade CLI features in Java
+- Prompt, history, Ctrl+C, tab-completion
+- Stays testable via injected streams
+
+</div>
+
+</div>
+
+<aside className="notes">
+- Bring together the two design patterns and the practical JLine section
+- The command pattern is the main takeaway — factory method and macros are natural extensions
+- JLine is the "real world" payoff: good design (injectable streams) enables easy library adoption
+</aside>
+
+</Slide>
+
+</RevealJS>
