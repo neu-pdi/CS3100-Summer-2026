@@ -486,6 +486,7 @@
       "dates": [
         "2026-05-06"
       ],
+      "assignedTime": "08:00",
       "status": "published",
       "sections": [
         "L01",
@@ -502,6 +503,8 @@
       "dates": [
         "2026-05-11"
       ],
+      "assignedTime": "08:00",
+      "status": "published",
       "sections": [
         "L01",
         "L02",
@@ -517,6 +520,8 @@
       "dates": [
         "2026-05-13"
       ],
+      "assignedTime": "08:00",
+      "status": "published",
       "sections": [
         "L01",
         "L02",
@@ -533,6 +538,7 @@
         "2026-05-18"
       ],
       "assignedTime": "08:00",
+      "status": "published",
       "sections": [
         "L01",
         "L02",
@@ -549,6 +555,7 @@
         "2026-05-27"
       ],
       "assignedTime": "08:00",
+      "status": "published",
       "sections": [
         "L01",
         "L02",
@@ -560,7 +567,9 @@
     },
     {
       "id": "lab6",
-      "title": "Lab 6: Architecture",
+      "assignedTime": "08:00",
+      "status": "published",
+      "title": "Lab 6: Hexagonal Architecture",
       "dates": [
         "2026-06-03"
       ],
@@ -571,7 +580,7 @@
         "L04",
         "L05"
       ],
-      "url": "/labs/lab8-architecture"
+      "url": "/labs/lab-hexagonal-architecture"
     },
     {
       "id": "lab7",
