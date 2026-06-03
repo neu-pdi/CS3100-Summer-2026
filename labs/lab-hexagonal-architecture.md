@@ -49,7 +49,7 @@ SceneItAll has been a single Java application — one `build.gradle`, one `src/`
 
 *(The full system also has Notification, Analytics, and User Management features, but we'll keep our scope narrow today.)*
 
-Right now, these features are jumbled together — classes from different features import each other freely, there's a `DatabaseConnection` singleton that everything uses, and the `AutomationRuleEngine` reaches directly into a hardware SDK to check device states.
+Right now, these features are jumbled together — classes from different features import each other freely, there's a `DatabaseConnection` class that everything uses by calling its static method (this class is called a singleton because we need only one database connection throughout the application), and the `AutomationRuleEngine` reaches directly into a hardware SDK to check device states.
 
 Here's an example of what a piece of the current code looks like (also in `src/AutomationRuleEngine.java` in your repo):
 
@@ -202,8 +202,8 @@ Take note of how many files reference this method — you'll use this observatio
 
 With your partner discuss these three questions **before designing any replacement**:
 
-1. From [L17](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l17-creation-patterns): what are the **three problems** with singletons? Give a concrete example of each in the context of `DatabaseConnection`.
-2. From [L16](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l16-testing2): does this singleton hurt **observability**, **controllability**, or both? Explain specifically.
+1. What are some **problems** with singletons? Give a concrete example of each in the context of `DatabaseConnection`.
+2. Does this singleton hurt **observability**, **controllability**, or both? Explain specifically.
 3. If two tests run concurrently and both call `DatabaseConnection.getInstance()`, what could go wrong?
 
 ## 4.4 Exercise: Design Repository Interfaces — Manual First
@@ -346,7 +346,7 @@ Save your diagram in `diagrams/automation-rules.md`.
 
 ## 5.3 Exercise: Design the Composition Root
 
-If we inject all these dependencies, *someone* has to wire them up. In [L17](https://neu-pdi.github.io/CS3100-Spring-2026/lecture-notes/l17-creation-patterns) we called this the **composition root**.
+If we inject all these dependencies, *someone* has to wire them up. This is called the **composition root**.
 
 Use Copilot:
 > *"Show me what `SceneItAllApplication.main()` should look like after applying dependency injection throughout. It should create all the production adapter implementations for DeviceManager and AutomationRuleEngine, then wire them in via constructor injection. There should be no calls to any `getInstance()` methods anywhere."*
@@ -411,10 +411,6 @@ Complete these questions in `REFLECTION.md` as you work through the lab.
 
 6. **Extending the Architecture:** What ports would Analytics & Reporting need? Would it share any with Device Management or Automation Rules?
 
-7. **Meta (pick one):**
-   - *Connections:* How does one of your design decisions connect to a concept from L7-L17?
-   - *Communication:* Did explaining a decision out loud clarify your thinking?
-   - *AI tools:* How did manual-first (Part 2) compare to Copilot-first (Part 3)?
 
 ## Submission Checklist
 
