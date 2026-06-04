@@ -129,21 +129,21 @@ Do not manually select expensive AI models. Always use **"Auto" mode** in Copilo
 
 Before writing any implementation code, plan and document your CLI architecture. By planning and documenting the architecture, your group can decide how to divide work so each member can implement and test without waiting on another. It may be tempting to let one member do the heavy lifting, but this is how teams fail to meet deadlines! That one member needs more time due to the heavy implementation workload and suddenly everyone is waiting on **them** to finish. That is not fair to that member, yourself, and the other teammates. 
 
-**Task**: Plan ahead to avoid this scenario by documenting your answers to the following questions in `GROUP_PLAN.md`:
+**Task**: Plan ahead to avoid this scenario. Even though we do not ask for the **specific plan**, we ask in the [Reflection](#8-reflection) about contributions from each memeber. Read the remainder of the subsections of this section and look at the list of commands listed in [the command reference](/assignments/Appendices/cyb5-command-reference). Then answer the below questions as a team. This will help your team come up with **your own implementation plan**, decide how you will work together to implement this CLI, and give ownership of parts of this assignment to each member.
 
 - For each command to be tested, what commands must already be implemented? (Hint: Read the tests we gave you to validate your answers.)
+- Beyond the command **execution**, what else must be implemented?
 - Are there any shared interfaces we should design together before implementing separately? What are they and what do they represent?
 - What will we do if a shared interface needs to be changed?
-- Have we accurately distributed the commands such that everyone has roughly the same amount of work?
-- Who will take charge and implement which commands given our answers to the above?
+- Who will take charge of what features given your answers to the above?
 
 ## 5.1 Separation of Concerns
 
 Think of your CLI as three distinct layers. Code for one layer must not mix concerns from another:
 
-- **Application services** coordinate domain operations (scaling, conversion, aggregation, search, persistence) — no formatting or I/O logic
+- **Application services** coordinate domain operations (scaling, search, persistence) — no formatting or I/O logic
 - **Presentation logic** handles command parsing and dispatch — no domain logic like ingredient math or conversion calculations
-- **Formatting logic** turns data into displayable output — reusable across commands (the same recipe formatter used by `show`, `cook`, and `scale`)
+- **Formatting logic** turns data into displayable output — reusable across commands (the same recipe formatter used by `show`, and `scale`)
 
 ## 5.2 Command Architecture
 
