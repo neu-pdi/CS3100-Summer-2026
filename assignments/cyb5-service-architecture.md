@@ -2,16 +2,13 @@
 title: "Assignment 5: Interactive CLI"
 sidebar_position: 6
 ---
-## Update log
-- 3/16/2026: When displaying a recipe with no servings information, use the phrase "No Servings" (applies to `show`, `recipes` listing, `cook` mode header).
 
----
 
-## Overview
+# 1 Overview
 
-In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — a command-oriented terminal application that lets users manage their recipe library, import recipes, scale ingredients, and generate shopping lists.
+In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — an instruction-oriented terminal application that lets users manage their recipe library, import recipes, scale ingredients, and generate shopping lists.
 
-The CLI is your first **driving adapter** in the [hexagonal architecture](/lecture-notes/l16-testability) — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to).
+The CLI is your first **driving adapter** in the hexagonal architecture — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to).
 
 :::danger 
 
@@ -23,23 +20,10 @@ Design Quality Is Equally Weighted with Implementation
 
 :::
 
-**Due:** Friday, June 12, 2026 at 11:59 PM Boston Time
-
 **Prerequisites:** This assignment builds on the A4 sample implementation (provided). You should be familiar with `RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`, and the domain model.
 
-:::danger 
 
-Start Early — Design Takes Time
-
-Good design requires iteration. You'll make better architectural decisions if you have time to sketch ideas, sleep on them, get feedback in office hours, and refine before implementing.
-
-**Submission limits:** Up to **15 times per rolling 24-hour period.**
-
-:::
-
----
-
-## Learning Objectives
+# 2 Learning Objectives
 
 By completing this assignment, you will demonstrate proficiency in:
 
@@ -50,9 +34,9 @@ By completing this assignment, you will demonstrate proficiency in:
 
 ---
 
-## Assignment Context and Concepts
+# 3 Assignment Context and Concepts
 
-### Actors: Who Uses CookYourBooks?
+## 3.1 Actors: Who Uses CookYourBooks?
 
 CookYourBooks this summer will serve a single actor: a librarian who wants to organize, curate, and transform their recipe collection. This librarian will want to perform the following operations
 
@@ -66,7 +50,7 @@ The specific commands you will expose via your CLI are defined [in this command 
 
 We have provided a modified `RecipeService` facade to cater to this single actor. In this assignment, you will create the CLI driving adapter utilizing this facade.
 
-### Data Persistence
+## 3.2 Data Persistence
 
 The provided `CybLibrary` class handles all data persistence automatically, storing everything in `cyb-library.json` in the current working directory:
 
@@ -74,9 +58,9 @@ The provided `CybLibrary` class handles all data persistence automatically, stor
 - **On changes:** Every mutation is written to the file immediately. You do not need to call save explicitly.
 - **On save failure:** Log the error at `ERROR` level with message `"Failed to save library: {}"` (passing the exception as the final argument), and print: `Warning: Failed to save changes to cyb-library.json: <error message>. Your changes may be lost.`
 
-### Application Wiring
+## 3.3 Application Wiring
 
-The provided `CookYourBooksApp` main class creates the repositories and conversion registry. You are responsible for wiring your own services and launching the CLI:
+The provided `CookYourBooksApp` main class creates the repositories and conversion registry. You are responsible for wiring the service to your CLI and launching the CLI:
 
 ```java
 public class CookYourBooksApp {
@@ -96,7 +80,7 @@ public class CookYourBooksApp {
 }
 ```
 
-### Build and Run
+## 3.4 Build and Run
 
 ```bash
 ./gradlew build
@@ -105,7 +89,7 @@ java -jar build/libs/cookyourbooks-all.jar
 
 The project includes a VS Code launch configuration — select **"Run CookYourBooks CLI (Interactive)"** from the Run and Debug view.
 
-### AI Policy
+# 4 AI Policy
 
 AI coding assistants are encouraged. Use AI to implement your design — the key learning objectives are architectural thinking, not coding speed.
 
@@ -135,12 +119,9 @@ Do not manually select expensive AI models. Always use **"Auto" mode** in Copilo
 
 ---
 
-## Design Task
+# 5 Design Task
 
-Before writing any implementation code, plan and document your CLI architecture. By planning and documenting the architecture, your group can decide
-how to divide work so each member can implement and test without waiting on another. It may be tempting to let one member do the heavy lifting, 
-but this is how teams fail to meet deadlines! That one member needs more time due to the heavy implementation workload and suddenly everyone 
-is waiting on **them** to finish. That is not fair to that member, yourself, and the other teammates. 
+Before writing any implementation code, plan and document your CLI architecture. By planning and documenting the architecture, your group can decide how to divide work so each member can implement and test without waiting on another. It may be tempting to let one member do the heavy lifting, but this is how teams fail to meet deadlines! That one member needs more time due to the heavy implementation workload and suddenly everyone is waiting on **them** to finish. That is not fair to that member, yourself, and the other teammates. 
 
 **Task**: Plan ahead to avoid this scenario by documenting your answers to the following questions in `GROUP_PLAN.md`:
 
@@ -150,7 +131,7 @@ is waiting on **them** to finish. That is not fair to that member, yourself, and
 - Have we accurately distributed the commands such that everyone has roughly the same amount of work?
 - Who will take charge and implement which commands given our answers to the above?
 
-### Separation of Concerns
+## 5.1 Separation of Concerns
 
 Think of your CLI as three distinct layers. Code for one layer must not mix concerns from another:
 
@@ -158,13 +139,13 @@ Think of your CLI as three distinct layers. Code for one layer must not mix conc
 - **Presentation logic** handles command parsing and dispatch — no domain logic like ingredient math or conversion calculations
 - **Formatting logic** turns data into displayable output — reusable across commands (the same recipe formatter used by `show`, `cook`, and `scale`)
 
-### Command Architecture
+## 5.2 Command Architecture
 
-Design an extensible command system. Refer to our lecture on the [Command Design Pattern]() as a starting point in your design. What you must *not* do is put all commands in one giant `switch` or `if-else` — that's the same anti-pattern as a monolithic service, just at the CLI layer.
+Design an extensible command system. Refer to our lecture on the [Command Design Pattern](/lecture-notes/l19-command-design-pattern) as a starting point in your design. What you must *not* do is put the details of all that must be done in one giant `switch` or `if-else` -- that would make this code grow non-linearly over time and become hard to maintain.
 
-### Tab Completion Architecture
+## 5.3 Tab Completion Architecture
 
-Tab completion involves distinct concerns with different rates of change:
+Tab completion involves distinct concerns:
 
 | Concern | Question | Example |
 |---------|----------|---------|
@@ -176,11 +157,11 @@ Consider where each concern belongs and document your reasoning in your `REFLECT
 
 ---
 
-## Implementation Task
+# 6 Implementation Task
 
 Once you have a plan, implement your design. The command reference and full example session are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference).
 
-### Command Summary
+## 6.1 Command Summary
 
 Below are all the commands in a convenient table. The full reference and details for each commands are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference.md).
 
@@ -197,7 +178,7 @@ Below are all the commands in a convenient table. The full reference and details
 | **General** | `help [command]` | Show help (or help for a specific command) |
 | | `quit` / `exit` | Exit the application |
 
-### JLine: Rich Terminal Interaction
+## 6.2 JLine: Rich Terminal Interaction
 
 Your CLI must use [JLine 3](https://github.com/jline/jline3) for terminal interaction. JLine provides:
 
@@ -206,7 +187,7 @@ Your CLI must use [JLine 3](https://github.com/jline/jline3) for terminal intera
 - **Tab completion** — auto-complete command names, collection names, recipe titles
 - **Styled output** — colors and formatting for readable output
 
-#### How CLI Input Parsing Works
+### 6.2.1 How CLI Input Parsing Works
 
 When a user types a command and presses Enter, JLine gives you the entire line as a `String`. Your CLI must **tokenize** it — splitting into a command name and arguments. The challenge is that spaces separate arguments *and* appear within argument values. Use **quoting** to group words:
 
@@ -230,7 +211,7 @@ ParsedLine parsed = reader.getParsedLine();
 List<String> words = parsed.words(); // ["search", "Chicken Thighs"]
 ```
 
-:::tip 
+:::tip Single-word Arguments
 
 Single-word arguments don't need quotes
 
@@ -238,7 +219,7 @@ Single-word arguments don't need quotes
 
 :::
 
-:::tip 
+:::tip Paths across operating systems
 
 Windows Users: Backslash in Paths
 
@@ -268,11 +249,11 @@ LineReader reader = LineReaderBuilder.builder()
 
 The starter code includes `JLineExample.java` you can run to see basic JLine features. See the [JLine Wiki](https://github.com/jline/jline3/wiki) for full documentation. AI assistants are effective at helping with JLine configuration.
 
-### Error Handling
+## 6.3 Error Handling
 
 Error messages must be **actionable** — tell the user what went wrong and what they can do about it. Exact error messages for each command are specified in the [Command Reference](/assignments/Appendices/cyb5-command-reference).
 
-#### Ambiguous Match Format
+### 6.3.1 Ambiguous Match Format
 
 When a user-provided name matches multiple recipes, display the matches with short IDs (first 8 characters of the recipe's internal ID) and prompt the user to be more specific:
 
@@ -287,7 +268,7 @@ The command is **not re-prompted** — the user must re-enter with a more specif
 
 **Recipe lookup order:** If the argument has fewer than 3 characters, match by title only (case-insensitive substring). If 3 or more characters, first try matching as a short ID prefix; if no match, fall back to title matching.
 
-### Tab Completion
+## 6.4 Tab Completion
 
 Your CLI must provide tab completion for:
 
@@ -298,7 +279,7 @@ Your CLI must provide tab completion for:
 
 Use JLine's [`Completer` interface](https://jline.org/docs/tab-completion#custom-completers). A combination of `AggregateCompleter` and `StringsCompleter` may be helpful.
 
-### Testing Requirements
+## 6.5 Testing Requirements
 
 **We provide the majority of the test suite.** Run `./gradlew test` locally to verify functionality before submitting. You do not need to write additional tests.
 
@@ -391,23 +372,32 @@ The provided tests are in `src/test/java/app/cookyourbooks/cli/`. Do not modify 
 
 :::
 
----
+# 7 Expectation of Group Work
 
-## Reflection
+We expect all group members to contribute equitably in the project. We highly recommend using branching, code reviews and pull requests for these assignments. Specifically, we expect:
+
+* Each group member to file at least one pull request (PR) in the Git repo
+* Each group member to place at least one comment on a PR that they did not file.
+
+We will be verifying this during grading.
+
+
+# 8 Reflection
 
 **Do not use AI to write your reflection.** Your answers must be your own.
 
 Update `REFLECTION.md` to address:
 
-## TODO: Replace question 1-4 with something else relevant to commands and CLI
+## TODO: Replace question 1-4 with something else relevant to commands and CLI. describe and justify specific design decisions etc. 
 
-1. **Applying Boundary Heuristics:** Which of the four L18 heuristics most influenced your service layer design? Give a concrete example: describe a specific boundary you drew (or chose not to draw) and explain which heuristic(s) informed that decision. If multiple heuristics pointed in different directions, how did you resolve the tension?
 
-2. **ADR Writing Experience:** Did documenting your decisions change how you thought about them? Was there a moment where writing the "Consequences" section made you reconsider a choice? How useful do you think ADRs would be on a team project vs. a solo assignment?
+1. **Handling different data for each operation:** Elaborate on how you handled in your design the fact that each operation requires a different set of data obtained from different sources (Section 5.3)
 
-3. **Transformation vs. Persistence:** A4's `RecipeService.scaleRecipe()` always saved. Your design needed to support "preview before save." Describe concretely how your service layer handles this differently. What methods exist? How does the CLI compose them? What would break if you tried to bolt this onto A4's interface?
+2. **Components and Wiring:** Your design likely includes several elements: parsing of the CLI instructions, interaction with `RecipeService` and possibly a controller orchestrating everything. Use the specific instruction `search <ingredient>` and provide a point-wise "trace" describing how this input is processed. Be specific: mention class and method names that are called in sequence. 
 
-4. **Cook Mode State Management:** Where does cook mode state (current step, original recipe) live in your architecture — in the CLI controller, in a service, in a dedicated session object? What tradeoffs did you consider? Could the same state management approach work for a future "meal planning session" for the Planner actor?
+3. **Documenting Design Decisions:** When your group made design decisions about which classes and interfaces to write, what they represent and which methods belong in which class, how were these design decisions documented? Hypothetically if another group continued the project using your implementation, how would they know why you designed things the way you did? Be specific: point to places in your submission where design was documented. 
+
+4. **Group Contributions:** For each group member, provide at least two bullet points describing how they contributed to the project. As this is part of the reflection for the entire group, we assume some consensus will be reached within the group about this. In case there are differences, we encourage individual group members to reach out to the instructor directly via email. Such emails will not influence the grade for the assignment, except in extreme cases where a group member simply did not contribute.
 
 5. **E2E Testing Experience:** Compare E2E tests with a dumb terminal to A4's mock-based approach. Which bugs does E2E testing catch that mocks might miss? Were there situations where you wished you had finer-grained unit tests? What's your takeaway about when to use each approach?
 
@@ -415,15 +405,15 @@ Update `REFLECTION.md` to address:
 
 ---
 
-## Grading
+# 9 Grading
 
 **Total: 100 points** (50 implementation [38 automated + 12 manual] + 50 design documentation & reflection), minus up to −30 for design quality (floor of 0).
 
-### Automated Testing (38 points)
+## 9.1 Automated Testing (38 points)
 
 Run `./gradlew test` locally to verify before submitting.
 
-#### Library Commands (38 points) (missing 10 points)
+## 9.1.1 Library Commands (38 points) (missing 10 points)
 
 | Component | Points |
 |-----------|--------|
@@ -438,7 +428,7 @@ Run `./gradlew test` locally to verify before submitting.
 | `delete <recipe>` | 3 |
 | `scale` | 2 |
 
-### Manual Demo Tests (12 points) (missing 8 points, consider at least one more demo)
+## 9.2 Manual Demo Tests (12 points) (missing 8 points, consider at least one more demo)
 
 Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `build/manual-demo-output/`. Graders review these for formatting and visual layout.
 
@@ -446,11 +436,9 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 |------|-------------|--------|------------------|
 | Recipe Display & Transform | `recipe-transform-demo.txt` | 4 | Decorative borders (═══); bullet points (•); scale/convert comparison tables with column headers, arrows (→), and alignment; vague ingredients show "to taste" |
 
-### Manual Grading — Design Quality (up to −30 points)
+## 9.3 Manual Grading — Design Quality (up to −30 points)
 
-#### Service Layer Design (up to −15) (all of this is gone)
-
-#### CLI Architecture (up to −10)
+### 9.3.1 CLI Architecture (up to −10)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
@@ -459,7 +447,7 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 | No separation of formatting | −3 | Output formatting mixed into command logic instead of dedicated formatters/views |
 | Copy-paste code across commands | −3 | Same formatting or error handling logic duplicated across commands |
 
-#### Code Quality (up to −5)
+### 9.3.2 Code Quality (up to −5)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
@@ -467,15 +455,19 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 | Missing Javadoc | −2 | Public classes and methods lack documentation |
 | Poor naming/style | −1 | Unclear variable names; inconsistent formatting |
 
-### Design Documentation (30 points) (missing all of these points due to no ADRs)
 
-### Reflection Questions (20 points)
+## 9.4 eflection Questions (20 points)
 
 6 questions × ~3-4 points each. See [Reflection](#reflection) for full prompts. Answers should demonstrate genuine reflection on your design process, not just describe what you built.
 
----
+## 9.5 Evidence of Group Work (10 points)
 
-## Submission
+This part will be graded for each member individually.
+
+* At least one PR per group member: 5 points
+* At least one comment on a PR filed by another group member: 5 points
+
+# Submission
 
 ```text
 ├── src/
