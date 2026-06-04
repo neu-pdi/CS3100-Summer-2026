@@ -46,7 +46,7 @@ CookYourBooks this summer will serve a single actor: a librarian who wants to or
 - view a particular recipe
 - scale recipes and optionally save them
 
-The specific commands you will expose via your CLI are defined [in this command reference](/assignments/Appendices/cyb5-command-reference.md).
+The specific commands you will expose via your CLI are defined [in this command reference](/assignments/Appendices/cyb5-command-reference).
 
 We have provided a modified `RecipeService` facade to cater to this single actor. In this assignment, you will create the CLI driving adapter utilizing this facade.
 
@@ -93,7 +93,9 @@ The project includes a VS Code launch configuration — select **"Run CookYourBo
 
 AI coding assistants are encouraged. Use AI to implement your design — the key learning objectives are architectural thinking, not coding speed.
 
-:::tip Using AI as a Thinking Tool for Design
+:::tip 
+
+Using AI as a Thinking Tool for Design
 
 Instead of asking "How should I design my CLI driver?", try visualizing your own ideas first:
 
@@ -103,7 +105,9 @@ Seeing your ideas as a diagram helps you spot issues. Use AI to externalize your
 
 :::
 
-:::warning AI and Design Decisions
+:::warning 
+
+AI and Design Decisions
 
 AI tools can generate plausible-looking ADRs, but they often miss the nuances of your specific context. If your ADRs read like generic templates without specific references to your code and the L18 heuristics, graders will notice. The architectural thinking is the learning outcome.
 
@@ -111,7 +115,9 @@ AI tools can generate plausible-looking ADRs, but they often miss the nuances of
 
 Use the "Plan" mode in Copilot or Cursor to generate an implementation plan from your ADRs. Review and refine it, then use "Build" mode to generate code. **Do not use AI to write your reflection.**
 
-:::danger AI Resource Consumption — Use "Auto" Mode Only
+:::danger 
+
+AI Resource Consumption — Use "Auto" Mode Only
 
 Do not manually select expensive AI models. Always use **"Auto" mode** in Copilot or Cursor.
 
@@ -149,8 +155,8 @@ Tab completion involves distinct concerns:
 
 | Concern | Question | Example |
 |---------|----------|---------|
-| **What arguments does a command need?** | Which positions expect which types? | `convert` needs a recipe at position 1 and a unit at position 2 |
-| **What values are available?** | Where do recipe titles, unit names come from? | Recipe titles from services; unit names from `Unit` enum |
+| **What arguments does a command need?** | Which positions expect which types? | `scale` needs a recipe at position 1 and a positive integer at position 2 |
+| **What values are available?** | Where do recipe titlescome from? | Recipe titles from services |
 | **How to format completions?** | How are candidates presented? | Names with spaces need quotes |
 
 Consider where each concern belongs and document your reasoning in your `REFLECTION.md`.
@@ -163,20 +169,20 @@ Once you have a plan, implement your design. The command reference and full exam
 
 ## 6.1 Command Summary
 
-Below are all the commands in a convenient table. The full reference and details for each commands are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference.md).
+Below are all the commands in a convenient table. The full reference and details for each commands are on the [Command Reference page](/assignments/Appendices/cyb5-command-reference).
 
 | Category | Command | Description |
 |----------|---------|-------------|
-| **Library** | `collections` | List all recipe collections |
-| | `collection create <name>` | Create a new personal collection |
-| | `recipes <collection>` | List recipes in a collection |
-| **Recipe** | `show <recipe>` | Display a recipe |
-| | `search <ingredient>` | Find recipes containing an ingredient |
-| | `import json <file> <coll>` | Import recipe from JSON file |
-| | `delete <recipe>` | Delete a recipe |
-| **Tools** | `scale <recipe> <servings>` | Scale recipe to target servings |
-| **General** | `help [command]` | Show help (or help for a specific command) |
-| | `quit` / `exit` | Exit the application |
+| **Library** | [`collections`](/assignments/Appendices/cyb5-command-reference#collections--list-collections) | List all recipe collections |
+| | [`collection create <name>`](/assignments/Appendices/cyb5-command-reference#collection-create-name--create-a-personal-collection) | Create a new personal collection |
+| | [`recipes <collection>`](/assignments/Appendices/cyb5-command-reference#recipes-collection--list-recipes-in-a-collection) | List recipes in a collection |
+| **Recipe** | [`show <recipe>`](/assignments/Appendices/cyb5-command-reference#show-recipe--display-a-recipe) | Display a recipe |
+| | [`search <ingredient>`](/assignments/Appendices/cyb5-command-reference#search-ingredient--search-recipes-by-ingredient) | Find recipes containing an ingredient |
+| | [`import json <file> <coll>`](/assignments/Appendices/cyb5-command-reference#import-json-file-collection--import-recipe-from-json) | Import recipe from JSON file |
+| | [`delete <recipe>`](/assignments/Appendices/cyb5-command-reference#delete-recipe--delete-a-recipe) | Delete a recipe |
+| **Tools** | [`scale <recipe> <servings>`](/assignments/Appendices/cyb5-command-reference#scale-recipe-servings--scale-a-recipe) | Scale recipe to target servings |
+| **General** | [`help [command]`](/assignments/Appendices/cyb5-command-reference#help--contextual-help) | Show help (or help for a specific command) |
+| | [`quit` / `exit`](/assignments/Appendices/cyb5-command-reference#quit--exit--exit-the-application) | Exit the application |
 
 ## 6.2 JLine: Rich Terminal Interaction
 
@@ -211,7 +217,9 @@ ParsedLine parsed = reader.getParsedLine();
 List<String> words = parsed.words(); // ["search", "Chicken Thighs"]
 ```
 
-:::tip Single-word Arguments
+:::tip 
+
+Single-word Arguments
 
 Single-word arguments don't need quotes
 
@@ -219,7 +227,9 @@ Single-word arguments don't need quotes
 
 :::
 
-:::tip Paths across operating systems
+:::tip 
+
+Paths across operating systems
 
 Windows Users: Backslash in Paths
 
@@ -391,11 +401,11 @@ Update `REFLECTION.md` to address:
 ## TODO: Replace question 1-4 with something else relevant to commands and CLI. describe and justify specific design decisions etc. 
 
 
-1. **Handling different data for each operation:** Elaborate on how you handled in your design the fact that each operation requires a different set of data obtained from different sources (Section 5.3)
+1. **Handling different data for each operation:** Each operation requires a different set of data obtained from different sources (See [Section 5.3](#53-tab-completion-architecture)). Elaborate on how you handled that in your design.
 
-2. **Components and Wiring:** Your design likely includes several elements: parsing of the CLI instructions, interaction with `RecipeService` and possibly a controller orchestrating everything. Use the specific instruction `search <ingredient>` and provide a point-wise "trace" describing how this input is processed. Be specific: mention class and method names that are called in sequence. 
+2. **Components and Wiring:** Your design likely includes several elements: parsing of the CLI instructions, interaction with `RecipeService` and possibly a controller orchestrating everything. Use the specific instruction `search <ingredient>` and provide a point-wise "trace" describing how this input is processed. Be specific: mention class and method names that are called in sequence.
 
-3. **Documenting Design Decisions:** When your group made design decisions about which classes and interfaces to write, what they represent and which methods belong in which class, how were these design decisions documented? Hypothetically if another group continued the project using your implementation, how would they know why you designed things the way you did? Be specific: point to places in your submission where design was documented. 
+3. **Documenting Design Decisions:** When your group made design decisions about which classes and interfaces to write, what they represent and which methods belong in which class, how were these design decisions documented? Hypothetically if another group continued the project using your implementation, how would they know why you designed things the way you did? Be specific: point to places in your submission where design was documented.
 
 4. **Group Contributions:** For each group member, provide at least two bullet points describing how they contributed to the project. As this is part of the reflection for the entire group, we assume some consensus will be reached within the group about this. In case there are differences, we encourage individual group members to reach out to the instructor directly via email. Such emails will not influence the grade for the assignment, except in extreme cases where a group member simply did not contribute.
 
@@ -413,28 +423,29 @@ Update `REFLECTION.md` to address:
 
 Run `./gradlew test` locally to verify before submitting.
 
-## 9.1.1 Library Commands (38 points) (missing 10 points)
+## 9.1.1 Library Commands (38 points)
 
 | Component | Points |
 |-----------|--------|
-| `help` (list and per-command) | 3 |
-| `collections` | 3 |
-| `collection create` | 3 |
-| `recipes <collection>` | 3 |
-| Data persistence (`cyb-library.json` load/save) | 3 |
-| `show <recipe>` | 2 |
-| `search <ingredient>` | 3 |
-| `import json` | 3 |
-| `delete <recipe>` | 3 |
-| `scale` | 2 |
+| `help` (list and per-command) | 4 |
+| `collections` | 4 |
+| `collection create` | 4 |
+| `recipes <collection>` | 4 |
+| Data persistence (`cyb-library.json` load/save) | 4 |
+| `show <recipe>` | 3 |
+| `search <ingredient>` | 4 |
+| `import json` | 4 |
+| `delete <recipe>` | 4 |
+| `scale` | 3 |
 
-## 9.2 Manual Demo Tests (12 points) (missing 8 points, consider at least one more demo)
+## 9.2 Manual Demo Tests (12 points)
 
 Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `build/manual-demo-output/`. Graders review these for formatting and visual layout.
 
 | Test | Output File | Points | Grading Criteria |
 |------|-------------|--------|------------------|
-| Recipe Display & Transform | `recipe-transform-demo.txt` | 4 | Decorative borders (═══); bullet points (•); scale/convert comparison tables with column headers, arrows (→), and alignment; vague ingredients show "to taste" |
+| Recipe Display & Transform | `recipe-transform-demo.txt` | 6 | Decorative borders (═══); bullet points (•); scale comparison tables with column headers, arrows (→), and alignment; vague ingredients show "to taste" |
+| Library & Shopping List | `library-lists-demo.txt` | 6 | Collections list shows numbered items with [Personal]/[Cookbook]/[Web] badges and recipe counts; recipe listing shows servings; search results include collection names; ambiguous match shows short IDs in brackets and context-appropriate hint|
 
 ## 9.3 Manual Grading — Design Quality (up to −30 points)
 
@@ -456,9 +467,9 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 | Poor naming/style | −1 | Unclear variable names; inconsistent formatting |
 
 
-## 9.4 eflection Questions (20 points)
+## 9.4 Reflection Questions (20 points)
 
-6 questions × ~3-4 points each. See [Reflection](#reflection) for full prompts. Answers should demonstrate genuine reflection on your design process, not just describe what you built.
+6 questions × ~3-4 points each. See [Reflection](#8-reflection) for full prompts. Answers should demonstrate genuine reflection on your design process, not just describe what you built.
 
 ## 9.5 Evidence of Group Work (10 points)
 
