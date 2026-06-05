@@ -3,8 +3,6 @@ title: "A5: Command Reference"
 sidebar_position: 7
 ---
 
-# TODO: Verify all links in this page before publishing
-
 This page documents the required behavior, output format, and error handling for every CLI command. See the [main handout](/assignments/cyb5-service-architecture) for architecture and design requirements.
 
 ---
@@ -103,7 +101,7 @@ Joy of Cooking (8 recipes):
 cyb> show "Chocolate Chip Cookies"
 ```
 
-Displays the full recipe: title, servings, all ingredients with quantities, and all instructions. Recipe is looked up by short ID or title (case-insensitive) across all collections. See [Ambiguous Match Format](/assignments/cyb5-service-architecture#ambiguous-match-format) for lookup details.
+Displays the full recipe: title, servings, all ingredients with quantities, and all instructions. Recipe is looked up by short ID or title (case-insensitive) across all collections. See [Ambiguous Match Format](/assignments/cyb5-service-architecture#631-ambiguous-match-format) for lookup details.
 
 **Example output:**
 ```text
@@ -130,7 +128,7 @@ Instructions:
 
 **Error handling:**
 - Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.`
-- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#ambiguous-match-format)
+- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#631-ambiguous-match-format)
 
 ### `search <ingredient>` — Search Recipes by Ingredient
 
@@ -158,7 +156,7 @@ Found 3 recipes.
 cyb> import json /path/to/recipe.json "Holiday Favorites"
 ```
 
-Imports a recipe from a JSON file and adds it to the specified collection. The JSON format is the same as A4/A5 (the handout provides the deserializer).
+Imports a recipe from a JSON file and adds it to the specified collection. The JSON format is the same as A4 (the handout provides the deserializer).
 
 **On success:**
 ```text
@@ -183,7 +181,7 @@ Deletes the specified recipe from the repository and removes it from all collect
 
 **Error handling:**
 - Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.`
-- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#ambiguous-match-format)
+- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#631-ambiguous-match-format)
 
 ---
 
@@ -230,7 +228,7 @@ Scaling discarded.
 **Error handling:**
 - Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes.`
 - Invalid servings: `Invalid servings. Please provide a positive number.`
-- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#ambiguous-match-format)
+- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#631-ambiguous-match-format)
 
 ---
 

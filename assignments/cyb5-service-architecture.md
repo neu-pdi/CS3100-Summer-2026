@@ -6,7 +6,7 @@ sidebar_position: 6
 
 # 1 Overview
 
-In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — an instruction-oriented terminal application that lets users manage their recipe library, import recipes, scale ingredients, and generate shopping lists.
+In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — an instruction-oriented terminal application that lets users manage their recipe library, import recipes, and scale ingredients.
 
 The CLI is your first **driving adapter** in the hexagonal architecture — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to).
 
@@ -20,7 +20,8 @@ Design Quality Is Equally Weighted with Implementation
 
 :::
 
-**Prerequisites:** This assignment builds on the A4 sample implementation (provided). You should be familiar with `RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`, and the domain model.
+**Prerequisites:** This assignment builds on the A4 sample implementation (provided). You should be familiar with `RecipeRepository`, `RecipeCollectionRepository`,
+ and the domain model.
 
 
 # 2 Learning Objectives
@@ -54,13 +55,13 @@ We have provided a modified `RecipeService` facade to cater to this single actor
 
 The provided `CybLibrary` class handles all data persistence automatically, storing everything in `cyb-library.json` in the current working directory:
 
-- **On startup:** `CybLibrary.load()` loads all collections, recipes, and house conversion rules, or starts with an empty library if the file doesn't exist.
+- **On startup:** `CybLibrary.load()` loads all collections, recipes, and house conversion rules (conversions unused in assignment), or starts with an empty library if the file doesn't exist.
 - **On changes:** Every mutation is written to the file immediately. You do not need to call save explicitly.
 - **On save failure:** Log the error at `ERROR` level with message `"Failed to save library: {}"` (passing the exception as the final argument), and print: `Warning: Failed to save changes to cyb-library.json: <error message>. Your changes may be lost.`
 
 ## 3.3 Application Wiring
 
-The provided `CookYourBooksApp` main class creates the repositories and conversion registry. You are responsible for wiring the service to your CLI and launching the CLI:
+The provided `CookYourBooksApp` main class creates the repositories. You are responsible for wiring the service to your CLI and launching the CLI:
 
 ```java
 public class CookYourBooksApp {
@@ -70,9 +71,8 @@ public class CookYourBooksApp {
 
         RecipeRepository recipeRepo = library.getRecipeRepository();
         RecipeCollectionRepository collRepo = library.getCollectionRepository();
-        ConversionRegistry conversionRegistry = library.getConversionRegistry();
 
-        RecipeService service = new RecipeServiceImpl(recipeRepo, collRepo, conversionRegistry);
+        RecipeService service = new RecipeServiceImpl(recipeRepo, collRepo);
 
         CookYourBooksCli cli = new CookYourBooksCli(service);
         cli.run();
@@ -135,7 +135,7 @@ Before writing any implementation code, plan and document your CLI architecture.
 Think of your CLI as three distinct layers. Code for one layer must not mix concerns from another:
 
 - **Application services** coordinate domain operations (scaling, search, persistence) — no formatting or I/O logic
-- **Presentation logic** handles command parsing and dispatch — no domain logic like ingredient math or conversion calculations
+- **Presentation logic** handles command parsing and dispatch — no domain logic like ingredient math
 - **Formatting logic** turns data into displayable output — reusable across commands (the same recipe formatter used by `show`, and `scale`)
 
 ## 5.2 Command Architecture
@@ -278,7 +278,6 @@ Your CLI must provide tab completion for:
 1. **Command names** — `sc` + Tab suggests `scale`; `col` suggests `collection`, `collections`
 2. **Recipe titles and short IDs** — for `show`, `delete`, and `scale`
 3. **Collection names** — for `recipes` and the collection argument of `import json`
-4. **Conversion rule identifiers** — after `conversion remove`, Tab suggests existing rule identifiers
 
 Use JLine's [`Completer` interface](https://jline.org/docs/tab-completion#custom-completers). A combination of `AggregateCompleter` and `StringsCompleter` may be helpful.
 
@@ -391,9 +390,6 @@ We will be verifying this during grading.
 
 Update `REFLECTION.md` to address:
 
-## TODO: Replace question 1-4 with something else relevant to commands and CLI. describe and justify specific design decisions etc. 
-
-
 1. **Handling different data for each operation:** Each operation requires a different set of data obtained from different sources (See [Section 5.3](#53-tab-completion-architecture)). Elaborate on how you handled that in your design.
 
 2. **Components and Wiring:** Your design likely includes several elements: parsing of the CLI instructions, interaction with `RecipeService` and possibly a controller orchestrating everything. Use the specific instruction `search <ingredient>` and provide a point-wise "trace" describing how this input is processed. Be specific: mention class and method names that are called in sequence.
@@ -421,15 +417,16 @@ Run `./gradlew test` locally to verify before submitting.
 | Component | Points |
 |-----------|--------|
 | `help` (list and per-command) | 4 |
-| `collections` | 4 |
+| `collections` | 3 |
 | `collection create` | 4 |
 | `recipes <collection>` | 4 |
-| Data persistence (`cyb-library.json` load/save) | 4 |
+| Data persistence (`cyb-library.json` load/save) | 2 |
 | `show <recipe>` | 3 |
 | `search <ingredient>` | 4 |
 | `import json` | 4 |
 | `delete <recipe>` | 4 |
 | `scale` | 3 |
+| Proper tab completion for relevant commands | 3 |
 
 ## 9.2 Manual Demo Tests (12 points)
 
@@ -438,7 +435,7 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 | Test | Output File | Points | Grading Criteria |
 |------|-------------|--------|------------------|
 | Recipe Display & Transform | `recipe-transform-demo.txt` | 6 | Decorative borders (═══); bullet points (•); scale comparison tables with column headers, arrows (→), and alignment; vague ingredients show "to taste" |
-| Library & Shopping List | `library-lists-demo.txt` | 6 | Collections list shows numbered items with [Personal]/[Cookbook]/[Web] badges and recipe counts; recipe listing shows servings; search results include collection names; ambiguous match shows short IDs in brackets and context-appropriate hint|
+| Library and Ambiguious Matches | `library-lists-demo.txt` | 6 | Collections list shows numbered items with [Personal]/[Cookbook]/[Web] badges and recipe counts; recipe listing shows servings; search results include collection names; ambiguous match shows short IDs in brackets and context-appropriate hint|
 
 ## 9.3 Manual Grading — Design Quality (up to −30 points)
 
