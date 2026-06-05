@@ -465,7 +465,15 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 This part will be graded for each member individually.
 
 * At least one PR per group member: 5 points
-* At least one comment on a PR filed by another group member: 5 points
+* At least one comment with a code review on a PR filed by another group member: 5 points
+
+Here are instructions for [filing a PR on the Github website](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request#creating-the-pull-request).
+
+If you have the Github Pull Requests Extension installed in VSCode, you can create and manage PRs right in VSCode.
+
+- Link to [Github Pull Requests Extension](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github)
+- Link to [how to file a PR in VSCode with Github Repositories Extension](https://code.visualstudio.com/docs/sourcecontrol/github#_creating-pull-requests)
+- Link to [how to review a PR in VSCode](https://code.visualstudio.com/docs/sourcecontrol/github#_reviewing)
 
 # Submission
 
