@@ -103,13 +103,8 @@ Seeing your ideas as a diagram helps you spot issues. Use AI to externalize your
 
 :::
 
-:::warning AI and Design Decisions
 
-AI tools can generate plausible-looking ADRs, but they often miss the nuances of your specific context. If your ADRs read like generic templates without specific references to your code and the L18 heuristics, graders will notice. The architectural thinking is the learning outcome.
-
-:::
-
-Use the "Plan" mode in Copilot or Cursor to generate an implementation plan from your ADRs. Review and refine it, then use "Build" mode to generate code. **Do not use AI to write your reflection.**
+Use the "Plan" mode in Copilot or Cursor to generate an implementation plan if you are using Copilot to brainstorm design ideas. Review and refine it, then use "Build" mode to generate code. **Do not use AI to write your reflection.**
 
 :::danger AI Resource Consumption — Use "Auto" Mode Only
 
