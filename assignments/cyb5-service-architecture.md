@@ -12,10 +12,9 @@ The CLI is your first **driving adapter** in the hexagonal architecture — an a
 
 :::danger 
 
-**Design Quality Is Equally Weighted with Implementation**
+**Design Quality Is Heavily Weighted**
 
 - **We provide the majority of the test suite.** You can run tests locally to verify functionality.
-- **Design documentation is worth 50% of your grade.** Reflection questions are worth 50 points total.
 - **Manual grading can deduct up to 30 points** for poor design, architecture, or code quality.
 
 :::
@@ -406,7 +405,7 @@ Update `REFLECTION.md` to address:
 
 # 9 Grading
 
-**Total: 100 points** (50 implementation [38 automated + 12 manual] + 50 design documentation & reflection), minus up to −30 for design quality (floor of 0).
+**Total: 80 points** (50 implementation [38 automated + 12 manual] + 30 design documentation & reflection), minus up to −30 for design quality (floor of 0).
 
 ## 9.1 Automated Testing (38 points)
 
