@@ -12,7 +12,7 @@ The CLI is your first **driving adapter** in the hexagonal architecture — an a
 
 :::danger 
 
-Design Quality Is Equally Weighted with Implementation
+**Design Quality Is Equally Weighted with Implementation**
 
 - **We provide the majority of the test suite.** You can run tests locally to verify functionality.
 - **Design documentation is worth 50% of your grade.** Reflection questions are worth 50 points total.
@@ -95,7 +95,7 @@ AI coding assistants are encouraged. Use AI to implement your design — the key
 
 :::tip 
 
-Using AI as a Thinking Tool for Design
+**Using AI as a Thinking Tool for Design**
 
 Instead of asking "How should I design my CLI driver?", try visualizing your own ideas first:
 
@@ -110,7 +110,7 @@ Use the "Plan" mode in Copilot or Cursor to generate an implementation plan if y
 
 :::danger 
 
-AI Resource Consumption — Use "Auto" Mode Only
+**AI Resource Consumption — Use "Auto" Mode Only**
 
 Do not manually select expensive AI models. Always use **"Auto" mode** in Copilot or Cursor.
 
@@ -212,7 +212,7 @@ List<String> words = parsed.words(); // ["search", "Chicken Thighs"]
 
 :::tip 
 
-Single-word Arguments
+**Single-word Arguments**
 
 Single-word arguments don't need quotes
 
@@ -222,7 +222,7 @@ Single-word arguments don't need quotes
 
 :::tip 
 
-Paths across operating systems
+**Paths across operating systems**
 
 Windows Users: Backslash in Paths
 
@@ -360,7 +360,7 @@ class CookYourBooksCliTest {
 
 :::info
 
-Why E2E Testing Instead of Mocks?
+**Why E2E Testing Instead of Mocks?**
 
 Unit testing CLIs with mocks often tests that your mock setup is correct, not that your CLI works. Real terminal behavior is hard to mock accurately, and integration bugs slip through because mocked layers never actually talk to each other. E2E tests with a dumb terminal are simpler and catch more bugs.
 
@@ -368,7 +368,7 @@ Unit testing CLIs with mocks often tests that your mock setup is correct, not th
 
 :::caution
 
-Test Location Matters
+**Test Location Matters**
 
 The provided tests are in `src/test/java/app/cookyourbooks/cli/`. Do not modify them. If you write additional tests for your own helper classes, put them in a different package.
 
