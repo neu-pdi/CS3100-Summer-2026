@@ -1,9 +1,7 @@
 ---
-title: "A5: Command Reference"
+title: "GA1: Command Reference"
 sidebar_position: 7
 ---
-
-# TODO: Verify all links in this page before publishing
 
 This page documents the required behavior, output format, and error handling for every CLI command. See the [main handout](/assignments/cyb5-service-architecture) for architecture and design requirements.
 
@@ -24,6 +22,7 @@ cyb> help scale
 ```
 
 **Requirements:**
+
 - `help` with no arguments lists all commands grouped by category (Library, Recipe, Tools, General) — see [Example Session](#example-session) for expected output
 - `help <command>` shows detailed usage. The `<command>` argument is the top-level command word only (e.g., `help scale`, `help collection`, `help import`) — multi-word subcommand lookups like `help collection create` are not required
 - Unknown command: `Unknown command: '<name>'. Type 'help' for a list of commands.`
@@ -88,9 +87,11 @@ Joy of Cooking (8 recipes):
 ```
 
 **Requirements:**
+
 - When a recipe has no servings information, display `No servings` in place of the servings line. This applies wherever recipe servings are shown: `recipes`, `show`, and `cook` mode header.
 
 **Error handling:**
+
 - Collection not found: `Collection not found: 'Unknown Collection'. Use 'collections' to see available collections.`
 
 ---
@@ -103,7 +104,7 @@ Joy of Cooking (8 recipes):
 cyb> show "Chocolate Chip Cookies"
 ```
 
-Displays the full recipe: title, servings, all ingredients with quantities, and all instructions. Recipe is looked up by short ID or title (case-insensitive) across all collections. See [Ambiguous Match Format](/assignments/cyb5-service-architecture#ambiguous-match-format) for lookup details.
+Displays the full recipe: title, servings, all ingredients with quantities, and all instructions. Recipe is looked up by short ID or title (case-insensitive) across all collections. See [Ambiguous Match Format](/assignments/cyb5-service-architecture#631-ambiguous-match-format) for lookup details.
 
 **Example output:**
 ```text
@@ -129,8 +130,9 @@ Instructions:
 ```
 
 **Error handling:**
+
 - Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.`
-- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#ambiguous-match-format)
+- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#631-ambiguous-match-format)
 
 ### `search <ingredient>` — Search Recipes by Ingredient
 
@@ -158,13 +160,14 @@ Found 3 recipes.
 cyb> import json /path/to/recipe.json "Holiday Favorites"
 ```
 
-Imports a recipe from a JSON file and adds it to the specified collection. The JSON format is the same as A4/A5 (the handout provides the deserializer).
+Imports a recipe from a JSON file and adds it to the specified collection. The JSON format is the same as A4 (the handout provides the deserializer).
 
 **On success:**
 ```text
 ```
 
 **Error handling:**
+
 - File not found or unreadable: Display the error message from `ImportException`
 - Collection not found: Display a helpful message suggesting the `collections` command
 - Parse/format errors: Display the error message from the exception
@@ -182,8 +185,9 @@ Deletes the specified recipe from the repository and removes it from all collect
 **On success:** `Deleted recipe 'Chocolate Chip Cookies'.`
 
 **Error handling:**
+
 - Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.`
-- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#ambiguous-match-format)
+- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#631-ambiguous-match-format)
 
 ---
 
@@ -223,14 +227,16 @@ Scaling discarded.
 ```
 
 **Requirements:**
+
 - VagueIngredients display unchanged (e.g., "to taste")
 - On save: persists the scaled recipe as a new recipe in a collection that contains the original (which collection is implementation-defined and will not be tested)
 - If the recipe has no servings: `Cannot scale 'Recipe Name': no serving information available.`
 
 **Error handling:**
+
 - Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes.`
 - Invalid servings: `Invalid servings. Please provide a positive number.`
-- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#ambiguous-match-format)
+- Multiple matches: Display using [ambiguous match format](/assignments/cyb5-service-architecture#631-ambiguous-match-format)
 
 ---
 

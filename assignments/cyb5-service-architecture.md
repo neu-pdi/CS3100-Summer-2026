@@ -6,21 +6,21 @@ sidebar_position: 6
 
 # 1 Overview
 
-In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — an instruction-oriented terminal application that lets users manage their recipe library, import recipes, scale ingredients, and generate shopping lists.
+In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — an instruction-oriented terminal application that lets users manage their recipe library, import recipes, and scale ingredients.
 
 The CLI is your first **driving adapter** in the hexagonal architecture — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to).
 
 :::danger 
 
-Design Quality Is Equally Weighted with Implementation
+**Design Quality Is Heavily Weighted**
 
 - **We provide the majority of the test suite.** You can run tests locally to verify functionality.
-- **Design documentation is worth 50% of your grade.** Reflection questions are worth 50 points total.
 - **Manual grading can deduct up to 30 points** for poor design, architecture, or code quality.
 
 :::
 
-**Prerequisites:** This assignment builds on the A4 sample implementation (provided). You should be familiar with `RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`, and the domain model.
+**Prerequisites:** This assignment builds on the A4 sample implementation (provided). You should be familiar with `RecipeRepository`, `RecipeCollectionRepository`,
+ and the domain model.
 
 
 # 2 Learning Objectives
@@ -54,13 +54,13 @@ We have provided a modified `RecipeService` facade to cater to this single actor
 
 The provided `CybLibrary` class handles all data persistence automatically, storing everything in `cyb-library.json` in the current working directory:
 
-- **On startup:** `CybLibrary.load()` loads all collections, recipes, and house conversion rules, or starts with an empty library if the file doesn't exist.
+- **On startup:** `CybLibrary.load()` loads all collections, recipes, and house conversion rules (conversions unused in assignment), or starts with an empty library if the file doesn't exist.
 - **On changes:** Every mutation is written to the file immediately. You do not need to call save explicitly.
 - **On save failure:** Log the error at `ERROR` level with message `"Failed to save library: {}"` (passing the exception as the final argument), and print: `Warning: Failed to save changes to cyb-library.json: <error message>. Your changes may be lost.`
 
 ## 3.3 Application Wiring
 
-The provided `CookYourBooksApp` main class creates the repositories and conversion registry. You are responsible for wiring the service to your CLI and launching the CLI:
+The provided `CookYourBooksApp` main class creates the repositories. You are responsible for wiring the service to your CLI and launching the CLI:
 
 ```java
 public class CookYourBooksApp {
@@ -70,9 +70,8 @@ public class CookYourBooksApp {
 
         RecipeRepository recipeRepo = library.getRecipeRepository();
         RecipeCollectionRepository collRepo = library.getCollectionRepository();
-        ConversionRegistry conversionRegistry = library.getConversionRegistry();
 
-        RecipeService service = new RecipeServiceImpl(recipeRepo, collRepo, conversionRegistry);
+        RecipeService service = new RecipeServiceImpl(recipeRepo, collRepo);
 
         CookYourBooksCli cli = new CookYourBooksCli(service);
         cli.run();
@@ -95,7 +94,7 @@ AI coding assistants are encouraged. Use AI to implement your design — the key
 
 :::tip 
 
-Using AI as a Thinking Tool for Design
+**Using AI as a Thinking Tool for Design**
 
 Instead of asking "How should I design my CLI driver?", try visualizing your own ideas first:
 
@@ -110,7 +109,7 @@ Use the "Plan" mode in Copilot or Cursor to generate an implementation plan if y
 
 :::danger 
 
-AI Resource Consumption — Use "Auto" Mode Only
+**AI Resource Consumption — Use "Auto" Mode Only**
 
 Do not manually select expensive AI models. Always use **"Auto" mode** in Copilot or Cursor.
 
@@ -135,7 +134,7 @@ Before writing any implementation code, plan and document your CLI architecture.
 Think of your CLI as three distinct layers. Code for one layer must not mix concerns from another:
 
 - **Application services** coordinate domain operations (scaling, search, persistence) — no formatting or I/O logic
-- **Presentation logic** handles command parsing and dispatch — no domain logic like ingredient math or conversion calculations
+- **Presentation logic** handles command parsing and dispatch — no domain logic like ingredient math
 - **Formatting logic** turns data into displayable output — reusable across commands (the same recipe formatter used by `show`, and `scale`)
 
 ## 5.2 Command Architecture
@@ -212,7 +211,7 @@ List<String> words = parsed.words(); // ["search", "Chicken Thighs"]
 
 :::tip 
 
-Single-word Arguments
+**Single-word Arguments**
 
 Single-word arguments don't need quotes
 
@@ -222,7 +221,7 @@ Single-word arguments don't need quotes
 
 :::tip 
 
-Paths across operating systems
+**Paths across operating systems**
 
 Windows Users: Backslash in Paths
 
@@ -278,7 +277,6 @@ Your CLI must provide tab completion for:
 1. **Command names** — `sc` + Tab suggests `scale`; `col` suggests `collection`, `collections`
 2. **Recipe titles and short IDs** — for `show`, `delete`, and `scale`
 3. **Collection names** — for `recipes` and the collection argument of `import json`
-4. **Conversion rule identifiers** — after `conversion remove`, Tab suggests existing rule identifiers
 
 Use JLine's [`Completer` interface](https://jline.org/docs/tab-completion#custom-completers). A combination of `AggregateCompleter` and `StringsCompleter` may be helpful.
 
@@ -361,7 +359,7 @@ class CookYourBooksCliTest {
 
 :::info
 
-Why E2E Testing Instead of Mocks?
+**Why E2E Testing Instead of Mocks?**
 
 Unit testing CLIs with mocks often tests that your mock setup is correct, not that your CLI works. Real terminal behavior is hard to mock accurately, and integration bugs slip through because mocked layers never actually talk to each other. E2E tests with a dumb terminal are simpler and catch more bugs.
 
@@ -369,7 +367,7 @@ Unit testing CLIs with mocks often tests that your mock setup is correct, not th
 
 :::caution
 
-Test Location Matters
+**Test Location Matters**
 
 The provided tests are in `src/test/java/app/cookyourbooks/cli/`. Do not modify them. If you write additional tests for your own helper classes, put them in a different package.
 
@@ -391,9 +389,6 @@ We will be verifying this during grading.
 
 Update `REFLECTION.md` to address:
 
-## TODO: Replace question 1-4 with something else relevant to commands and CLI. describe and justify specific design decisions etc. 
-
-
 1. **Handling different data for each operation:** Each operation requires a different set of data obtained from different sources (See [Section 5.3](#53-tab-completion-architecture)). Elaborate on how you handled that in your design.
 
 2. **Components and Wiring:** Your design likely includes several elements: parsing of the CLI instructions, interaction with `RecipeService` and possibly a controller orchestrating everything. Use the specific instruction `search <ingredient>` and provide a point-wise "trace" describing how this input is processed. Be specific: mention class and method names that are called in sequence.
@@ -410,7 +405,7 @@ Update `REFLECTION.md` to address:
 
 # 9 Grading
 
-**Total: 100 points** (50 implementation [38 automated + 12 manual] + 50 design documentation & reflection), minus up to −30 for design quality (floor of 0).
+**Total: 80 points** (50 implementation [38 automated + 12 manual] + 30 design documentation & reflection), minus up to −30 for design quality (floor of 0).
 
 ## 9.1 Automated Testing (38 points)
 
@@ -421,15 +416,16 @@ Run `./gradlew test` locally to verify before submitting.
 | Component | Points |
 |-----------|--------|
 | `help` (list and per-command) | 4 |
-| `collections` | 4 |
+| `collections` | 3 |
 | `collection create` | 4 |
 | `recipes <collection>` | 4 |
-| Data persistence (`cyb-library.json` load/save) | 4 |
+| Data persistence (`cyb-library.json` load/save) | 2 |
 | `show <recipe>` | 3 |
 | `search <ingredient>` | 4 |
 | `import json` | 4 |
 | `delete <recipe>` | 4 |
 | `scale` | 3 |
+| Proper tab completion for relevant commands | 3 |
 
 ## 9.2 Manual Demo Tests (12 points)
 
@@ -438,7 +434,7 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 | Test | Output File | Points | Grading Criteria |
 |------|-------------|--------|------------------|
 | Recipe Display & Transform | `recipe-transform-demo.txt` | 6 | Decorative borders (═══); bullet points (•); scale comparison tables with column headers, arrows (→), and alignment; vague ingredients show "to taste" |
-| Library & Shopping List | `library-lists-demo.txt` | 6 | Collections list shows numbered items with [Personal]/[Cookbook]/[Web] badges and recipe counts; recipe listing shows servings; search results include collection names; ambiguous match shows short IDs in brackets and context-appropriate hint|
+| Library and Ambiguious Matches | `library-lists-demo.txt` | 6 | Collections list shows numbered items with [Personal]/[Cookbook]/[Web] badges and recipe counts; recipe listing shows servings; search results include collection names; ambiguous match shows short IDs in brackets and context-appropriate hint|
 
 ## 9.3 Manual Grading — Design Quality (up to −30 points)
 
@@ -469,7 +465,15 @@ Run `./gradlew test --tests "*ManualDemoTest"` to generate output files in `buil
 This part will be graded for each member individually.
 
 * At least one PR per group member: 5 points
-* At least one comment on a PR filed by another group member: 5 points
+* At least one comment with a code review on a PR filed by another group member: 5 points
+
+Here are instructions for [filing a PR on the Github website](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request#creating-the-pull-request).
+
+If you have the Github Pull Requests Extension installed in VSCode, you can create and manage PRs right in VSCode.
+
+- Link to [Github Pull Requests Extension](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github)
+- Link to [how to file a PR in VSCode with Github Repositories Extension](https://code.visualstudio.com/docs/sourcecontrol/github#_creating-pull-requests)
+- Link to [how to review a PR in VSCode](https://code.visualstudio.com/docs/sourcecontrol/github#_reviewing)
 
 # Submission
 
