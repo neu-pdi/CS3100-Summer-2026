@@ -4,9 +4,9 @@ lecture_number: 30
 title: GUI Patterns and Testing
 ---
 
-## Define the Model-View-ViewModel (MVVM) pattern (15 minutes)
+# 1 The Model-View-ViewModel (MVVM) pattern
 
-In the previous lecture, we introduced Model-View-Controller (MVC) as a way to separate concerns in GUI applications. MVC has served developers well for decades, but as applications grew more complex—and as testability became more critical—limitations emerged.
+In a previous lecture, we introduced Model-View-Controller (MVC) as a way to separate concerns in GUI applications. MVC has served developers well for decades, but as applications grew more complex—and as testability became more critical—limitations emerged.
 
 Consider our CookYourBooks recipe panel. In the MVC implementation, the Controller does a lot of manual work:
 
@@ -30,7 +30,7 @@ Every time the Model changes, we must remember to update the View. Every time th
 
 **Model-View-ViewModel (MVVM)** evolved from MVC to address these problems. MVVM was developed by Microsoft architects in 2005 for Windows Presentation Foundation (WPF), but the pattern has spread to virtually every modern UI framework.
 
-### The Three Components
+## 1.1 The Three Components
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -58,7 +58,7 @@ Every time the Model changes, we must remember to update the View. Every time th
 
 **ViewModel**: The crucial innovation. The ViewModel exposes *UI-friendly properties* that the View can bind to. It transforms Model data into exactly what the View needs and translates user actions into Model operations. Critically, **the ViewModel has no reference to the View**—it doesn't know or care how (or if) it's being displayed.
 
-### The Power of Data Binding
+## 1.2 The Power of Data Binding
 
 The key insight of MVVM is **data binding**: a declarative mechanism that automatically synchronizes properties between the ViewModel and View.
 
@@ -98,7 +98,7 @@ public class RecipePanelViewModel {
 }
 ```
 
-## Compare and contrast MVC with MVVM patterns (10 minutes)
+## 1.3 Comparing MVC with MVVM
 
 Both patterns separate concerns, but they do so differently.
 
@@ -111,7 +111,7 @@ Both patterns separate concerns, but they do so differently.
 | **View's role** | Passive (waits for Controller) | Active (binds to ViewModel) |
 | **State location** | Split between View and Model | Centralized in ViewModel |
 
-### Testability
+## 1.4 Testability
 
 This is where MVVM shines—it dramatically improves *observability* (we can inspect ViewModel properties) and *controllability* (we can set properties directly without simulating clicks):
 
@@ -135,13 +135,13 @@ void scaleRecipe_updatesIngredients() {
 
 The ViewModel test runs in milliseconds, requires no UI toolkit initialization, and verifies exactly the logic we care about.
 
-## Explain why separation of concerns makes GUIs testable units (10 minutes)
+# 2 Making GUIs testable
 
-In [Lecture 16](./l16-testability.md), we introduced the testing pyramid and two key properties for testable code: **observability** and **controllability**. We also covered **Hexagonal Architecture**, which separates domain logic from infrastructure through ports and adapters.
+As described earlier, two properties make code testable: **observability** and **controllability**. The **Hexagonal Architecture** made the code more testable by separating domain logic from infrastructure through ports and adapters.
 
 MVC and MVVM are the GUI-specific application of these same principles:
 
-| L16 Concept | GUI Application |
+| Concept | GUI Application |
 |-------------|-----------------|
 | Domain code (easy to test) | Model and ViewModel |
 | Infrastructure code (needs test doubles) | View (widgets, rendering) |
@@ -150,25 +150,27 @@ MVC and MVVM are the GUI-specific application of these same principles:
 
 The Model in MVC/MVVM plays the same role as the "Application Core" in Hexagonal Architecture—it contains pure business logic with no dependencies on UI infrastructure. The ViewModel adds *observability* by exposing bindable properties we can inspect in tests without rendering any UI.
 
-## Write end-to-end tests for a GUI application using TestFX (20 minutes)
+# 2.1 End-to-end Testing of a JavaFX application using TestFX
 
 :::note Recall
-In [Lecture 15 (Test Doubles and Isolation)](/lecture-notes/l15-testing), we introduced the testing pyramid and discussed why E2E tests are valuable but expensive: slow, flaky, and hard to debug. We deferred deep coverage of E2E testing until now. With MVVM in hand, you'll see why: most GUI behavior can be tested at the ViewModel level (fast, reliable, no UI needed). E2E tests are reserved for critical user journeys that span the entire application.
+
+E2E tests are valuable but expensive: slow, flaky, and hard to debug. We did not discuss E2E testing in detail because we lacked the infrastructure to facilitate it. With the MVVM architecture most GUI behavior can be tested at the ViewModel level (fast, reliable, no UI needed). E2E tests are reserved for critical user journeys that span the entire application.
+
 :::
 
-### When E2E Tests Are Worth the Cost
+## 2.2 When E2E Tests Are Worth the Cost
 
-Despite pushing tests down the pyramid, E2E tests remain essential—but only for the right things. E2E tests are expensive: slow to run, prone to flakiness, and high-maintenance.
+Write E2E tests for:
 
-**Write E2E tests for:**
 - **Critical user journeys**: The paths that, if broken, would make the application unusable. For CookYourBooks: "User can import a recipe." Not: "User sees correct hover animation."
 - **Integration boundaries**: Where multiple components come together in ways that unit tests can't verify.
 
-**Don't write E2E tests for:**
+Avoid E2E tests for:
+
 - **Business logic**: If you can test it in the Model or ViewModel, do that instead.
 - **Every UI permutation**: Test the happy path and critical error cases.
 
-### The Core Problem: Element Location
+## 2.3 The Core Problem: Element Location
 
 Every GUI E2E test has the same fundamental structure:
 1. **Locate** a UI element
@@ -183,7 +185,7 @@ The hard problem is *locating elements reliably*.
 | **By CSS class** | `.button` | Breaks if styling changes; may match multiple elements |
 | **By position** | `lookup(".button").nth(2)` | Breaks if layout changes |
 
-### The Solution: Accessibility Locators
+## 2.4 The Solution: Accessibility Locators
 
 There's one identifier that describes *what an element is* rather than *how it's implemented*: the **accessibility label**.
 
@@ -195,7 +197,7 @@ There's one identifier that describes *what an element is* rather than *how it's
 
 The accessibility label describes the element's *purpose*, not its implementation. When you refactor the UI—changing IDs, CSS classes, or layout—the element is still "Scale recipe to selected servings."
 
-### TestFX Example
+## 2.5 TestFX Example
 
 ```java
 import org.testfx.framework.junit5.ApplicationTest;

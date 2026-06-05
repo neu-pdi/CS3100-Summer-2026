@@ -106,14 +106,14 @@ After this lecture, you will be able to:
 
 <Slide>
 
-## Last Lecture We Built an MVC App — Now Let's Break It
+## Before, we Built an MVC App — Now Let's Break It
 
 <p style={{fontSize: '0.85em'}}>
-Our SceneItAll area dashboard from L29. Spot the bug:
+Our SceneItAll area dashboard. Spot the bug:
 </p>
 
 ```java
-// Controller from L29
+// Controller
 @FXML private void initialize() {
     brightnessSlider.valueProperty().addListener((obs, old, val) -> {
         int level = val.intValue();
@@ -760,75 +760,6 @@ If your test imports <code>javafx.scene</code>, it's probably testing the wrong 
 
 </Slide>
 
-{/* ============================================ */}
-{/* COMPREHENSION CHECK */}
-{/* ============================================ */}
-
-<Slide>
-
-## Comprehension Check
-
-<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '2em'}}>
-Open <strong>Poll Everywhere</strong> and answer the next 4 questions.
-</p>
-
-<aside className="notes">
-**Run 4 multiple-choice questions on Poll Everywhere. Give ~60 seconds per question, then briefly discuss the answer.**
-
----
-
-**Question 1: MVC vs MVVM dependencies**
-
-In our MVVM implementation, what does the ViewModel depend on?
-
-- A. The Model and the View (FXML widgets)
-- B. The Model only ✅
-- C. The View only (it reads widget values directly)
-- D. Nothing — it's completely standalone
-
-*Discussion:* This is the core insight of the lecture. The MVC Controller depends on Model + View widgets. The ViewModel depends on Model only — it exposes observable properties but has no reference to any widget. D is tempting but wrong — the ViewModel does read from and update the Model. If students picked A, revisit the comparison slide: that's the MVC Controller, not the ViewModel.
-
----
-
-**Question 2: ObservableList behavior**
-
-You have an `ObservableList<String>` of device statuses bound to a ListView. A Light in your Model changes brightness from 70% to 30%. What happens to the ListView?
-
-- A. It updates automatically — ObservableList detects the brightness change
-- B. Nothing — ObservableList only fires on add/remove/replace, not on changes inside existing items ✅
-- C. It throws a ConcurrentModificationException
-- D. The ListView goes blank because the binding is broken
-
-*Discussion:* This is the gotcha we covered. ObservableList fires when you `add()`, `remove()`, or `setAll()` — but it does NOT fire when a property inside an existing item changes. The fix: call `setAll()` in the ViewModel to replace the entire list contents after the model changes. Students who got this wrong should revisit the ObservableList slide.
-
----
-
-**Question 3: What to test where**
-
-You want to verify that activating the "Evening" scene sets brightness to 30%. Where should this test live?
-
-- A. ViewModel unit test — call `viewModel.activateScene("Evening")` and assert `brightnessProperty().get() == 30` ✅
-- B. E2E test with TestFX — click the Activate button and check the slider position
-- C. Model unit test — call `area.activateScene("Evening")` and check device brightness
-- D. Both A and C are correct, but not B
-
-*Discussion:* A is the best answer — it tests the ViewModel's responsibility (translating model state into UI-ready properties) without starting the UI. C tests the Model's logic but not the ViewModel's property update. B works but is slow and brittle — save E2E tests for critical user journeys that span the full stack. D is a reasonable argument (both A and C test valuable things) but A is the most direct test of the behavior described.
-
----
-
-**Question 4: E2E test locators**
-
-You're writing a TestFX E2E test. You need to click the "Activate" button. Which locator strategy is most resilient to UI refactoring?
-
-- A. `clickOn("#activateButton")` — find by fx:id
-- B. `clickOn(".button")` — find by CSS class
-- C. `clickOn("Activate")` — find by visible text
-- D. `clickOn(hasAccessibleText("Activate scene"))` — find by accessibility label ✅
-
-*Discussion:* A breaks when a developer renames the fx:id. B matches every button on screen. C breaks when the label text changes (e.g., "Activate" → "Apply Scene") and may match other text on the page. D uses the accessibility label, which describes what the element *does* — that doesn't change when you refactor. Bonus: this is the same `accessibleText` you added in L28 for screen reader users. Your accessibility work makes your tests more stable — they reinforce each other.
-</aside>
-
-</Slide>
 
 {/* ============================================ */}
 {/* ARC 4: E2E TESTING WITH TESTFX (~12 min) */}
@@ -1085,54 +1016,6 @@ void brightnessSliderUpdatesDeviceList() {
 {/* ARC 5: PUTTING IT ALL TOGETHER (~5 min) */}
 {/* ============================================ */}
 
-<Slide>
-
-## Your GA1 Testing Strategy
-
-<div style={{fontSize: '0.8em'}}>
-
-| Layer | What you test | How many | Speed |
-|-------|--------------|----------|-------|
-| **Model unit tests** | Business logic (scaling, conversion, search) | Many (10-20) | ~5 ms each |
-| **ViewModel unit tests** | UI state, commands, property updates | Many (10-20) | ~5 ms each |
-| **E2E tests (TestFX)** | Critical user journey, end-to-end wiring | Few (1-2) | ~2 sec each |
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.8em'}}>
-In GA1 you'll apply these patterns to CookYourBooks. The ViewModel interfaces we provide are your testing contract:
-</p>
-
-```java
-// GA1 provides this interface
-public interface LibraryViewModel {
-    StringProperty selectedCookbookProperty();
-    ObservableList<String> getRecipeNames();
-    void selectCookbook(String name);
-    void deleteRecipe(String name);
-}
-
-// You implement it — and test it
-@Test
-void selectCookbook_populatesRecipeNames() {
-    viewModel.selectCookbook("Italian Favorites");
-    assertFalse(viewModel.getRecipeNames().isEmpty());
-    assertTrue(viewModel.getRecipeNames().contains("Pasta Carbonara"));
-}
-```
-
-<aside className="notes">
-**The ViewModel interface IS the spec.** Students implement the interface, write tests against it, and build a View that binds to its properties. The TA evaluates the ViewModel implementation — it's individually graded.
-
-**The three layers mirror the semester arc:**
-- Model tests: they've been writing these since HW1
-- ViewModel tests: the new skill from this lecture
-- E2E tests: the capstone — full integration
-
-> **Transition:** Key takeaways...
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -1155,43 +1038,5 @@ void selectCookbook_populatesRecipeNames() {
 
 </Slide>
 
-<Slide>
-
-## Looking Ahead
-
-<div style={{fontSize: '0.85em'}}>
-
-**Lab 12 (next Monday): Hands-on GUI practice**
-- Build SceneItAll GUI components using MVC and MVVM patterns from L29 and L30
-- Practice ViewModel testing and FXML binding
-- Bring your laptop with Scene Builder installed
-
-**Next up: Concurrency (L31-32)**
-- What happens when your event handler needs to talk to a network or database?
-- If it blocks, the UI freezes (remember the event loop from L29)
-- Background threads, `Platform.runLater()`, `Task` and `Service` classes
-- How to keep the UI responsive during long-running operations
-
-**Your group project:**
-- GA1 (due Apr 9): Implement your feature's ViewModel, View, and tests — in GA1 you'll apply these patterns to **CookYourBooks**
-- Write ViewModel unit tests — these are individually graded
-- Write 1-2 E2E tests for your feature's critical user journey
-- Use accessibility labels on all interactive widgets — it helps your users AND your tests
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
-Today you learned to separate what the UI shows from how it works, and to test both. Next, you learn to keep the UI alive while doing heavy work.
-</p>
-
-<aside className="notes">
-**Concurrency preview:** In L29 we mentioned that long-running handlers freeze the UI. L31-32 solves this — students will learn to run background tasks and update the UI safely from another thread. This is essential for GA1 features that import data, search, or make network calls.
-
-**AI policy reminder:** AI is encouraged for GA1 — great for generating ViewModel boilerplate, property bindings, and test scaffolding. Students must understand the code for code walks.
-
-> That's it for today. Questions?
-</aside>
-
-</Slide>
 
 </RevealJS>
