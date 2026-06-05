@@ -215,7 +215,12 @@ Save scaled recipe? (y/n): y
 Saved scaled recipe 'Chocolate Chip Cookies (scaled to 48)'.
 ```
 
-If the user declines: `Scaling discarded.`
+If the user declines: 
+
+```text
+Save scaled recipe? (y/n): n
+Scaling discarded.
+```
 
 **Requirements:**
 - VagueIngredients display unchanged (e.g., "to taste")
