@@ -349,7 +349,8 @@ function extractAnswerKeyFull(
   if (answerKeyStart < 0) return {};
 
   const section = content.slice(answerKeyStart);
-  const rubricHeading = /^## Part II: Case Study Rubric\s*$/m;
+  // Accept multiple Part II answer-key heading variants.
+  const rubricHeading = /^## Part II:\s*(?:Case Study Rubric|Open-Ended Case Studies)\s*$/im;
   const rubricMatch = section.match(rubricHeading);
   let answerKeyOpenEndedMarkdown: string | undefined;
   let mcPortion = section;

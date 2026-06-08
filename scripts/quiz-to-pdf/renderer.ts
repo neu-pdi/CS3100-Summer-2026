@@ -264,9 +264,11 @@ export async function renderQuizToHtml(quiz: ParsedQuiz, options: PdfOptions): P
   const hasOpenKey = !!quiz.answerKeyOpenEndedMarkdown?.trim();
   const hasCaseStudies = !!quiz.caseStudies?.length;
   if (options.includeAnswers && (hasMcKey || hasOpenKey || hasCaseStudies)) {
-    // Include case study prompts with rubric blockquotes in the answer key
-    const answerKeyContent = renderAnswerKey(quiz)
-      + renderPartTwoPrompts(quiz, false, true);
+    // If a dedicated Part II answer key exists, render only that; otherwise
+    // fall back to including Part II prompts with rubric blockquotes.
+    const answerKeyContent = hasOpenKey
+      ? renderAnswerKey(quiz)
+      : renderAnswerKey(quiz) + renderPartTwoPrompts(quiz, false, true);
     result.answerKeyHtml = renderDocument(answerKeyContent, options);
   }
 
