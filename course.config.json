@@ -584,7 +584,9 @@
     },
     {
       "id": "lab7",
-      "title": "Lab 7: Requirements Engineering",
+      "title": "Lab 7: GUI Programming",
+      "assignedTime": "08:00",
+      "status": "published",
       "dates": [
         "2026-06-08"
       ],
@@ -595,11 +597,13 @@
         "L04",
         "L05"
       ],
-      "url": "/labs/lab5-requirements"
+      "url": "/labs/lab-gui-no-pair-programming"
     },
     {
       "id": "lab8",
-      "title": "Lab 8: GUI Programming",
+      "title": "Lab 8: Requirements Engineering",
+      "assignedTime": "08:00",
+      "status": "published",
       "dates": [
         "2026-06-15"
       ],
@@ -610,7 +614,7 @@
         "L04",
         "L05"
       ],
-      "url": "/labs/lab12-gui"
+      "url": "/labs/lab-requirements"
     }
   ],
   "assignments": [
