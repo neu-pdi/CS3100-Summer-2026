@@ -248,6 +248,10 @@ export async function renderQuizToHtml(quiz: ParsedQuiz, options: PdfOptions): P
     }
   }
 
+  if (quiz.partOneHeading?.trim()) {
+    quizParts.push(`<h2 class="part-one-heading">${escapeHtml(quiz.partOneHeading)}</h2>`);
+  }
+
   if (quiz.partOneIntroMarkdown?.trim()) {
     quizParts.push(`<div class="part-intro">${marked.parse(quiz.partOneIntroMarkdown)}</div>`);
   }
@@ -513,6 +517,9 @@ function renderAnswerKey(quiz: ParsedQuiz): string {
   const hasOpen = !!quiz.answerKeyOpenEndedMarkdown?.trim();
   if (!hasTable && !hasOpen) return '';
 
+  const partOneHeading = quiz.partOneHeading || 'Part I';
+  const partTwoHeading = quiz.partTwoHeading || 'Part II';
+
   let tableHtml = '';
   if (hasTable) {
     const rows = quiz.answerKey!
@@ -526,7 +533,7 @@ function renderAnswerKey(quiz: ParsedQuiz): string {
       )
       .join('');
     tableHtml = `
-  <h3 class="answer-key-part-title">Part I — Multiple choice</h3>
+  <h3 class="answer-key-part-title">${escapeHtml(partOneHeading)}</h3>
   <table class="answer-key-table">
     <thead>
       <tr>
@@ -542,7 +549,8 @@ function renderAnswerKey(quiz: ParsedQuiz): string {
   }
 
   const openHtml = hasOpen
-    ? `<div class="answer-key-open-ended">${marked.parse(quiz.answerKeyOpenEndedMarkdown!)}</div>`
+    ? `<h3 class="answer-key-part-title">${escapeHtml(partTwoHeading)}</h3>
+       <div class="answer-key-open-ended">${marked.parse(quiz.answerKeyOpenEndedMarkdown!)}</div>`
     : '';
 
   return `

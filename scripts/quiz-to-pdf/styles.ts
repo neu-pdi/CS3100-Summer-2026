@@ -184,6 +184,12 @@ body {
 }
 
 /* Part I intro before MC questions */
+.part-one-heading {
+  font-size: 14pt;
+  margin: 0 0 0.5rem 0;
+  page-break-after: avoid;
+}
+
 .part-intro {
   margin-bottom: 1rem;
   padding: 0.5rem 0;
@@ -456,6 +462,7 @@ body {
   margin-bottom: 0.5rem;
   padding-bottom: 0.3rem;
   border-bottom: 1px solid #ddd;
+  break-inside: avoid;
   page-break-inside: avoid;
 }
 
@@ -473,6 +480,8 @@ body {
 .question-text {
   margin-bottom: 0.3rem;
   line-height: 1.3;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .question-text p {
@@ -494,6 +503,8 @@ body {
   list-style: none;
   padding: 0;
   margin: 0 0 0 0.5rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
   page-break-before: avoid;
 }
 
@@ -502,6 +513,8 @@ body {
   align-items: baseline;
   margin-bottom: 0.15rem;
   line-height: 1.3;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .choice-letter {
@@ -682,6 +695,14 @@ p code, li code {
   }
 
   .question {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .question-text,
+  .choices,
+  .choice {
+    break-inside: avoid;
     page-break-inside: avoid;
   }
 

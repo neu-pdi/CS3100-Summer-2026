@@ -59,6 +59,8 @@ export interface ParsedQuiz {
   instructions: string[];
   questions: QuizQuestion[];
   answerKey?: AnswerKeyEntry[];
+  /** Raw Part I document heading line (without leading #) */
+  partOneHeading?: string;
   /** Intro after Part I / Questions heading, before first ### Question */
   partOneIntroMarkdown?: string;
   /** Raw Part II document heading line (without leading #) */

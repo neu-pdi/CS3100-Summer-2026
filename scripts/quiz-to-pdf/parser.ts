@@ -24,12 +24,27 @@ interface DocumentBoundaries {
 
 function findAnswerKeyStart(content: string): number {
   const idxs: number[] = [];
-  const re = /^#{1,2} Answer Key\s*$/gm;
+  const re = /^#{1,2}\s*(?:Answer Key|Answers)\s*$/gim;
   let m: RegExpExecArray | null;
   while ((m = re.exec(content)) !== null) {
     if (m.index !== undefined) idxs.push(m.index);
   }
   return idxs.length ? Math.min(...idxs) : -1;
+}
+
+function findQuestionsStart(content: string): number {
+  const match = content.match(/^#{1,2}\s*Questions\s*$/im);
+  return match?.index ?? -1;
+}
+
+function findPartHeadingStarts(section: string): number[] {
+  const starts: number[] = [];
+  const re = /^##\s*Part\b.*$/gim;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(section)) !== null) {
+    if (m.index !== undefined) starts.push(m.index);
+  }
+  return starts;
 }
 
 function findMcSectionStart(content: string): number {
@@ -58,9 +73,24 @@ function findMcEndRelativeToSlice(slice: string): number {
 
 function computeBoundaries(content: string): DocumentBoundaries {
   const answerKeyStart = findAnswerKeyStart(content);
+  const contentLen = content.length;
+
+  const questionsStart = findQuestionsStart(content);
+  const questionsEnd = answerKeyStart >= 0 ? answerKeyStart : contentLen;
+
+  if (questionsStart >= 0 && questionsEnd > questionsStart) {
+    const questionsSection = content.slice(questionsStart, questionsEnd);
+    const partStartsRel = findPartHeadingStarts(questionsSection);
+    if (partStartsRel.length > 0) {
+      const mcStart = questionsStart + partStartsRel[0];
+      const mcEnd = partStartsRel.length > 1 ? questionsStart + partStartsRel[1] : questionsEnd;
+      const part2Start = partStartsRel.length > 1 ? questionsStart + partStartsRel[1] : -1;
+      const part2End = questionsEnd;
+      return { mcStart, mcEnd, part2Start, part2End, answerKeyStart };
+    }
+  }
 
   const mcStart = findMcSectionStart(content);
-  const contentLen = content.length;
   let mcEnd = contentLen;
   if (mcStart >= 0) {
     const slice = content.slice(mcStart);
@@ -150,6 +180,15 @@ function extractPartOneIntro(content: string, mcStart: number, mcEnd: number): s
   return intro || undefined;
 }
 
+function extractHeadingLine(content: string, start: number): string | undefined {
+  if (start < 0) return undefined;
+  const region = content.slice(start);
+  const firstNl = region.indexOf('\n');
+  const raw = firstNl >= 0 ? region.slice(0, firstNl) : region;
+  const cleaned = raw.replace(/^#+\s*/, '').trim();
+  return cleaned || undefined;
+}
+
 function extractCaseStudies(content: string, part2Start: number, part2End: number): {
   heading?: string;
   intro?: string;
@@ -161,7 +200,7 @@ function extractCaseStudies(content: string, part2Start: number, part2End: numbe
   const headingLine =
     firstNl >= 0 ? region.slice(0, firstNl).replace(/^#+\s*/, '').trim() : region.replace(/^#+\s*/, '').trim();
   const afterHeading = firstNl >= 0 ? region.slice(firstNl + 1) : '';
-  const firstCase = afterHeading.search(/^## Case Study /m);
+  const firstCase = afterHeading.search(/^###?\s*Case Study\b/m);
   let intro: string | undefined;
   let body = afterHeading;
   if (firstCase >= 0) {
@@ -170,12 +209,14 @@ function extractCaseStudies(content: string, part2Start: number, part2End: numbe
     intro = introRaw || undefined;
     body = afterHeading.slice(firstCase);
   }
-  const chunks = body.split(/(?=^## Case Study )/m).filter(c => /^## Case Study /m.test(c));
+  const chunks = body
+    .split(/(?=^###?\s*Case Study\b)/m)
+    .filter(c => /^###?\s*Case Study\b/m.test(c));
   const studies: CaseStudy[] = [];
   for (const chunk of chunks) {
-    const titleMatch = chunk.match(/^## (.+?)\s*$/m);
+    const titleMatch = chunk.match(/^###?\s+(.+?)\s*$/m);
     const title = titleMatch?.[1]?.trim() ?? 'Case Study';
-    const bodyMarkdown = chunk.replace(/^## [^\n]+\n?/, '').trim();
+    const bodyMarkdown = chunk.replace(/^###?\s+[^\n]+\n?/, '').trim();
     studies.push({
       title,
       bodyMarkdown,
@@ -190,6 +231,7 @@ function extractCaseStudies(content: string, part2Start: number, part2End: numbe
  */
 export function parseQuizMarkdown(content: string): ParsedQuiz {
   const boundaries = computeBoundaries(content);
+  const partOneHeading = extractHeadingLine(content, boundaries.mcStart);
   const partOneIntroMarkdown = extractPartOneIntro(content, boundaries.mcStart, boundaries.mcEnd);
   const questions = extractQuestionsFromRegion(content, boundaries.mcStart, boundaries.mcEnd);
   const { heading: partTwoHeading, intro: partTwoIntroMarkdown, studies } = extractCaseStudies(
@@ -203,7 +245,8 @@ export function parseQuizMarkdown(content: string): ParsedQuiz {
   const instructions = extractInstructions(content, partOneIntroMarkdown);
   const { answerKey, answerKeyOpenEndedMarkdown } = extractAnswerKeyFull(
     content,
-    boundaries.answerKeyStart
+    boundaries.answerKeyStart,
+    partTwoHeading
   );
 
   if (metadata.questionCount <= 0 && questions.length > 0) {
@@ -215,6 +258,7 @@ export function parseQuizMarkdown(content: string): ParsedQuiz {
     instructions,
     questions,
     answerKey,
+    partOneHeading,
     partOneIntroMarkdown,
     partTwoHeading,
     partTwoIntroMarkdown,
@@ -342,23 +386,41 @@ function parseQuestionContent(content: string): { text: string; choices: QuizCho
   return { text, choices };
 }
 
+function normalizeHeadingText(text: string): string {
+  return text.replace(/^#+\s*/, '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
 function extractAnswerKeyFull(
   content: string,
-  answerKeyStart: number
+  answerKeyStart: number,
+  partTwoHeading?: string
 ): { answerKey?: AnswerKeyEntry[]; answerKeyOpenEndedMarkdown?: string } {
   if (answerKeyStart < 0) return {};
 
   const section = content.slice(answerKeyStart);
-  // Accept multiple Part II answer-key heading variants.
-  const rubricHeading = /^## Part II:\s*(?:Case Study Rubric|Open-Ended Case Studies)\s*$/im;
-  const rubricMatch = section.match(rubricHeading);
   let answerKeyOpenEndedMarkdown: string | undefined;
   let mcPortion = section;
 
-  if (rubricMatch?.index !== undefined) {
-    const rubricBody = section.slice(rubricMatch.index + rubricMatch[0].length).trim();
-    answerKeyOpenEndedMarkdown = rubricBody || undefined;
-    mcPortion = section.slice(0, rubricMatch.index);
+  const expectedPartTwoHeading = normalizeHeadingText(partTwoHeading || '');
+  if (expectedPartTwoHeading) {
+    const headingPattern = /^#{1,6}\s+(.+)$/gm;
+    let m: RegExpExecArray | null;
+    let headingStart = -1;
+    let headingLength = 0;
+
+    while ((m = headingPattern.exec(section)) !== null) {
+      if (normalizeHeadingText(m[1]) === expectedPartTwoHeading) {
+        headingStart = m.index;
+        headingLength = m[0].length;
+        break;
+      }
+    }
+
+    if (headingStart >= 0) {
+      const partTwoKeyBody = section.slice(headingStart + headingLength).trim();
+      answerKeyOpenEndedMarkdown = partTwoKeyBody || undefined;
+      mcPortion = section.slice(0, headingStart);
+    }
   }
 
   const entries: AnswerKeyEntry[] = [];
