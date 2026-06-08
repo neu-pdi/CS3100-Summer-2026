@@ -4,5 +4,7 @@ lecture_number: 26
 title: Exam 2
 ---
 
-## Exam (60 minutes)
+## Exam (90 minutes)
 
+
+[Practice Exam](/code/lectures/l26-exam2/practice.pdf)
