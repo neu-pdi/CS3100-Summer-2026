@@ -1,5 +1,5 @@
 ---
-title: "Assignment 5: Interactive CLI"
+title: "Group Assignment 1: Interactive CLI"
 sidebar_position: 6
 ---
 
