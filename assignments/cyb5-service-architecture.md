@@ -1,8 +1,12 @@
 ---
-title: "Assignment 5: Interactive CLI"
+title: "Group Assignment 1: Interactive CLI"
 sidebar_position: 6
 ---
 
+# Updates
+
+- 06/08: The test example in this assignment used an outdated command cook. We have replaced it with a test that matches what we ask of you.
+- 06/08: In CompletionTests, you have an extra test about the cook command. Delete that test as you were not asked to implement it. See [this post](https://app.pawtograder.com/course/554/discussion/8149). from details from your classmate who found the issue.
 
 # 1 Overview
 
@@ -321,27 +325,6 @@ class CookYourBooksCliTest {
         String result = output.toString();
         assertThat(result).contains("Holiday Favorites");
         assertThat(result).contains("Joy of Cooking");
-    }
-
-    @Test
-    void cookMode_navigatesThroughSteps() throws Exception {
-        setupRecipeWithSteps("Pancakes", 4);
-
-        sendCommands(
-            "cook \"Pancakes\"\n",
-            "next\n",
-            "next\n",
-            "prev\n",
-            "quit\n",
-            "quit\n"
-        );
-        runCli();
-
-        String result = output.toString();
-        assertThat(result).contains("Step 1 of 4");
-        assertThat(result).contains("Step 2 of 4");
-        assertThat(result).contains("Step 3 of 4");
-        assertThat(result).contains("Step 2 of 4"); // After prev
     }
 
     private void sendCommand(String command) throws IOException {
