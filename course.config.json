@@ -416,6 +416,15 @@
       ]
     },
     {
+      "lectureId": "l27-ucd",
+      "dates": [
+        "2026-06-08"
+      ],
+      "topics": [
+        "User-Centered Design"
+      ]
+    },
+    {
       "lectureId": "l29-gui1",
       "dates": [
         "2026-06-09"
@@ -698,8 +707,9 @@
       "assignedTime": "21:00",
       "dueDate": "2026-06-18",
       "dueTime": "20:59",
-      "points": 30,
-      "url": "/assignments/cyb10-design-sprint"
+      "status": "published",
+      "points": 100,
+      "url": "/assignments/cyb6-gui"
     }
   ],
   "calendars": {
