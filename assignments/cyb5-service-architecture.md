@@ -3,6 +3,10 @@ title: "Assignment 5: Interactive CLI"
 sidebar_position: 6
 ---
 
+# Updates
+
+- 06/08: The test example in this assignment used an outdated command cook. We have replaced it with a test that matches what we ask of you.
+- 06/08: In CompletionTests, you have an extra test about the cook command. Delete that test as you were not asked to implement it. See [this post](https://app.pawtograder.com/course/554/discussion/8149). from details from your classmate who found the issue.
 
 # 1 Overview
 
