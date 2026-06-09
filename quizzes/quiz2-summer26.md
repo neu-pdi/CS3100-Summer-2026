@@ -660,7 +660,8 @@ public void activatesHeatingWhenBelowTarget() {
     // with the argument "livingRoom", return 65.0
     when(mockSensor.readTemperature("livingRoom")).thenReturn(65.0);
     
-    // Alternative: when readTemperature is called with any integer argument, return 65.0. Similarly there is anyInt().
+    // Alternative: when readTemperature is called with any integer 
+    // argument, return 65.0. Similarly there is anyInt().
     when(mockSensor.readTemperature(anyString())).thenReturn(65.0);
 
     // Verify: setMode was called with arguments HVACMode.HEATING
