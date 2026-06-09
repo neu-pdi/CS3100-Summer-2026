@@ -323,27 +323,6 @@ class CookYourBooksCliTest {
         assertThat(result).contains("Joy of Cooking");
     }
 
-    @Test
-    void cookMode_navigatesThroughSteps() throws Exception {
-        setupRecipeWithSteps("Pancakes", 4);
-
-        sendCommands(
-            "cook \"Pancakes\"\n",
-            "next\n",
-            "next\n",
-            "prev\n",
-            "quit\n",
-            "quit\n"
-        );
-        runCli();
-
-        String result = output.toString();
-        assertThat(result).contains("Step 1 of 4");
-        assertThat(result).contains("Step 2 of 4");
-        assertThat(result).contains("Step 3 of 4");
-        assertThat(result).contains("Step 2 of 4"); // After prev
-    }
-
     private void sendCommand(String command) throws IOException {
         commandInput.write(command.getBytes());
         commandInput.flush();
