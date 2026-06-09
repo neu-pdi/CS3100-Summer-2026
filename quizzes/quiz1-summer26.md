@@ -134,7 +134,7 @@ Suppose you create a new object: `Notifier notifier = new CountingNotifier(); `.
 What happens when you run this code?
 
 ```java
-Set<String> students = new HashSet<String>();
+Set<String> roster = new HashSet<String>();
 roster.add("Alice");
 roster.add("Alicia"); 
 roster.add("alice");
