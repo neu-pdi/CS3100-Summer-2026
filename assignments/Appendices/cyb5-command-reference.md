@@ -164,6 +164,7 @@ Imports a recipe from a JSON file and adds it to the specified collection. The J
 
 **On success:**
 ```text
+Imported 'Grandma's Apple Pie' into 'Holiday Favorites'.
 ```
 
 **Error handling:**
