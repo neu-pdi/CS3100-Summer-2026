@@ -11,6 +11,7 @@ Building on foundations introduced in CS 2100, examines program design at increa
 ## Course Objectives
 
 Upon successful completion of this course, students will be able to:
+
 - Analyze software requirements and synthesize an object-oriented design utilizing open-source libraries
 - Identify the stakeholders of a software module, along with their values and interests
 - Utilize the vocabulary of design patterns to compare the impact of design decisions on non-functional requirements such as accessibility, changeability, performance, reusability and privacy
@@ -104,7 +105,7 @@ Your letter grade is determined by both your total points AND meeting minimum th
 
 *There is no A+ grade. If you fail to meet the thresholds for a letter grade, your grade is capped at the highest level whose thresholds you satisfy.*
 
-**Why thresholds?** These requirements ensure that you demonstrate competence across different aspects of the course. You cannot compensate for missing fundamental skills (tested in assignments) by only performing well on exams, or vice versa. The exam threshold for a B (55%) is intentionally lower to accommodate students who struggle with timed assessments but demonstrate mastery through their project work.
+**Why thresholds?** These requirements ensure that you demonstrate competence across different aspects of the course. You cannot compensate for missing fundamental skills (tested in assignments) by only performing well on exams, or vice versa. The exam threshold for a B (60%) is intentionally lower to accommodate students who struggle with timed assessments but demonstrate mastery through their project work.
 
 ### Grade Recovery Policies
 **Grading grievances:** If you have concerns regarding the grading of your work, please let us know right away by opening a regrade request in Pawtograder. **All regrade requests must be submitted within 7 days from your receipt of the graded work**. If your regrade request is closed and you feel that the response was not satisfactory, you may appeal to the instructor via Pawtograder within 3 days of the resolution of your regrade request by the grader.
@@ -124,12 +125,14 @@ Each instructor maintains their own office hours. You can also directly email yo
 TA office hours are available throughout the week to provide one-on-one support with your coursework. To get help, join the queue through the Pawtograder office hours system—we operate on a first-come, first-served basis.
 
 To make the most of your time:
+
 - Come prepared with a specific question or issue. When you submit a help request, describe your concern so the TA can prepare.
 - Have your code accessible (via GitHub or locally) so you can share your screen or walk through it together.
 - If you need help *debugging* please follow a systematic debugging workflow summarized in the syllabus [below](#debugging-workflow).
 - Typical sessions last 10-15 minutes, so focus on one issue at a time.
 
 What we can help with:
+
 - clarifying assignment requirements
 - debugging guidance 
 - testing strategies
@@ -158,6 +161,7 @@ During the 48 hours before deadlines, the course staff will be monitoring the fo
 Responses will guide you toward understanding, not provide direct answers. If your question is already in the FAQ, we'll point you there—and if it should be clearer, let us know.
 
 **Forum categories include:**
+
 - Assignments and Labs – specific Q&A (each has a pinned FAQ)
 - AI Tools – questions about AI coding assistants, workshop recordings, and best practices
 - Study Groups – find study partners
