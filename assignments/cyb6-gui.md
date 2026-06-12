@@ -6,7 +6,7 @@ sidebar_position: 6
 
 # 1 Overview
 
-In this assignment, you'll build a graphical user interface for CookYourBooks to augment the CLI that you created previously. This GUI will expose the same functionality: manage a recipe library, import recipes and scale ingredients. 
+In this assignment, you'll build a graphical user interface for CookYourBooks to augment the CLI that you created previously. This GUI will expose the same functionality: manage a recipe library, import recipes and scale ingredients.
 
 
 **Prerequisites:** This assignment builds on the handout code from GA1 as this assignment does not need a CLI. In fact, we saw we need to create a new controller for GUIs. You should be familiar with TODO.
@@ -23,7 +23,7 @@ By completing this assignment, you will demonstrate proficiency in:
 
 ---
 
-# Provided code
+# 3 Provided code
 
 TODO
 
@@ -39,15 +39,15 @@ Build a graphical user interface for the CookYourBooks program, starting from th
    
     * List all the recipe collections from the `RecipeCollectionRepository`
     * Display all recipes within a collection
-    * Create a new recipe collection. 
+    * Create a new recipe collection.
 
    3. Recipe features: The GUI should support the following features:
    
     * Search recipes that have a specific ingredient.
     * Show the details of a specific recipe. The recipe can either be explicitly specified, or be selected from a displayed list or the results of the above operation.
     * Scale a specific recipe for a specified number of servings. The recipe to be scaled can either be explicitly specified, or be selected from a displayed list or the results of the above operation.
-    * Import a recipe from a json file, so that it shows up in subsequent search results. Optionally, put an imported recipe in a specified collection.
-    * Delete a specific recipe. A deleted recipe should no longer show up in any displayed list or search result, unless it is imported back in.
+    * Import a recipe from a json file, so that it shows up in subsequent search results. Optionally, add an imported recipe in a specified collection.
+    * Delete a specific recipe. A deleted recipe should no longer show up in any subsequently displayed list or search result, unless it is imported back in.
 
    4. Any error conditions should be suitably displayed to the user, through pop-up messages or clearly visible text as appropriate. Under no circumstances should an operation result in the program crashing.
 
@@ -59,7 +59,8 @@ Build a graphical user interface for the CookYourBooks program, starting from th
    We do not expect snazzy, sophisticated user-friendly programs. Our standard is: can a user unfamiliar with your code and technical documentation operate the program correctly **without reading your code and technical documentation?**
    6. The GUI should be reasonably proportioned and labeled. Use text labels to clearly indicate what input is expected. Gray out widgets that the user should not be allowed to use at specific points in time (if applicable). Weirdly sized regions, text that is hard to read, unbalanced GUI layout will all cause point deductions.
    7. The GUI should specify suitable accessible text for all widgets appropriately.
-   8. None of this should interfere with the "CLI mode". That is, at any time it should be possible to run the application successfully in the cli mode. See [the Gradle setup](#6-gradle-setup) for details on how to make run your application in CLI or GUI mode.
+   8. Your GUI should not look or feel like a "CLI in a window". An example of this would be a window with a text field for the user to type in the CLI command, a sequence of pop-up windows to take in one text input at a time, etc.
+   9. None of this should interfere with the "CLI mode". That is, at any time it should be possible to run the application successfully in the cli mode. See [the Gradle setup](#6-gradle-setup) for details on how to make run your application in CLI or GUI mode.
 
 We recommend the following for more JavaFX documentation
 
@@ -76,8 +77,7 @@ Make sure to consider at least one other alternative for exposing your features 
 
 ### 4.1.1 Dialogs in JavaFX
 
-Sometimes, programs with GUIs open up small windows to either notify the user or ask for some input. These are called `Dialog`s. In JavaFx,
-`Dialog` is generic, meaning it is `Dialog<R>`. The type parameter `R` represents the data you retrieve from the `Dialog`. 
+Sometimes, programs with GUIs open up small windows to either notify the user or ask for some input. These are called `Dialog`s. In JavaFx, `Dialog` is generic, meaning it is `Dialog<R>`. The type parameter `R` represents the data you retrieve from the `Dialog`.
 
 This assignment covers the three dialog types that may help you. If you wish to create your own `Dialog`, please read the [`Dialog` JavaFX documentation](https://openjfx.io/javadoc/21/javafx.controls/javafx/scene/control/Dialog.html) and heed its warnings.
 
@@ -148,9 +148,7 @@ if (result.isPresent()) {
 ```
 ### 4.1.2 FileChooser in JavaFX
 
-When applications with GUIs ask users to load a file, they usually open a window like Finder or Explorer. 
-In JavaFX, this is the `FileChooser`. Unlike `Dialog`s, which can be launched with no other information,
-`FileChooser` needs a reference to the main `Stage` of your application. In exchange, you get the
+When applications with GUIs ask users to load a file, they usually open a window like Finder or Explorer. In JavaFX, this is the `FileChooser`. Unlike `Dialog`s, which can be launched with no other information, `FileChooser` needs a reference to the main `Stage` of your application. In exchange, you get the
 actual `File` object the user selected (see [the `File` documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/File.html) for information on getting a `Path` from the object or any necessary operations).
 
 Below is a small snippet of what we can do with a `FileChooser`. 
@@ -191,10 +189,9 @@ area.setEditable(false);
 area.setText("Hello there.\nHow was your day?\n\t[ ] Good.\n\t[ ] Could be better.");
 ```
 
-There are other options like using `Label`s or drawing `Text`. The former is better when you know the amount of space the text needs to fill. The former involves
-a little know-how on how to place the text and handle font sizing.
+There are other options like using `Label`s or drawing `Text`. The former is better when you know the amount of space the text needs to fill. The former involves a little know-how on how to place the text and handle font sizing.
 
-## 4.2 View and controller 
+## 4.2 View and controller
  
 Carefully design the interaction between the GUI and a controller. We recommend implementing a view-model as well.
 
@@ -225,13 +222,12 @@ While **comprehensive** testing of graphical user interfaces is beyond the scope
 
 * Is the correct action taken by the domain when the appropriate user input is given?
 * Is the wiring correct (e.g. is/are the correct method(s) called from your action handlers in your model/view-model)?
-* At least one end-to-end tests using TestFX, the required test being the user journey we describe in [Required E2E Testing](#required-e2e-testing)
+* At least one end-to-end test using TestFX, the required test being the user journey we describe in [Required E2E Testing](#required-e2e-testing)
 
 ## 5.1 Testing your view-model
 
 Recall we can unit test view-models to ensure the wiring from commands to view-model to domain objects are working.
-Below we give an exaxmple of an example test of a view-model. The constructor and methods shown are merely examples: your view-model may be different
-and still well designed.
+Below we give an exaxmple of an example test of a view-model. The constructor and methods shown are merely examples: your view-model may be different and still well designed.
 
 ```java
 @Test
@@ -250,12 +246,11 @@ void selectCollection_updatesRecipeList() {
 
 ## 5.2 Required E2E Testing
 
-E2E tests are most useful for complete user journeys. For this assignment, you are required to write one E2E tests for the following journey
-that exercises a good amount of your expected operations.
+E2E tests are most useful for complete user journeys. For this assignment, you are required to write one E2E tests for the following journey that exercises a good amount of your expected operations.
 
 **User journey: Scale a recipe within a collection**
 
-- For setup, make sure you have already created a collection with at least three recipes, each with non-null servings
+For setup, make sure you have already created a collection with at least three recipes, each with non-null servings:
 
 1. User starts the application with the GUI
 2. User selects a RecipeCollection from the RecipeCollectionRepository
@@ -266,8 +261,7 @@ that exercises a good amount of your expected operations.
 
 ## 5.3 Setup for manual testing
 
-Unlike prior assignments, graders will need to manual use your GUI to test functionality. To assist them, your main for the GUI must
-configure the model with the following
+Unlike prior assignments, graders will need to manual use your GUI to test functionality. To assist them, you must set up your program, so that when it is run, it starts in the following state:
 
 - at least 2 distinct recipe collections
 - at least 4 different recipes split between the collections
@@ -348,7 +342,7 @@ Please see the [previous assignment description](/assignments/cyb5-service-archi
 
 Update `REFLECTION.md` to address:
 
-1. **Design of GUI:** How did the group converge upon the design (layout) of the GUI? Provide at least one example of an operation for which multiple alternatives in the GUI were considered and one was chosen. 
+1. **Design of GUI:** How did the group converge upon the design (layout) of the GUI? Provide at least one example of an operation for which multiple alternatives in the GUI were considered and one was chosen.
 
 2. **Group Contributions:** For each group member, provide at least two bullet points describing how they contributed to the project. As this is part of the reflection for the entire group, we assume some consensus will be reached within the group about this. In case there are differences, we encourage individual group members to reach out to the instructor directly via email. Such emails will not influence the grade for the assignment, except in extreme cases where a group member simply did not contribute.
 
@@ -360,7 +354,7 @@ Update `REFLECTION.md` to address:
 
 **Total points: ** 76 pts
 
-## Manual Testing (44 pts)
+## 10.1 Manual Testing (44 pts)
 
 This assignment allows you to decide your own interfaces for the view-model and your own GUI design. Therefore, graders will test
 your GUI _manually_. What follows are all the scenarios they will test manually and how much each is worth
@@ -381,10 +375,9 @@ your GUI _manually_. What follows are all the scenarios they will test manually 
 | Delete a recipe and check it no longer appears in any collection | 4 |
 | Delete a recipe and check it no longer appears in a search | 4 |
 
-## E2E Test (20 pts)
+## 10.2 E2E Test (20 pts)
 
-You are required to write at least one E2E test as specified in [Required E2E Testing](#52-required-e2e-testing). Grading will be split
-between seeing the test perform specific actions and the test verifying expected behaviors for each action.
+You are required to write at least one E2E test as specified in [Required E2E Testing](#52-required-e2e-testing). Grading will be split between seeing the test perform specific actions and the test verifying expected behaviors for each action.
 
 | Test Action | Points |
 | ---- | ----- |
@@ -402,7 +395,7 @@ between seeing the test perform specific actions and the test verifying expected
 | Assert the scaled recipe is displayed | 2 |
 | Assert the test saves the recipe to the correct collection | 2 |
 
-## User Interface Design (up to -Y)
+## 10.3 User Interface Design (up to -Y)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
@@ -410,7 +403,7 @@ between seeing the test perform specific actions and the test verifying expected
 | Invalid recipe can be input | -Y | User is allowed to select a recipe that does not exist for any command |
 | Non-user friendly design | -Y | User needs advance knowledge of CYB to use a feature |
 
-## View-Model and Controller Design (up to -Y)
+## 10.4 View-Model and Controller Design (up to -Y)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
@@ -419,7 +412,7 @@ between seeing the test perform specific actions and the test verifying expected
 | Recipe class was modified for view purposes | -Y | Domain core should not be aware of JavaFX |
 | RecipeCollection class was modified for view purposes | -Y | Domain core should not be aware of JavaFX |
 
-## Code Quality (up to −5)
+## 10.5 Code Quality (up to −5)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
@@ -428,6 +421,6 @@ between seeing the test perform specific actions and the test verifying expected
 | Poor naming/style | −1 | Unclear variable names; inconsistent formatting |
 
 
-## Reflections
+## 10.6 Reflections
 
 3 questions × 4 points each. See [Reflection](#9-reflection) for full prompts. Answers should demonstrate genuine reflection on your design process, not just describe what you built.
