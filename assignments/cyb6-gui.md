@@ -395,22 +395,22 @@ You are required to write at least one E2E test as specified in [Required E2E Te
 | Assert the scaled recipe is displayed | 2 |
 | Assert the test saves the recipe to the correct collection | 2 |
 
-## 10.3 User Interface Design (up to -Y)
+## 10.3 User Interface Design (up to -15)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
-| GUI acts as CLI | -Y | User is asked to enter CLI commands at any point |
-| Invalid recipe can be input | -Y | User is allowed to select a recipe that does not exist for any command |
-| Non-user friendly design | -Y | User needs advance knowledge of CYB to use a feature |
+| GUI acts as CLI | -5 | User is asked to enter CLI commands at any point |
+| Invalid recipe can be input | -5 | User is allowed to select a recipe that does not exist for any command |
+| Non-user friendly design | -5 | User needs advance knowledge of CYB to use a feature |
 
-## 10.4 View-Model and Controller Design (up to -Y)
+## 10.4 View-Model and Controller Design (up to -10)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
-| View-model is aware of JavaFX widgets | -Y | View-model should not be aware of view directly |
-| View-model is aware of controller | -Y | View-model should not be aware of the controller |
-| Recipe class was modified for view purposes | -Y | Domain core should not be aware of JavaFX |
-| RecipeCollection class was modified for view purposes | -Y | Domain core should not be aware of JavaFX |
+| View-model is aware of JavaFX widgets | -2 | View-model should not be aware of view directly |
+| View-model is aware of controller | -2 | View-model should not be aware of the controller |
+| Recipe class was modified for view purposes | -3 | Domain core should not be aware of JavaFX |
+| RecipeCollection class was modified for view purposes | -3 | Domain core should not be aware of JavaFX |
 
 ## 10.5 Code Quality (up to −5)
 
